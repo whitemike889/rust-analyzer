@@ -574,11 +574,42 @@
 <span id="574">574</span>
 <span id="575">575</span>
 <span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">pending_requests</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">path</span>::<span class="ident">PathBuf</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Instant</span>, <span class="ident">any</span>::<span class="ident">TypeId</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">path</span>::<span class="ident">PathBuf</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Instant</span>};
 
 <span class="kw">use</span> <span class="ident">crossbeam_channel</span>::{<span class="ident">select</span>, <span class="ident">unbounded</span>, <span class="ident">Receiver</span>, <span class="ident">RecvError</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="ident">failure</span>::{<span class="ident">bail</span>, <span class="ident">format_err</span>};
@@ -589,19 +620,24 @@
 <span class="kw">use</span> <span class="ident">lsp_types</span>::<span class="ident">NumberOrString</span>;
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">Canceled</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::<span class="ident">VfsTask</span>;
-<span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>::<span class="ident">DeserializeOwned</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">threadpool</span>::<span class="ident">ThreadPool</span>;
+<span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">main_loop</span>::<span class="ident">subscriptions</span>::<span class="ident">Subscriptions</span>,
+    <span class="ident">main_loop</span>::{
+        <span class="ident">subscriptions</span>::<span class="ident">Subscriptions</span>,
+        <span class="ident">pending_requests</span>::{<span class="ident">PendingRequests</span>, <span class="ident">PendingRequest</span>},
+    },
     <span class="ident">project_model</span>::<span class="ident">workspace_loader</span>,
     <span class="ident">req</span>,
-    <span class="ident">server_world</span>::{<span class="ident">ServerWorld</span>, <span class="ident">ServerWorldState</span>, <span class="ident">CompletedRequest</span>},
+    <span class="ident">server_world</span>::{<span class="ident">ServerWorld</span>, <span class="ident">ServerWorldState</span>},
     <span class="prelude-ty">Result</span>,
     <span class="ident">InitializationOptions</span>,
 };
-<span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
+
+<span class="kw">const</span> <span class="ident">THREADPOOL_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
+<span class="kw">const</span> <span class="ident">MAX_IN_FLIGHT_LIBS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">THREADPOOL_SIZE</span> <span class="op">-</span> <span class="number">3</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Fail</span>)]</span>
 <span class="attribute">#[<span class="ident">fail</span>(<span class="ident">display</span> <span class="op">=</span> <span class="string">&quot;Language Server request failed with {}. ({})&quot;</span>, <span class="ident">code</span>, <span class="ident">message</span>)]</span>
@@ -616,34 +652,12 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">enum</span> <span class="ident">Task</span> {
-    <span class="ident">Respond</span>(<span class="ident">RawResponse</span>),
-    <span class="ident">Notify</span>(<span class="ident">RawNotification</span>),
-}
-
-<span class="kw">struct</span> <span class="ident">PendingRequest</span> {
-    <span class="ident">received</span>: <span class="ident">Instant</span>,
-    <span class="ident">method</span>: <span class="ident">String</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span>(<span class="ident">u64</span>, <span class="ident">PendingRequest</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CompletedRequest</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">id</span>, <span class="ident">pending</span>): (<span class="ident">u64</span>, <span class="ident">PendingRequest</span>)) <span class="op">-&gt;</span> <span class="ident">CompletedRequest</span> {
-        <span class="ident">CompletedRequest</span> { <span class="ident">id</span>, <span class="ident">method</span>: <span class="ident">pending</span>.<span class="ident">method</span>, <span class="ident">duration</span>: <span class="ident">pending</span>.<span class="ident">received</span>.<span class="ident">elapsed</span>() }
-    }
-}
-
-<span class="kw">const</span> <span class="ident">THREADPOOL_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
-
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">main_loop</span>(
     <span class="ident">ws_roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
     <span class="ident">options</span>: <span class="ident">InitializationOptions</span>,
     <span class="ident">msg_receiver</span>: <span class="kw-2">&amp;</span><span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">THREADPOOL_SIZE</span>);
-    <span class="kw">let</span> (<span class="ident">task_sender</span>, <span class="ident">task_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>::<span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>();
-
     <span class="comment">// FIXME: support dynamic workspace loading.</span>
     <span class="kw">let</span> <span class="ident">workspaces</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="ident">ws_worker</span> <span class="op">=</span> <span class="ident">workspace_loader</span>();
@@ -668,10 +682,12 @@
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">ServerWorldState</span>::<span class="ident">new</span>(<span class="ident">ws_roots</span>, <span class="ident">workspaces</span>);
 
-    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;server initialized, serving requests&quot;</span>);
+    <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">THREADPOOL_SIZE</span>);
+    <span class="kw">let</span> (<span class="ident">task_sender</span>, <span class="ident">task_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>::<span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pending_requests</span> <span class="op">=</span> <span class="ident">PendingRequests</span>::<span class="ident">default</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">subs</span> <span class="op">=</span> <span class="ident">Subscriptions</span>::<span class="ident">default</span>();
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pending_requests</span> <span class="op">=</span> <span class="ident">FxHashMap</span>::<span class="ident">default</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">subs</span> <span class="op">=</span> <span class="ident">Subscriptions</span>::<span class="ident">new</span>();
+    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;server initialized, serving requests&quot;</span>);
     <span class="kw">let</span> <span class="ident">main_res</span> <span class="op">=</span> <span class="ident">main_loop_inner</span>(
         <span class="ident">options</span>,
         <span class="kw-2">&amp;</span><span class="ident">pool</span>,
@@ -697,6 +713,12 @@
     <span class="ident">drop</span>(<span class="ident">vfs</span>);
 
     <span class="ident">main_res</span>
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">enum</span> <span class="ident">Task</span> {
+    <span class="ident">Respond</span>(<span class="ident">RawResponse</span>),
+    <span class="ident">Notify</span>(<span class="ident">RawNotification</span>),
 }
 
 <span class="kw">enum</span> <span class="ident">Event</span> {
@@ -749,10 +771,10 @@
     <span class="ident">task_sender</span>: <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
     <span class="ident">task_receiver</span>: <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ServerWorldState</span>,
-    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">PendingRequest</span><span class="op">&gt;</span>,
+    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PendingRequests</span>,
     <span class="ident">subs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Subscriptions</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="comment">// We try not to index more than THREADPOOL_SIZE - 3 libraries at the same</span>
+    <span class="comment">// We try not to index more than MAX_IN_FLIGHT_LIBS libraries at the same</span>
     <span class="comment">// time to always have a thread ready to react to input.</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_flight_libraries</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pending_libraries</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
@@ -773,15 +795,16 @@
             },
             <span class="ident">recv</span>(<span class="ident">libdata_receiver</span>) <span class="op">-&gt;</span> <span class="ident">data</span> <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Lib</span>(<span class="ident">data</span>.<span class="ident">unwrap</span>())
         };
-        <span class="comment">// NOTE: don&#39;t count blocking select! call as a loop-turn time</span>
-        <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;main_loop_inner/loop-turn&quot;</span>);
         <span class="kw">let</span> <span class="ident">loop_start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
 
+        <span class="comment">// NOTE: don&#39;t count blocking select! call as a loop-turn time</span>
+        <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;main_loop_inner/loop-turn&quot;</span>);
         <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;loop turn = {:?}&quot;</span>, <span class="ident">event</span>);
         <span class="kw">let</span> <span class="ident">queue_count</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">queued_count</span>();
         <span class="kw">if</span> <span class="ident">queue_count</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;queued count = {}&quot;</span>, <span class="ident">queue_count</span>);
         }
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state_changed</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">match</span> <span class="ident">event</span> {
             <span class="ident">Event</span>::<span class="ident">Task</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> {
@@ -803,34 +826,15 @@
                         <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> <span class="ident">req</span>,
                         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
                     };
-                    <span class="kw">match</span> <span class="ident">req</span>.<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">CollectGarbage</span><span class="op">&gt;</span>() {
-                        <span class="prelude-val">Ok</span>((<span class="ident">id</span>, ())) <span class="op">=&gt;</span> {
-                            <span class="ident">state</span>.<span class="ident">collect_garbage</span>();
-                            <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">RawResponse</span>::<span class="ident">ok</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">CollectGarbage</span><span class="op">&gt;</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span>());
-                            <span class="ident">msg_sender</span>.<span class="ident">send</span>(<span class="ident">resp</span>.<span class="ident">into</span>()).<span class="ident">unwrap</span>()
-                        }
-                        <span class="prelude-val">Err</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
-                            <span class="kw">match</span> <span class="ident">on_request</span>(
-                                <span class="ident">state</span>,
-                                <span class="ident">pending_requests</span>,
-                                <span class="ident">pool</span>,
-                                <span class="kw-2">&amp;</span><span class="ident">task_sender</span>,
-                                <span class="ident">loop_start</span>,
-                                <span class="ident">req</span>,
-                            )<span class="question-mark">?</span> {
-                                <span class="prelude-val">None</span> <span class="op">=&gt;</span> (),
-                                <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
-                                    <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;unknown request: {:?}&quot;</span>, <span class="ident">req</span>);
-                                    <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">RawResponse</span>::<span class="ident">err</span>(
-                                        <span class="ident">req</span>.<span class="ident">id</span>,
-                                        <span class="ident">ErrorCode</span>::<span class="ident">MethodNotFound</span> <span class="kw">as</span> <span class="ident">i32</span>,
-                                        <span class="string">&quot;unknown request&quot;</span>.<span class="ident">to_string</span>(),
-                                    );
-                                    <span class="ident">msg_sender</span>.<span class="ident">send</span>(<span class="ident">resp</span>.<span class="ident">into</span>()).<span class="ident">unwrap</span>()
-                                }
-                            }
-                        }
-                    }
+                    <span class="ident">on_request</span>(
+                        <span class="ident">state</span>,
+                        <span class="ident">pending_requests</span>,
+                        <span class="ident">pool</span>,
+                        <span class="kw-2">&amp;</span><span class="ident">task_sender</span>,
+                        <span class="ident">msg_sender</span>,
+                        <span class="ident">loop_start</span>,
+                        <span class="ident">req</span>,
+                    )<span class="question-mark">?</span>
                 }
                 <span class="ident">RawMessage</span>::<span class="ident">Notification</span>(<span class="ident">not</span>) <span class="op">=&gt;</span> {
                     <span class="ident">on_notification</span>(<span class="ident">msg_sender</span>, <span class="ident">state</span>, <span class="ident">pending_requests</span>, <span class="ident">subs</span>, <span class="ident">not</span>)<span class="question-mark">?</span>;
@@ -841,7 +845,7 @@
         };
 
         <span class="ident">pending_libraries</span>.<span class="ident">extend</span>(<span class="ident">state</span>.<span class="ident">process_changes</span>());
-        <span class="kw">while</span> <span class="ident">in_flight_libraries</span> <span class="op">&lt;</span> <span class="ident">THREADPOOL_SIZE</span> <span class="op">-</span> <span class="number">3</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">pending_libraries</span>.<span class="ident">is_empty</span>() {
+        <span class="kw">while</span> <span class="ident">in_flight_libraries</span> <span class="op">&lt;</span> <span class="ident">MAX_IN_FLIGHT_LIBS</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">pending_libraries</span>.<span class="ident">is_empty</span>() {
             <span class="kw">let</span> (<span class="ident">root</span>, <span class="ident">files</span>) <span class="op">=</span> <span class="ident">pending_libraries</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
             <span class="ident">in_flight_libraries</span> <span class="op">+=</span> <span class="number">1</span>;
             <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">libdata_sender</span>.<span class="ident">clone</span>();
@@ -882,13 +886,12 @@
 <span class="kw">fn</span> <span class="ident">on_task</span>(
     <span class="ident">task</span>: <span class="ident">Task</span>,
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
-    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">PendingRequest</span><span class="op">&gt;</span>,
+    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PendingRequests</span>,
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ServerWorldState</span>,
 ) {
     <span class="kw">match</span> <span class="ident">task</span> {
         <span class="ident">Task</span>::<span class="ident">Respond</span>(<span class="ident">response</span>) <span class="op">=&gt;</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pending</span>) <span class="op">=</span> <span class="ident">pending_requests</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>.<span class="ident">id</span>) {
-                <span class="kw">let</span> <span class="ident">completed</span> <span class="op">=</span> <span class="ident">CompletedRequest</span>::<span class="ident">from</span>((<span class="ident">response</span>.<span class="ident">id</span>, <span class="ident">pending</span>));
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">completed</span>) <span class="op">=</span> <span class="ident">pending_requests</span>.<span class="ident">finish</span>(<span class="ident">response</span>.<span class="ident">id</span>) {
                 <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;handled req#{} in {:?}&quot;</span>, <span class="ident">completed</span>.<span class="ident">id</span>, <span class="ident">completed</span>.<span class="ident">duration</span>);
                 <span class="ident">state</span>.<span class="ident">complete_request</span>(<span class="ident">completed</span>);
                 <span class="ident">msg_sender</span>.<span class="ident">send</span>(<span class="ident">response</span>.<span class="ident">into</span>()).<span class="ident">unwrap</span>();
@@ -902,22 +905,35 @@
 
 <span class="kw">fn</span> <span class="ident">on_request</span>(
     <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ServerWorldState</span>,
-    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">PendingRequest</span><span class="op">&gt;</span>,
+    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PendingRequests</span>,
     <span class="ident">pool</span>: <span class="kw-2">&amp;</span><span class="ident">ThreadPool</span>,
     <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
+    <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">request_received</span>: <span class="ident">Instant</span>,
     <span class="ident">req</span>: <span class="ident">RawRequest</span>,
-) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RawRequest</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">method</span> <span class="op">=</span> <span class="ident">req</span>.<span class="ident">method</span>.<span class="ident">clone</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pool_dispatcher</span> <span class="op">=</span> <span class="ident">PoolDispatcher</span> { <span class="ident">req</span>: <span class="prelude-val">Some</span>(<span class="ident">req</span>), <span class="ident">res</span>: <span class="prelude-val">None</span>, <span class="ident">pool</span>, <span class="ident">world</span>, <span class="ident">sender</span> };
-    <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">pool_dispatcher</span>
+) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pool_dispatcher</span> <span class="op">=</span> <span class="ident">PoolDispatcher</span> {
+        <span class="ident">req</span>: <span class="prelude-val">Some</span>(<span class="ident">req</span>),
+        <span class="ident">pool</span>,
+        <span class="ident">world</span>,
+        <span class="ident">sender</span>,
+        <span class="ident">msg_sender</span>,
+        <span class="ident">pending_requests</span>,
+        <span class="ident">request_received</span>,
+    };
+    <span class="ident">pool_dispatcher</span>
+        .<span class="ident">on_sync</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">CollectGarbage</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">s</span>, ()<span class="op">|</span> <span class="prelude-val">Ok</span>(<span class="ident">s</span>.<span class="ident">collect_garbage</span>()))<span class="question-mark">?</span>
+        .<span class="ident">on_sync</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">JoinLines</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">s</span>, <span class="ident">p</span><span class="op">|</span> <span class="ident">handlers</span>::<span class="ident">handle_join_lines</span>(<span class="ident">s</span>.<span class="ident">snapshot</span>(), <span class="ident">p</span>))<span class="question-mark">?</span>
+        .<span class="ident">on_sync</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">OnEnter</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">s</span>, <span class="ident">p</span><span class="op">|</span> <span class="ident">handlers</span>::<span class="ident">handle_on_enter</span>(<span class="ident">s</span>.<span class="ident">snapshot</span>(), <span class="ident">p</span>))<span class="question-mark">?</span>
+        .<span class="ident">on_sync</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SelectionRangeRequest</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">s</span>, <span class="ident">p</span><span class="op">|</span> {
+            <span class="ident">handlers</span>::<span class="ident">handle_selection_range</span>(<span class="ident">s</span>.<span class="ident">snapshot</span>(), <span class="ident">p</span>)
+        })<span class="question-mark">?</span>
+        .<span class="ident">on_sync</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">FindMatchingBrace</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">s</span>, <span class="ident">p</span><span class="op">|</span> {
+            <span class="ident">handlers</span>::<span class="ident">handle_find_matching_brace</span>(<span class="ident">s</span>.<span class="ident">snapshot</span>(), <span class="ident">p</span>)
+        })<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">AnalyzerStatus</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_analyzer_status</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SyntaxTree</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_syntax_tree</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">ExtendSelection</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_extend_selection</span>)<span class="question-mark">?</span>
-        .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SelectionRangeRequest</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_selection_range</span>)<span class="question-mark">?</span>
-        .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">FindMatchingBrace</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_find_matching_brace</span>)<span class="question-mark">?</span>
-        .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">JoinLines</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_join_lines</span>)<span class="question-mark">?</span>
-        .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">OnEnter</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_on_enter</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">OnTypeFormatting</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_on_type_formatting</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">DocumentSymbolRequest</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_document_symbol</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">WorkspaceSymbol</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_workspace_symbol</span>)<span class="question-mark">?</span>
@@ -940,21 +956,13 @@
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">Formatting</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_formatting</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">DocumentHighlightRequest</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_document_highlight</span>)<span class="question-mark">?</span>
         .<span class="ident">finish</span>();
-    <span class="kw">match</span> <span class="ident">req</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">id</span>) <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span>
-                <span class="ident">pending_requests</span>.<span class="ident">insert</span>(<span class="ident">id</span>, <span class="ident">PendingRequest</span> { <span class="ident">method</span>, <span class="ident">received</span>: <span class="ident">request_received</span> });
-            <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">prev</span>.<span class="ident">is_none</span>(), <span class="string">&quot;duplicate request: {}&quot;</span>, <span class="ident">id</span>);
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        }
-        <span class="prelude-val">Err</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">req</span>)),
-    }
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="kw">fn</span> <span class="ident">on_notification</span>(
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ServerWorldState</span>,
-    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">PendingRequest</span><span class="op">&gt;</span>,
+    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PendingRequests</span>,
     <span class="ident">subs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Subscriptions</span>,
     <span class="ident">not</span>: <span class="ident">RawNotification</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -966,7 +974,7 @@
                     <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;string id&#39;s not supported: {:?}&quot;</span>, <span class="ident">id</span>);
                 }
             };
-            <span class="kw">if</span> <span class="ident">pending_requests</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>).<span class="ident">is_some</span>() {
+            <span class="kw">if</span> <span class="ident">pending_requests</span>.<span class="ident">cancel</span>(<span class="ident">id</span>) {
                 <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">RawResponse</span>::<span class="ident">err</span>(
                     <span class="ident">id</span>,
                     <span class="ident">ErrorCode</span>::<span class="ident">RequestCanceled</span> <span class="kw">as</span> <span class="ident">i32</span>,
@@ -1022,86 +1030,138 @@
 
 <span class="kw">struct</span> <span class="ident">PoolDispatcher</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="ident">req</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RawRequest</span><span class="op">&gt;</span>,
-    <span class="ident">res</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
     <span class="ident">pool</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ThreadPool</span>,
     <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">ServerWorldState</span>,
+    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">PendingRequests</span>,
+    <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
+    <span class="ident">request_received</span>: <span class="ident">Instant</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PoolDispatcher</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Dispatches the request onto the current thread</span>
+    <span class="kw">fn</span> <span class="ident">on_sync</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">f</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ServerWorldState</span>, <span class="ident">R</span>::<span class="ident">Params</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>::<span class="prelude-ty">Result</span><span class="op">&gt;</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">R</span>: <span class="ident">req</span>::<span class="ident">Request</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">R</span>::<span class="ident">Params</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">R</span>::<span class="prelude-ty">Result</span>: <span class="ident">Serialize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    {
+        <span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">params</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="self">self</span>);
+            }
+        };
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>(<span class="self">self</span>.<span class="ident">world</span>, <span class="ident">params</span>);
+        <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">result_to_task</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">id</span>, <span class="ident">result</span>);
+        <span class="ident">on_task</span>(<span class="ident">task</span>, <span class="self">self</span>.<span class="ident">msg_sender</span>, <span class="self">self</span>.<span class="ident">pending_requests</span>, <span class="self">self</span>.<span class="ident">world</span>);
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>)
+    }
+
+    <span class="doccomment">/// Dispatches the request onto thread pool</span>
     <span class="kw">fn</span> <span class="ident">on</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">f</span>: <span class="kw">fn</span>(<span class="ident">ServerWorld</span>, <span class="ident">R</span>::<span class="ident">Params</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>::<span class="prelude-ty">Result</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">R</span>: <span class="ident">req</span>::<span class="ident">Request</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">R</span>::<span class="ident">Params</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">R</span>::<span class="prelude-ty">Result</span>: <span class="ident">Serialize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
-        <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">req</span>.<span class="ident">take</span>() {
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="self">self</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> <span class="ident">req</span>,
-        };
-        <span class="kw">match</span> <span class="ident">req</span>.<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>() {
-            <span class="prelude-val">Ok</span>((<span class="ident">id</span>, <span class="ident">params</span>)) <span class="op">=&gt;</span> {
-                <span class="comment">// Real time requests block user typing, so we should react quickly to them.</span>
-                <span class="comment">// Currently this means that we try to cancel background jobs if we don&#39;t have</span>
-                <span class="comment">// a spare thread.</span>
-                <span class="kw">let</span> <span class="ident">is_real_time</span> <span class="op">=</span> <span class="ident">TypeId</span>::<span class="ident">of</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>() <span class="op">==</span> <span class="ident">TypeId</span>::<span class="ident">of</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">JoinLines</span><span class="op">&gt;</span>()
-                    <span class="op">||</span> <span class="ident">TypeId</span>::<span class="ident">of</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>() <span class="op">==</span> <span class="ident">TypeId</span>::<span class="ident">of</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">OnEnter</span><span class="op">&gt;</span>();
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">queued_count</span>() <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="ident">is_real_time</span> {
-                    <span class="self">self</span>.<span class="ident">world</span>.<span class="ident">cancel_requests</span>();
-                }
-
-                <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">world</span>.<span class="ident">snapshot</span>();
-                <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">clone</span>();
-                <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">execute</span>(<span class="kw">move</span> <span class="op">||</span> {
-                    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">f</span>(<span class="ident">world</span>, <span class="ident">params</span>) {
-                        <span class="prelude-val">Ok</span>(<span class="ident">resp</span>) <span class="op">=&gt;</span> <span class="ident">RawResponse</span>::<span class="ident">ok</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">resp</span>),
-                        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">e</span>.<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">LspError</span><span class="op">&gt;</span>() {
-                            <span class="prelude-val">Ok</span>(<span class="ident">lsp_error</span>) <span class="op">=&gt;</span> {
-                                <span class="ident">RawResponse</span>::<span class="ident">err</span>(<span class="ident">id</span>, <span class="ident">lsp_error</span>.<span class="ident">code</span>, <span class="ident">lsp_error</span>.<span class="ident">message</span>)
-                            }
-                            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
-                                <span class="kw">if</span> <span class="ident">is_canceled</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>) {
-                                    <span class="comment">// FIXME: When https://github.com/Microsoft/vscode-languageserver-node/issues/457</span>
-                                    <span class="comment">// gets fixed, we can return the proper response.</span>
-                                    <span class="comment">// This works around the issue where &quot;content modified&quot; error would continuously</span>
-                                    <span class="comment">// show an message pop-up in VsCode</span>
-                                    <span class="comment">// RawResponse::err(</span>
-                                    <span class="comment">//     id,</span>
-                                    <span class="comment">//     ErrorCode::ContentModified as i32,</span>
-                                    <span class="comment">//     &quot;content modified&quot;.to_string(),</span>
-                                    <span class="comment">// )</span>
-                                    <span class="ident">RawResponse</span> {
-                                        <span class="ident">id</span>,
-                                        <span class="ident">result</span>: <span class="prelude-val">Some</span>(<span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="kw-2">&amp;</span>()).<span class="ident">unwrap</span>()),
-                                        <span class="ident">error</span>: <span class="prelude-val">None</span>,
-                                    }
-                                } <span class="kw">else</span> {
-                                    <span class="ident">RawResponse</span>::<span class="ident">err</span>(
-                                        <span class="ident">id</span>,
-                                        <span class="ident">ErrorCode</span>::<span class="ident">InternalError</span> <span class="kw">as</span> <span class="ident">i32</span>,
-                                        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\n{}&quot;</span>, <span class="ident">e</span>, <span class="ident">e</span>.<span class="ident">backtrace</span>()),
-                                    )
-                                }
-                            }
-                        },
-                    };
-                    <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">Task</span>::<span class="ident">Respond</span>(<span class="ident">response</span>);
-                    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">task</span>).<span class="ident">unwrap</span>();
-                });
-                <span class="self">self</span>.<span class="ident">res</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>);
+        <span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">params</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="self">self</span>);
             }
-            <span class="prelude-val">Err</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">req</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">req</span>),
-        }
+        };
+
+        <span class="self">self</span>.<span class="ident">pool</span>.<span class="ident">execute</span>({
+            <span class="kw">let</span> <span class="ident">world</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">world</span>.<span class="ident">snapshot</span>();
+            <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sender</span>.<span class="ident">clone</span>();
+            <span class="kw">move</span> <span class="op">||</span> {
+                <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">f</span>(<span class="ident">world</span>, <span class="ident">params</span>);
+                <span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="ident">result_to_task</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">id</span>, <span class="ident">result</span>);
+                <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">task</span>).<span class="ident">unwrap</span>();
+            }
+        });
+
         <span class="prelude-val">Ok</span>(<span class="self">self</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">RawRequest</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> (<span class="self">self</span>.<span class="ident">res</span>.<span class="ident">take</span>(), <span class="self">self</span>.<span class="ident">req</span>.<span class="ident">take</span>()) {
-            (<span class="prelude-val">Some</span>(<span class="ident">res</span>), <span class="prelude-val">None</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">res</span>),
-            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">req</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">req</span>),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+    <span class="kw">fn</span> <span class="ident">parse</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">u64</span>, <span class="ident">R</span>::<span class="ident">Params</span>)<span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">R</span>: <span class="ident">req</span>::<span class="ident">Request</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">R</span>::<span class="ident">Params</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    {
+        <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">req</span>.<span class="ident">take</span>()<span class="question-mark">?</span>;
+        <span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">params</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">req</span>.<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>() {
+            <span class="prelude-val">Ok</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
+            <span class="prelude-val">Err</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">req</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">req</span>);
+                <span class="kw">return</span> <span class="prelude-val">None</span>;
+            }
+        };
+        <span class="self">self</span>.<span class="ident">pending_requests</span>.<span class="ident">start</span>(<span class="ident">PendingRequest</span> {
+            <span class="ident">id</span>,
+            <span class="ident">method</span>: <span class="ident">R</span>::<span class="ident">METHOD</span>.<span class="ident">to_string</span>(),
+            <span class="ident">received</span>: <span class="self">self</span>.<span class="ident">request_received</span>,
+        });
+        <span class="prelude-val">Some</span>((<span class="ident">id</span>, <span class="ident">params</span>))
+    }
+
+    <span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">req</span>.<span class="ident">take</span>() {
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> (),
+            <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;unknown request: {:?}&quot;</span>, <span class="ident">req</span>);
+                <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span> <span class="ident">RawResponse</span>::<span class="ident">err</span>(
+                    <span class="ident">req</span>.<span class="ident">id</span>,
+                    <span class="ident">ErrorCode</span>::<span class="ident">MethodNotFound</span> <span class="kw">as</span> <span class="ident">i32</span>,
+                    <span class="string">&quot;unknown request&quot;</span>.<span class="ident">to_string</span>(),
+                );
+                <span class="self">self</span>.<span class="ident">msg_sender</span>.<span class="ident">send</span>(<span class="ident">resp</span>.<span class="ident">into</span>()).<span class="ident">unwrap</span>();
+            }
         }
     }
+}
+
+<span class="kw">fn</span> <span class="ident">result_to_task</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">id</span>: <span class="ident">u64</span>, <span class="ident">result</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">R</span>::<span class="prelude-ty">Result</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Task</span>
+<span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">req</span>::<span class="ident">Request</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">R</span>::<span class="ident">Params</span>: <span class="ident">DeserializeOwned</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">R</span>::<span class="prelude-ty">Result</span>: <span class="ident">Serialize</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">result</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">resp</span>) <span class="op">=&gt;</span> <span class="ident">RawResponse</span>::<span class="ident">ok</span>::<span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">resp</span>),
+        <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">e</span>.<span class="ident">downcast</span>::<span class="op">&lt;</span><span class="ident">LspError</span><span class="op">&gt;</span>() {
+            <span class="prelude-val">Ok</span>(<span class="ident">lsp_error</span>) <span class="op">=&gt;</span> <span class="ident">RawResponse</span>::<span class="ident">err</span>(<span class="ident">id</span>, <span class="ident">lsp_error</span>.<span class="ident">code</span>, <span class="ident">lsp_error</span>.<span class="ident">message</span>),
+            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="ident">is_canceled</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>) {
+                    <span class="comment">// FIXME: When https://github.com/Microsoft/vscode-languageserver-node/issues/457</span>
+                    <span class="comment">// gets fixed, we can return the proper response.</span>
+                    <span class="comment">// This works around the issue where &quot;content modified&quot; error would continuously</span>
+                    <span class="comment">// show an message pop-up in VsCode</span>
+                    <span class="comment">// RawResponse::err(</span>
+                    <span class="comment">//     id,</span>
+                    <span class="comment">//     ErrorCode::ContentModified as i32,</span>
+                    <span class="comment">//     &quot;content modified&quot;.to_string(),</span>
+                    <span class="comment">// )</span>
+                    <span class="ident">RawResponse</span> {
+                        <span class="ident">id</span>,
+                        <span class="ident">result</span>: <span class="prelude-val">Some</span>(<span class="ident">serde_json</span>::<span class="ident">to_value</span>(<span class="kw-2">&amp;</span>()).<span class="ident">unwrap</span>()),
+                        <span class="ident">error</span>: <span class="prelude-val">None</span>,
+                    }
+                } <span class="kw">else</span> {
+                    <span class="ident">RawResponse</span>::<span class="ident">err</span>(
+                        <span class="ident">id</span>,
+                        <span class="ident">ErrorCode</span>::<span class="ident">InternalError</span> <span class="kw">as</span> <span class="ident">i32</span>,
+                        <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{}\n{}&quot;</span>, <span class="ident">e</span>, <span class="ident">e</span>.<span class="ident">backtrace</span>()),
+                    )
+                }
+            }
+        },
+    };
+    <span class="ident">Task</span>::<span class="ident">Respond</span>(<span class="ident">response</span>)
 }
 
 <span class="kw">fn</span> <span class="ident">update_file_notifications_on_threadpool</span>(

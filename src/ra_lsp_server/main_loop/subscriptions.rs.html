@@ -17,27 +17,23 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::<span class="ident">FileId</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashSet</span>;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Subscriptions</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Subscriptions</span> {
     <span class="ident">subs</span>: <span class="ident">FxHashSet</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Subscriptions</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Subscriptions</span> {
-        <span class="ident">Subscriptions</span> { <span class="ident">subs</span>: <span class="ident">FxHashSet</span>::<span class="ident">default</span>() }
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_sub</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_sub</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) {
         <span class="self">self</span>.<span class="ident">subs</span>.<span class="ident">insert</span>(<span class="ident">file_id</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_sub</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">remove_sub</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) {
         <span class="self">self</span>.<span class="ident">subs</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">file_id</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subscriptions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">subscriptions</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">subs</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">collect</span>()
     }
 }
