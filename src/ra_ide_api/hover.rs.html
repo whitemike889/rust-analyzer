@@ -559,6 +559,12 @@
 <span id="559">559</span>
 <span id="560">560</span>
 <span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">SourceDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
@@ -567,7 +573,11 @@
 };
 <span class="kw">use</span> <span class="ident">hir</span>::<span class="ident">HirDisplay</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>::<span class="ident">RootDatabase</span>, <span class="ident">RangeInfo</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">display</span>::{<span class="ident">rust_code_markup</span>, <span class="ident">doc_text_for</span>}};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">db</span>::<span class="ident">RootDatabase</span>,
+    <span class="ident">RangeInfo</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>,
+    <span class="ident">display</span>::{<span class="ident">rust_code_markup</span>, <span class="ident">doc_text_for</span>},
+};
 
 <span class="doccomment">/// Contains the results when hovering over an item</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
@@ -717,9 +727,11 @@
     <span class="kw">fn</span> <span class="ident">check_hover_result</span>(<span class="ident">fixture</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">expected</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">str</span>]) {
         <span class="kw">let</span> (<span class="ident">analysis</span>, <span class="ident">position</span>) <span class="op">=</span> <span class="ident">analysis_and_position</span>(<span class="ident">fixture</span>);
         <span class="kw">let</span> <span class="ident">hover</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">hover</span>(<span class="ident">position</span>).<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">results</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">from</span>(<span class="ident">hover</span>.<span class="ident">info</span>.<span class="ident">results</span>());
+        <span class="ident">results</span>.<span class="ident">sort</span>();
 
         <span class="kw">for</span> (<span class="ident">markup</span>, <span class="ident">expected</span>) <span class="kw">in</span>
-            <span class="ident">hover</span>.<span class="ident">info</span>.<span class="ident">results</span>().<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">expected</span>.<span class="ident">iter</span>().<span class="ident">chain</span>(<span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>(<span class="kw-2">&amp;</span><span class="string">&quot;&lt;missing&gt;&quot;</span>)))
+            <span class="ident">results</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">expected</span>.<span class="ident">iter</span>().<span class="ident">chain</span>(<span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">repeat</span>(<span class="kw-2">&amp;</span><span class="string">&quot;&lt;missing&gt;&quot;</span>)))
         {
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">trim_markup</span>(<span class="kw-2">&amp;</span><span class="ident">markup</span>), <span class="kw-2">*</span><span class="ident">expected</span>);
         }
