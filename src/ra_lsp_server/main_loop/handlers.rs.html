@@ -924,11 +924,11 @@
     <span class="ident">cargo_target_spec</span>::{<span class="ident">runnable_args</span>, <span class="ident">CargoTargetSpec</span>},
     <span class="ident">conv</span>::{<span class="ident">to_location</span>, <span class="ident">to_location_link</span>, <span class="ident">Conv</span>, <span class="ident">ConvWith</span>, <span class="ident">MapConvWith</span>, <span class="ident">TryConvWith</span>},
     <span class="ident">req</span>::{<span class="self">self</span>, <span class="ident">Decoration</span>},
-    <span class="ident">server_world</span>::<span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>::<span class="ident">WorldSnapshot</span>,
     <span class="ident">LspError</span>, <span class="prelude-ty">Result</span>,
 };
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_analyzer_status</span>(<span class="ident">world</span>: <span class="ident">ServerWorld</span>, <span class="kw">_</span>: ()) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_analyzer_status</span>(<span class="ident">world</span>: <span class="ident">WorldSnapshot</span>, <span class="kw">_</span>: ()) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">status</span>();
     <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">buf</span>, <span class="string">&quot;\n\nrequests:&quot;</span>).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">requests</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">latest_requests</span>.<span class="ident">read</span>();
@@ -939,7 +939,7 @@
     <span class="prelude-val">Ok</span>(<span class="ident">buf</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_syntax_tree</span>(<span class="ident">world</span>: <span class="ident">ServerWorld</span>, <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">SyntaxTreeParams</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_syntax_tree</span>(<span class="ident">world</span>: <span class="ident">WorldSnapshot</span>, <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">SyntaxTreeParams</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">id</span>);
     <span class="kw">let</span> <span class="ident">text_range</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">range</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>));
@@ -949,7 +949,7 @@
 
 <span class="comment">// FIXME: drop this API</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_extend_selection</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">ExtendSelectionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">ExtendSelectionResult</span><span class="op">&gt;</span> {
     <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(
@@ -969,7 +969,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_selection_range</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">SelectionRangeParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SelectionRange</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_selection_range&quot;</span>);
@@ -1010,7 +1010,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_find_matching_brace</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">FindMatchingBraceParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Position</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_find_matching_brace&quot;</span>);
@@ -1029,7 +1029,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_join_lines</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">JoinLinesParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SourceChange</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_join_lines&quot;</span>);
@@ -1038,7 +1038,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_on_enter</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SourceChange</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_on_enter&quot;</span>);
@@ -1050,7 +1050,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_on_type_formatting</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">DocumentOnTypeFormattingParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TextEdit</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_on_type_formatting&quot;</span>);
@@ -1081,7 +1081,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_document_symbol</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">DocumentSymbolParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">DocumentSymbolResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1119,7 +1119,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_workspace_symbol</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">WorkspaceSymbolParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SymbolInformation</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">all_symbols</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">query</span>.<span class="ident">contains</span>(<span class="string">&#39;#&#39;</span>);
@@ -1145,7 +1145,7 @@
 
     <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">res</span>));
 
-    <span class="kw">fn</span> <span class="ident">exec_query</span>(<span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">ServerWorld</span>, <span class="ident">query</span>: <span class="ident">Query</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SymbolInformation</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">exec_query</span>(<span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>, <span class="ident">query</span>: <span class="ident">Query</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SymbolInformation</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="ident">nav</span> <span class="kw">in</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">symbol_search</span>(<span class="ident">query</span>)<span class="question-mark">?</span> {
             <span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">SymbolInformation</span> {
@@ -1162,7 +1162,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_goto_definition</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">GotoDefinitionResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1182,7 +1182,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_goto_implementation</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">GotoImplementationResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1202,7 +1202,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_goto_type_definition</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">GotoTypeDefinitionResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1222,7 +1222,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_parent_module</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Location</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1235,7 +1235,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_runnables</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">RunnablesParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">Runnable</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1296,7 +1296,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_decorations</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">TextDocumentIdentifier</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Decoration</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1304,7 +1304,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_completion</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">CompletionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">CompletionResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_completion&quot;</span>);
@@ -1347,7 +1347,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_folding_range</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">FoldingRangeParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FoldingRange</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1381,7 +1381,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_signature_help</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SignatureHelp</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1400,7 +1400,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_hover</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hover</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1422,7 +1422,7 @@
 
 <span class="doccomment">/// Test doc comment</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_prepare_rename</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PrepareRenameResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1443,7 +1443,7 @@
     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">PrepareRenameResponse</span>::<span class="ident">Range</span>(<span class="ident">loc</span>.<span class="ident">range</span>)))
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_rename</span>(<span class="ident">world</span>: <span class="ident">ServerWorld</span>, <span class="ident">params</span>: <span class="ident">RenameParams</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WorkspaceEdit</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_rename</span>(<span class="ident">world</span>: <span class="ident">WorldSnapshot</span>, <span class="ident">params</span>: <span class="ident">RenameParams</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WorkspaceEdit</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
     <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">position</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>);
@@ -1469,7 +1469,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_references</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">ReferenceParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Location</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1497,7 +1497,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_formatting</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">DocumentFormattingParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TextEdit</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1541,7 +1541,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_code_action</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">CodeActionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CodeActionResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_code_action&quot;</span>);
@@ -1604,7 +1604,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_code_lens</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">CodeLensParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CodeLens</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1681,7 +1681,7 @@
     <span class="ident">Impls</span>(<span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>),
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_code_lens_resolve</span>(<span class="ident">world</span>: <span class="ident">ServerWorld</span>, <span class="ident">code_lens</span>: <span class="ident">CodeLens</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CodeLens</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_code_lens_resolve</span>(<span class="ident">world</span>: <span class="ident">WorldSnapshot</span>, <span class="ident">code_lens</span>: <span class="ident">CodeLens</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CodeLens</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">code_lens</span>.<span class="ident">data</span>.<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">resolve</span> <span class="op">=</span> <span class="ident">serde_json</span>::<span class="ident">from_value</span>(<span class="ident">data</span>)<span class="question-mark">?</span>;
     <span class="kw">match</span> <span class="ident">resolve</span> {
@@ -1726,7 +1726,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_document_highlight</span>(
-    <span class="ident">world</span>: <span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">TextDocumentPositionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DocumentHighlight</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -1745,7 +1745,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">publish_diagnostics</span>(
-    <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>,
     <span class="ident">file_id</span>: <span class="ident">FileId</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">PublishDiagnosticsParams</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">uri</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">file_id_to_uri</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span>;
@@ -1767,14 +1767,14 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">publish_decorations</span>(
-    <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">ServerWorld</span>,
+    <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>,
     <span class="ident">file_id</span>: <span class="ident">FileId</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">PublishDecorationsParams</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">uri</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">file_id_to_uri</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="ident">req</span>::<span class="ident">PublishDecorationsParams</span> { <span class="ident">uri</span>, <span class="ident">decorations</span>: <span class="ident">highlight</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>)<span class="question-mark">?</span> })
 }
 
-<span class="kw">fn</span> <span class="ident">highlight</span>(<span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">ServerWorld</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Decoration</span><span class="op">&gt;&gt;</span> {
+<span class="kw">fn</span> <span class="ident">highlight</span>(<span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Decoration</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">world</span>
         .<span class="ident">analysis</span>()
