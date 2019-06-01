@@ -465,9 +465,9 @@
 
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ParseOrExpandQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">AstIdMapQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
-        <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">AstIdToNodeQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
 
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">RawItemsWithSourceMapQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
+        <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ImplsInModuleWithSourceMapQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">BodyWithSourceMapQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
     }
 }

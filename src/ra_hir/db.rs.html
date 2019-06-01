@@ -179,8 +179,6 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -258,6 +256,7 @@
     <span class="kw">fn</span> <span class="ident">ast_id_map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AstIdMap</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">source_id</span>::<span class="ident">AstIdMap</span>::<span class="ident">file_item_query</span>)]</span>
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
     <span class="kw">fn</span> <span class="ident">ast_id_to_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>, <span class="ident">ast_id</span>: <span class="ident">ErasedFileAstId</span>) <span class="op">-&gt;</span> <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="ident">RawItems</span>::<span class="ident">raw_items_query</span>)]</span>
@@ -274,9 +273,6 @@
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">impl_block</span>::<span class="ident">impls_in_module</span>)]</span>
     <span class="kw">fn</span> <span class="ident">impls_in_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ModuleImplBlocks</span><span class="op">&gt;</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">impl_block</span>::<span class="ident">impls_in_module_source_map_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">impls_in_module_source_map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ImplSourceMap</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">impl_block</span>::<span class="ident">impls_in_module_with_source_map_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">impls_in_module_with_source_map</span>(

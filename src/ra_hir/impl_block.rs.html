@@ -231,13 +231,6 @@
 <span id="231">231</span>
 <span id="232">232</span>
 <span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
@@ -300,7 +293,7 @@
 
     <span class="doccomment">/// Returns the syntax of the impl block</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">source</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> (<span class="ident">HirFileId</span>, <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">ImplBlock</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> <span class="ident">source_map</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">impls_in_module_source_map</span>(<span class="self">self</span>.<span class="ident">module</span>);
+        <span class="kw">let</span> <span class="ident">source_map</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">impls_in_module_with_source_map</span>(<span class="self">self</span>.<span class="ident">module</span>).<span class="number">1</span>;
         <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>);
         (<span class="ident">file_id</span>, <span class="ident">source_map</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="self">self</span>.<span class="ident">impl_id</span>))
     }
@@ -471,13 +464,6 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">impls_in_module</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ModuleImplBlocks</span><span class="op">&gt;</span> {
     <span class="ident">db</span>.<span class="ident">impls_in_module_with_source_map</span>(<span class="ident">module</span>).<span class="number">0</span>
-}
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">impls_in_module_source_map_query</span>(
-    <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
-    <span class="ident">module</span>: <span class="ident">Module</span>,
-) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ImplSourceMap</span><span class="op">&gt;</span> {
-    <span class="ident">db</span>.<span class="ident">impls_in_module_with_source_map</span>(<span class="ident">module</span>).<span class="number">1</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "ra_hir";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
