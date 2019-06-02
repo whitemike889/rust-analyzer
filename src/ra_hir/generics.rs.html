@@ -227,7 +227,7 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>, <span class="ident">TypeParamsOwner</span>, <span class="ident">TypeBoundsOwner</span>, <span class="ident">DefaultTypeParamOwner</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">db</span>::{ <span class="ident">HirDatabase</span>, <span class="ident">DefDatabase</span>},
+    <span class="ident">db</span>::{<span class="ident">HirDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">AstDatabase</span>},
     <span class="ident">Name</span>, <span class="ident">AsName</span>, <span class="ident">Function</span>, <span class="ident">Struct</span>, <span class="ident">Union</span>, <span class="ident">Enum</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>, <span class="ident">ImplBlock</span>, <span class="ident">Container</span>, <span class="ident">path</span>::<span class="ident">Path</span>, <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>, <span class="ident">AdtDef</span>
 };
 
@@ -271,7 +271,7 @@
 
 <span class="kw">impl</span> <span class="ident">GenericParams</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">generic_params_query</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">def</span>: <span class="ident">GenericDef</span>,
     ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">GenericParams</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">generics</span> <span class="op">=</span> <span class="ident">GenericParams</span>::<span class="ident">default</span>();

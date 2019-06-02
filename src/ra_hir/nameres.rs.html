@@ -571,6 +571,9 @@
 <span id="571">571</span>
 <span id="572">572</span>
 <span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">///</span>
@@ -639,7 +642,7 @@
 <span class="kw">use</span> <span class="ident">once_cell</span>::<span class="ident">sync</span>::<span class="ident">Lazy</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Crate</span>, <span class="ident">Module</span>, <span class="ident">MacroDef</span>, <span class="ident">AsName</span>, <span class="ident">BuiltinType</span>,
+    <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Crate</span>, <span class="ident">Module</span>, <span class="ident">MacroDef</span>, <span class="ident">AsName</span>, <span class="ident">BuiltinType</span>, <span class="ident">AstDatabase</span>,
     <span class="ident">DefDatabase</span>, <span class="ident">Path</span>, <span class="ident">PathKind</span>, <span class="ident">HirFileId</span>, <span class="ident">Trait</span>,
     <span class="ident">ids</span>::<span class="ident">MacroDefId</span>,
     <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>,
@@ -806,7 +809,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CrateDefMap</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">crate_def_map_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">krate</span>: <span class="ident">Crate</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CrateDefMap</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">crate_def_map_query</span>(
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
+        <span class="ident">krate</span>: <span class="ident">Crate</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CrateDefMap</span><span class="op">&gt;</span> {
         <span class="ident">db</span>.<span class="ident">check_canceled</span>();
         <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;crate_def_map_query&quot;</span>);
         <span class="kw">let</span> <span class="ident">def_map</span> <span class="op">=</span> {
@@ -852,7 +858,7 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">add_diagnostics</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">module</span>: <span class="ident">CrateModuleId</span>,
         <span class="ident">sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DiagnosticSink</span>,
     ) {
@@ -1108,7 +1114,7 @@
     <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">AstPtr</span>, <span class="ident">ast</span>};
 
     <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">AstId</span>, <span class="ident">DefDatabase</span>,
+        <span class="ident">AstId</span>, <span class="ident">DefDatabase</span>, <span class="ident">AstDatabase</span>,
         <span class="ident">nameres</span>::<span class="ident">CrateModuleId</span>,
         <span class="ident">diagnostics</span>::{<span class="ident">DiagnosticSink</span>, <span class="ident">UnresolvedModule</span>}
 };
@@ -1125,7 +1131,7 @@
     <span class="kw">impl</span> <span class="ident">DefDiagnostic</span> {
         <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">add_to</span>(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
-            <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
+            <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
             <span class="ident">target_module</span>: <span class="ident">CrateModuleId</span>,
             <span class="ident">sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">DiagnosticSink</span>,
         ) {

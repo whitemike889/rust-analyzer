@@ -254,6 +254,11 @@
 <span id="254">254</span>
 <span id="255">255</span>
 <span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">panic</span>};
 
@@ -270,7 +275,12 @@
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WORKSPACE</span>: <span class="ident">SourceRootId</span> <span class="op">=</span> <span class="ident">SourceRootId</span>(<span class="number">0</span>);
 
-<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">database</span>(<span class="ident">ra_db</span>::<span class="ident">SourceDatabaseStorage</span>, <span class="ident">db</span>::<span class="ident">HirDatabaseStorage</span>, <span class="ident">db</span>::<span class="ident">DefDatabaseStorage</span>)]</span>
+<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">database</span>(
+    <span class="ident">ra_db</span>::<span class="ident">SourceDatabaseStorage</span>,
+    <span class="ident">db</span>::<span class="ident">AstDatabaseStorage</span>,
+    <span class="ident">db</span>::<span class="ident">DefDatabaseStorage</span>,
+    <span class="ident">db</span>::<span class="ident">HirDatabaseStorage</span>
+)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MockDatabase</span> {
     <span class="ident">events</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">salsa</span>::<span class="ident">Event</span><span class="op">&lt;</span><span class="ident">MockDatabase</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,

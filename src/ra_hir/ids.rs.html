@@ -386,6 +386,9 @@
 <span id="386">386</span>
 <span id="387">387</span>
 <span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
@@ -398,7 +401,7 @@
 <span class="kw">use</span> <span class="ident">mbe</span>::<span class="ident">MacroRules</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">Module</span>, <span class="ident">DefDatabase</span>, <span class="ident">AstId</span>, <span class="ident">FileAstId</span>,
+    <span class="ident">Module</span>, <span class="ident">DefDatabase</span>, <span class="ident">AstId</span>, <span class="ident">FileAstId</span>, <span class="ident">AstDatabase</span>,
 };
 
 <span class="doccomment">/// hir makes heavy use of ids: integer (u32) handlers to various things. You</span>
@@ -426,7 +429,7 @@
 <span class="kw">impl</span> <span class="ident">HirFileId</span> {
     <span class="doccomment">/// For macro-expansion files, returns the file original source file the</span>
     <span class="doccomment">/// expansion originated from.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">original_file</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">FileId</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">original_file</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">FileId</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
             <span class="ident">HirFileIdRepr</span>::<span class="ident">File</span>(<span class="ident">file_id</span>) <span class="op">=&gt;</span> <span class="ident">file_id</span>,
             <span class="ident">HirFileIdRepr</span>::<span class="ident">Macro</span>(<span class="ident">macro_file</span>) <span class="op">=&gt;</span> {
@@ -447,7 +450,7 @@
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">parse_or_expand_query</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>,
         <span class="ident">file_id</span>: <span class="ident">HirFileId</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span> {
         <span class="ident">db</span>.<span class="ident">check_canceled</span>();
@@ -509,7 +512,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MacroDefId</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">AstId</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">MacroCall</span><span class="op">&gt;</span>);
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">macro_def_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">id</span>: <span class="ident">MacroDefId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">MacroRules</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">macro_def_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>, <span class="ident">id</span>: <span class="ident">MacroDefId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">MacroRules</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">macro_call</span> <span class="op">=</span> <span class="ident">id</span>.<span class="number">0</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
     <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="ident">macro_call</span>.<span class="ident">token_tree</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> (<span class="ident">tt</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">mbe</span>::<span class="ident">ast_to_token_tree</span>(<span class="ident">arg</span>).<span class="ident">or_else</span>(<span class="op">||</span> {
@@ -523,7 +526,7 @@
     <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">rules</span>))
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">macro_arg_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">id</span>: <span class="ident">MacroCallId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;&gt;</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">macro_arg_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>, <span class="ident">id</span>: <span class="ident">MacroCallId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="ident">id</span>.<span class="ident">loc</span>(<span class="ident">db</span>);
     <span class="kw">let</span> <span class="ident">macro_call</span> <span class="op">=</span> <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
     <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="ident">macro_call</span>.<span class="ident">token_tree</span>()<span class="question-mark">?</span>;
@@ -532,7 +535,7 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">macro_expand_query</span>(
-    <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
+    <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>,
     <span class="ident">id</span>: <span class="ident">MacroCallId</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="ident">id</span>.<span class="ident">loc</span>(<span class="ident">db</span>);
@@ -574,7 +577,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">MacroCallId</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">loc</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">MacroCallLoc</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">loc</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">MacroCallLoc</span> {
         <span class="ident">db</span>.<span class="ident">lookup_intern_macro</span>(<span class="self">self</span>)
     }
 
@@ -585,7 +588,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">MacroCallLoc</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">id</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">MacroCallId</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">id</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">MacroCallId</span> {
         <span class="ident">db</span>.<span class="ident">intern_macro</span>(<span class="self">self</span>)
     }
 }
@@ -622,7 +625,7 @@
     <span class="ident">file_id</span>: <span class="ident">HirFileId</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">DB</span>: <span class="ident">DefDatabase</span><span class="op">&gt;</span> <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">DB</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">DB</span>: <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span><span class="op">&gt;</span> <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">DB</span><span class="op">&gt;</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">DB</span>, <span class="ident">module</span>: <span class="ident">Module</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">DB</span><span class="op">&gt;</span> {
         <span class="ident">LocationCtx</span> { <span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">file_id</span> }
     }
@@ -639,16 +642,19 @@
     <span class="kw">fn</span> <span class="ident">intern</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">loc</span>: <span class="ident">ItemLoc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span>;
     <span class="kw">fn</span> <span class="ident">lookup_intern</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">ItemLoc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="ident">ctx</span>: <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span><span class="op">&gt;</span>, <span class="ident">ast</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="ident">ctx</span>: <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">AstDatabase</span> <span class="op">+</span> <span class="ident">DefDatabase</span>)<span class="op">&gt;</span>, <span class="ident">ast</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">db</span>.<span class="ident">ast_id_map</span>(<span class="ident">ctx</span>.<span class="ident">file_id</span>);
         <span class="kw">let</span> <span class="ident">item_id</span> <span class="op">=</span> <span class="ident">items</span>.<span class="ident">ast_id</span>(<span class="ident">ast</span>);
         <span class="self">Self</span>::<span class="ident">from_ast_id</span>(<span class="ident">ctx</span>, <span class="ident">item_id</span>)
     }
-    <span class="kw">fn</span> <span class="ident">from_ast_id</span>(<span class="ident">ctx</span>: <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span><span class="op">&gt;</span>, <span class="ident">ast_id</span>: <span class="ident">FileAstId</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_ast_id</span>(
+        <span class="ident">ctx</span>: <span class="ident">LocationCtx</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">AstDatabase</span> <span class="op">+</span> <span class="ident">DefDatabase</span>)<span class="op">&gt;</span>,
+        <span class="ident">ast_id</span>: <span class="ident">FileAstId</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>,
+    ) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="ident">ItemLoc</span> { <span class="ident">module</span>: <span class="ident">ctx</span>.<span class="ident">module</span>, <span class="ident">ast_id</span>: <span class="ident">ast_id</span>.<span class="ident">with_file_id</span>(<span class="ident">ctx</span>.<span class="ident">file_id</span>) };
         <span class="self">Self</span>::<span class="ident">intern</span>(<span class="ident">ctx</span>.<span class="ident">db</span>, <span class="ident">loc</span>)
     }
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> (<span class="ident">HirFileId</span>, <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">AstDatabase</span> <span class="op">+</span> <span class="ident">DefDatabase</span>)) <span class="op">-&gt;</span> (<span class="ident">HirFileId</span>, <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lookup_intern</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
         (<span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">file_id</span>(), <span class="ident">ast</span>)
@@ -745,7 +751,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">MacroCallId</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>().<span class="ident">loc</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">syntax_str</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">chunks</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>().<span class="ident">join</span>(<span class="string">&quot; &quot;</span>);
@@ -756,7 +762,7 @@
         <span class="kw">let</span> <span class="ident">macro_rules</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">macro_def</span>(<span class="ident">loc</span>.<span class="ident">def</span>);
 
         <span class="macro">format</span><span class="macro">!</span>(
-            <span class="string">&quot;macro call [file: {:#?}] : {}\nhas rules: {}&quot;</span>,
+            <span class="string">&quot;macro call [file: {:?}] : {}\nhas rules: {}&quot;</span>,
             <span class="ident">db</span>.<span class="ident">file_relative_path</span>(<span class="ident">original</span>),
             <span class="ident">syntax_str</span>,
             <span class="ident">macro_rules</span>.<span class="ident">is_some</span>()

@@ -333,6 +333,9 @@
 <span id="333">333</span>
 <span id="334">334</span>
 <span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">ops</span>::<span class="ident">Index</span>};
 
@@ -343,7 +346,7 @@
     <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>, <span class="ident">AttrsOwner</span>},
 };
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">DefDatabase</span>, <span class="ident">Name</span>, <span class="ident">AsName</span>, <span class="ident">Path</span>, <span class="ident">HirFileId</span>, <span class="ident">ModuleSource</span>, <span class="ident">AstIdMap</span>, <span class="ident">FileAstId</span>, <span class="ident">Either</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">DefDatabase</span>, <span class="ident">Name</span>, <span class="ident">AsName</span>, <span class="ident">Path</span>, <span class="ident">HirFileId</span>, <span class="ident">ModuleSource</span>, <span class="ident">AstIdMap</span>, <span class="ident">FileAstId</span>, <span class="ident">Either</span>, <span class="ident">AstDatabase</span>};
 
 <span class="doccomment">/// `RawItems` is a set of top-level items in a file (except for impls).</span>
 <span class="doccomment">///</span>
@@ -392,12 +395,15 @@
 }
 
 <span class="kw">impl</span> <span class="ident">RawItems</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">raw_items_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">raw_items_query</span>(
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
+        <span class="ident">file_id</span>: <span class="ident">HirFileId</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span> {
         <span class="ident">db</span>.<span class="ident">raw_items_with_source_map</span>(<span class="ident">file_id</span>).<span class="number">0</span>
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">raw_items_with_source_map_query</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">file_id</span>: <span class="ident">HirFileId</span>,
     ) <span class="op">-&gt;</span> (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ImportSourceMap</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">RawItemsCollector</span> {
