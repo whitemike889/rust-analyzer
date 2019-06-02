@@ -185,6 +185,9 @@
 <span id="185">185</span>
 <span id="186">186</span>
 <span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -221,8 +224,11 @@
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">source_id</span>::<span class="ident">AstIdMap</span>::<span class="ident">file_item_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">ast_id_to_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>, <span class="ident">ast_id</span>: <span class="ident">ErasedFileAstId</span>) <span class="op">-&gt;</span> <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">HirFileId</span>::<span class="ident">parse_or_expand_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">parse_or_expand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">HirFileId</span>::<span class="ident">parse_macro_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">parse_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_file</span>: <span class="ident">ids</span>::<span class="ident">MacroFile</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_def_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">macro_def</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_id</span>: <span class="ident">MacroDefId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">mbe</span>::<span class="ident">MacroRules</span><span class="op">&gt;&gt;</span>;
