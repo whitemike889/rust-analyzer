@@ -322,7 +322,7 @@
                 <span class="ident">newlines</span>.<span class="ident">push</span>(<span class="ident">curr_row</span>);
 
                 <span class="comment">// Save any utf-16 characters seen in the previous line</span>
-                <span class="kw">if</span> <span class="ident">utf16_chars</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">utf16_chars</span>.<span class="ident">is_empty</span>() {
                     <span class="ident">utf16_lines</span>.<span class="ident">insert</span>(<span class="ident">line</span>, <span class="ident">utf16_chars</span>);
                     <span class="ident">utf16_chars</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
                 }
@@ -342,7 +342,7 @@
         }
 
         <span class="comment">// Save any utf-16 characters seen in the last line</span>
-        <span class="kw">if</span> <span class="ident">utf16_chars</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">utf16_chars</span>.<span class="ident">is_empty</span>() {
             <span class="ident">utf16_lines</span>.<span class="ident">insert</span>(<span class="ident">line</span>, <span class="ident">utf16_chars</span>);
         }
 

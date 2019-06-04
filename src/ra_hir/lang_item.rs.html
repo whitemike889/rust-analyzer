@@ -205,7 +205,7 @@
                 .<span class="ident">nth</span>(<span class="number">0</span>);
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lang_item_name</span>) <span class="op">=</span> <span class="ident">lang_item_name</span> {
                 <span class="kw">let</span> <span class="ident">imp</span> <span class="op">=</span> <span class="ident">ImplBlock</span>::<span class="ident">from_id</span>(<span class="kw-2">*</span><span class="ident">module</span>, <span class="ident">impl_id</span>);
-                <span class="self">self</span>.<span class="ident">items</span>.<span class="ident">entry</span>(<span class="ident">lang_item_name</span>).<span class="ident">or_insert</span>(<span class="ident">LangItemTarget</span>::<span class="ident">ImplBlock</span>(<span class="ident">imp</span>));
+                <span class="self">self</span>.<span class="ident">items</span>.<span class="ident">entry</span>(<span class="ident">lang_item_name</span>).<span class="ident">or_insert_with</span>(<span class="op">||</span> <span class="ident">LangItemTarget</span>::<span class="ident">ImplBlock</span>(<span class="ident">imp</span>));
             }
         }
 

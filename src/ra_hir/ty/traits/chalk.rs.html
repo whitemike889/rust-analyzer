@@ -463,9 +463,6 @@
 <span id="463">463</span>
 <span id="464">464</span>
 <span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Conversion code from/to Chalk.</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -680,13 +677,10 @@
             <span class="comment">// anyway), otherwise Chalk can easily get into slow situations</span>
             <span class="kw">return</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">pred</span>.<span class="ident">clone</span>().<span class="ident">subst</span>(<span class="ident">substs</span>).<span class="ident">to_chalk</span>(<span class="ident">db</span>)];
         }
-        <span class="kw">match</span> <span class="ident">pred</span> {
-            <span class="ident">GenericPredicate</span>::<span class="ident">Implemented</span>(<span class="ident">trait_ref</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="ident">blacklisted_trait</span>(<span class="ident">db</span>, <span class="ident">trait_ref</span>.<span class="ident">trait_</span>) {
-                    <span class="kw">continue</span>;
-                }
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">GenericPredicate</span>::<span class="ident">Implemented</span>(<span class="ident">trait_ref</span>) <span class="op">=</span> <span class="ident">pred</span> {
+            <span class="kw">if</span> <span class="ident">blacklisted_trait</span>(<span class="ident">db</span>, <span class="ident">trait_ref</span>.<span class="ident">trait_</span>) {
+                <span class="kw">continue</span>;
             }
-            <span class="kw">_</span> <span class="op">=&gt;</span> {}
         }
         <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">pred</span>.<span class="ident">clone</span>().<span class="ident">subst</span>(<span class="ident">substs</span>).<span class="ident">to_chalk</span>(<span class="ident">db</span>));
     }

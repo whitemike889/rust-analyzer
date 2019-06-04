@@ -437,7 +437,6 @@
 <span id="437">437</span>
 <span id="438">438</span>
 <span id="439">439</span>
-<span id="440">440</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">test_utils</span>::<span class="ident">tested_by</span>;
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">SourceDatabase</span>;
@@ -462,8 +461,7 @@
     <span class="kw">let</span> <span class="ident">function</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">calling_node</span> {
         <span class="ident">FnCallNode</span>::<span class="ident">CallExpr</span>(<span class="ident">expr</span>) <span class="op">=&gt;</span> {
             <span class="comment">//FIXME: apply subst</span>
-            <span class="kw">let</span> (<span class="ident">callable_def</span>, <span class="ident">_subst</span>) <span class="op">=</span>
-                <span class="ident">analyzer</span>.<span class="ident">type_of</span>(<span class="ident">db</span>, <span class="ident">expr</span>.<span class="ident">expr</span>()<span class="question-mark">?</span>.<span class="ident">into</span>())<span class="question-mark">?</span>.<span class="ident">as_callable</span>()<span class="question-mark">?</span>;
+            <span class="kw">let</span> (<span class="ident">callable_def</span>, <span class="ident">_subst</span>) <span class="op">=</span> <span class="ident">analyzer</span>.<span class="ident">type_of</span>(<span class="ident">db</span>, <span class="ident">expr</span>.<span class="ident">expr</span>()<span class="question-mark">?</span>)<span class="question-mark">?</span>.<span class="ident">as_callable</span>()<span class="question-mark">?</span>;
             <span class="kw">match</span> <span class="ident">callable_def</span> {
                 <span class="ident">hir</span>::<span class="ident">CallableDef</span>::<span class="ident">Function</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
                 <span class="comment">//FIXME: handle other callables</span>
@@ -505,7 +503,7 @@
 
             <span class="comment">// If we are in a method account for `self`</span>
             <span class="kw">if</span> <span class="ident">has_self</span> {
-                <span class="ident">param</span> <span class="op">=</span> <span class="ident">param</span> <span class="op">+</span> <span class="number">1</span>;
+                <span class="ident">param</span> <span class="op">+=</span> <span class="number">1</span>;
             }
 
             <span class="ident">call_info</span>.<span class="ident">active_parameter</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">param</span>);

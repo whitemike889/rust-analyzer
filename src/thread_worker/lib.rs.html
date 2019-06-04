@@ -76,9 +76,6 @@
 <span id="76">76</span>
 <span id="77">77</span>
 <span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Small utility to correctly spawn crossbeam-channel based worker threads.</span>
 
@@ -101,13 +98,10 @@
         <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;.. {} terminated with {}&quot;</span>, <span class="ident">name</span>, <span class="kw">if</span> <span class="ident">res</span>.<span class="ident">is_ok</span>() { <span class="string">&quot;ok&quot;</span> } <span class="kw">else</span> { <span class="string">&quot;err&quot;</span> });
 
         <span class="comment">// escalate panic, but avoid aborting the process</span>
-        <span class="kw">match</span> <span class="ident">res</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">thread</span>::<span class="ident">panicking</span>() {
-                    <span class="macro">panic</span><span class="macro">!</span>(<span class="ident">e</span>)
-                }
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">res</span> {
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">thread</span>::<span class="ident">panicking</span>() {
+                <span class="macro">panic</span><span class="macro">!</span>(<span class="ident">e</span>)
             }
-            <span class="kw">_</span> <span class="op">=&gt;</span> (),
         }
     }
 }

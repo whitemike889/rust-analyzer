@@ -408,7 +408,7 @@
     ) <span class="op">-&gt;</span> (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ImportSourceMap</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">collector</span> <span class="op">=</span> <span class="ident">RawItemsCollector</span> {
             <span class="ident">raw_items</span>: <span class="ident">RawItems</span>::<span class="ident">default</span>(),
-            <span class="ident">source_ast_id_map</span>: <span class="ident">db</span>.<span class="ident">ast_id_map</span>(<span class="ident">file_id</span>.<span class="ident">into</span>()),
+            <span class="ident">source_ast_id_map</span>: <span class="ident">db</span>.<span class="ident">ast_id_map</span>(<span class="ident">file_id</span>),
             <span class="ident">source_map</span>: <span class="ident">ImportSourceMap</span>::<span class="ident">default</span>(),
         };
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">node</span>) <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse_or_expand</span>(<span class="ident">file_id</span>) {

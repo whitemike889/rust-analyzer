@@ -580,6 +580,7 @@
 <span id="580">580</span>
 <span id="581">581</span>
 <span id="582">582</span>
+<span id="583">583</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">atom</span>;
 
@@ -1037,6 +1038,7 @@
 <span class="comment">//     x.1i32;</span>
 <span class="comment">//     x.0x01;</span>
 <span class="comment">// }</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">if_same_then_else</span>)]</span>
 <span class="kw">fn</span> <span class="ident">field_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">lhs</span>: <span class="ident">CompletedMarker</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[.]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);

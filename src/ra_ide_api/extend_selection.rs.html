@@ -477,7 +477,7 @@
     }
 
     <span class="kw">let</span> <span class="ident">start_idx</span> <span class="op">=</span> <span class="ident">before</span>.<span class="ident">rfind</span>(<span class="ident">non_word_char</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">u32</span>;
-    <span class="kw">let</span> <span class="ident">end_idx</span> <span class="op">=</span> <span class="ident">after</span>.<span class="ident">find</span>(<span class="ident">non_word_char</span>).<span class="ident">unwrap_or</span>(<span class="ident">after</span>.<span class="ident">len</span>()) <span class="kw">as</span> <span class="ident">u32</span>;
+    <span class="kw">let</span> <span class="ident">end_idx</span> <span class="op">=</span> <span class="ident">after</span>.<span class="ident">find</span>(<span class="ident">non_word_char</span>).<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">after</span>.<span class="ident">len</span>()) <span class="kw">as</span> <span class="ident">u32</span>;
 
     <span class="kw">let</span> <span class="ident">from</span>: <span class="ident">TextUnit</span> <span class="op">=</span> (<span class="ident">start_idx</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">into</span>();
     <span class="kw">let</span> <span class="ident">to</span>: <span class="ident">TextUnit</span> <span class="op">=</span> (<span class="ident">cursor_position</span> <span class="op">+</span> <span class="ident">end_idx</span>).<span class="ident">into</span>();

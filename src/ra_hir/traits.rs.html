@@ -90,9 +90,6 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
-<span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! HIR for trait definitions.</span>
 
@@ -173,13 +170,10 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">trait_items_index</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">TraitItemsIndex</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">TraitItemsIndex</span> { <span class="ident">traits_by_def</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>() };
         <span class="kw">for</span> <span class="ident">decl</span> <span class="kw">in</span> <span class="ident">module</span>.<span class="ident">declarations</span>(<span class="ident">db</span>) {
-            <span class="kw">match</span> <span class="ident">decl</span> {
-                <span class="kw">crate</span>::<span class="ident">ModuleDef</span>::<span class="ident">Trait</span>(<span class="ident">tr</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">tr</span>.<span class="ident">trait_data</span>(<span class="ident">db</span>).<span class="ident">items</span>() {
-                        <span class="ident">index</span>.<span class="ident">traits_by_def</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">item</span>, <span class="ident">tr</span>);
-                    }
+            <span class="kw">if</span> <span class="kw">let</span> <span class="kw">crate</span>::<span class="ident">ModuleDef</span>::<span class="ident">Trait</span>(<span class="ident">tr</span>) <span class="op">=</span> <span class="ident">decl</span> {
+                <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">tr</span>.<span class="ident">trait_data</span>(<span class="ident">db</span>).<span class="ident">items</span>() {
+                    <span class="ident">index</span>.<span class="ident">traits_by_def</span>.<span class="ident">insert</span>(<span class="kw-2">*</span><span class="ident">item</span>, <span class="ident">tr</span>);
                 }
-                <span class="kw">_</span> <span class="op">=&gt;</span> {}
             }
         }
         <span class="ident">index</span>

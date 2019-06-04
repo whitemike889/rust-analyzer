@@ -173,10 +173,10 @@
 }
 
 <span class="kw">fn</span> <span class="ident">vfs_file_to_id</span>(<span class="ident">f</span>: <span class="ident">ra_vfs</span>::<span class="ident">VfsFile</span>) <span class="op">-&gt;</span> <span class="ident">FileId</span> {
-    <span class="ident">FileId</span>(<span class="ident">f</span>.<span class="number">0</span>.<span class="ident">into</span>())
+    <span class="ident">FileId</span>(<span class="ident">f</span>.<span class="number">0</span>)
 }
 <span class="kw">fn</span> <span class="ident">vfs_root_to_id</span>(<span class="ident">r</span>: <span class="ident">ra_vfs</span>::<span class="ident">VfsRoot</span>) <span class="op">-&gt;</span> <span class="ident">SourceRootId</span> {
-    <span class="ident">SourceRootId</span>(<span class="ident">r</span>.<span class="number">0</span>.<span class="ident">into</span>())
+    <span class="ident">SourceRootId</span>(<span class="ident">r</span>.<span class="number">0</span>)
 }
 
 <span class="kw">impl</span> <span class="ident">BatchDatabase</span> {

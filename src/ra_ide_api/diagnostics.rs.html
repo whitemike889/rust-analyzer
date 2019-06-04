@@ -543,7 +543,7 @@
 
         <span class="ident">acc</span>.<span class="ident">push</span>(<span class="ident">Diagnostic</span> {
             <span class="ident">range</span>,
-            <span class="ident">message</span>: <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Unnecessary braces in use statement&quot;</span>),
+            <span class="ident">message</span>: <span class="string">&quot;Unnecessary braces in use statement&quot;</span>.<span class="ident">to_string</span>(),
             <span class="ident">severity</span>: <span class="ident">Severity</span>::<span class="ident">WeakWarning</span>,
             <span class="ident">fix</span>: <span class="prelude-val">Some</span>(<span class="ident">SourceChange</span>::<span class="ident">source_file_edit</span>(
                 <span class="string">&quot;Remove unnecessary braces&quot;</span>,
@@ -589,7 +589,7 @@
 
                 <span class="ident">acc</span>.<span class="ident">push</span>(<span class="ident">Diagnostic</span> {
                     <span class="ident">range</span>: <span class="ident">named_field</span>.<span class="ident">syntax</span>().<span class="ident">range</span>(),
-                    <span class="ident">message</span>: <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Shorthand struct initialization&quot;</span>),
+                    <span class="ident">message</span>: <span class="string">&quot;Shorthand struct initialization&quot;</span>.<span class="ident">to_string</span>(),
                     <span class="ident">severity</span>: <span class="ident">Severity</span>::<span class="ident">WeakWarning</span>,
                     <span class="ident">fix</span>: <span class="prelude-val">Some</span>(<span class="ident">SourceChange</span>::<span class="ident">source_file_edit</span>(
                         <span class="string">&quot;use struct shorthand initialization&quot;</span>,

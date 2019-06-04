@@ -296,8 +296,6 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This is the actual &quot;grammar&quot; of the Rust language.</span>
 <span class="doccomment">//!</span>
@@ -388,10 +386,8 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">stmt</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">with_semi</span>: <span class="ident">bool</span>) {
-    <span class="kw">let</span> <span class="ident">with_semi</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">with_semi</span> {
-        <span class="bool-val">true</span> <span class="op">=&gt;</span> <span class="ident">expressions</span>::<span class="ident">StmtWithSemi</span>::<span class="ident">Yes</span>,
-        <span class="bool-val">false</span> <span class="op">=&gt;</span> <span class="ident">expressions</span>::<span class="ident">StmtWithSemi</span>::<span class="ident">No</span>,
-    };
+    <span class="kw">let</span> <span class="ident">with_semi</span> <span class="op">=</span>
+        <span class="kw">if</span> <span class="ident">with_semi</span> { <span class="ident">expressions</span>::<span class="ident">StmtWithSemi</span>::<span class="ident">Yes</span> } <span class="kw">else</span> { <span class="ident">expressions</span>::<span class="ident">StmtWithSemi</span>::<span class="ident">No</span> };
 
     <span class="ident">expressions</span>::<span class="ident">stmt</span>(<span class="ident">p</span>, <span class="ident">with_semi</span>)
 }

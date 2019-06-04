@@ -330,10 +330,6 @@
 <span id="330">330</span>
 <span id="331">331</span>
 <span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">iter</span>, <span class="ident">ops</span>::<span class="ident">RangeInclusive</span>};
 
@@ -549,21 +545,17 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">strip_attrs_and_docs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">loop</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">start</span>) <span class="op">=</span> <span class="self">self</span>
-                .<span class="ident">ast</span>()
-                .<span class="ident">syntax</span>()
-                .<span class="ident">children_with_tokens</span>()
-                .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">ATTR</span> <span class="op">||</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">COMMENT</span>)
-            {
-                <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">start</span>.<span class="ident">next_sibling_or_token</span>() {
-                    <span class="prelude-val">Some</span>(<span class="ident">el</span>) <span class="kw">if</span> <span class="ident">el</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">WHITESPACE</span> <span class="op">=&gt;</span> <span class="ident">el</span>,
-                    <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">start</span>,
-                };
-                <span class="self">self</span>.<span class="ident">ast</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">replace_children</span>(<span class="ident">RangeInclusive</span>::<span class="ident">new</span>(<span class="ident">start</span>, <span class="ident">end</span>), <span class="ident">iter</span>::<span class="ident">empty</span>());
-            } <span class="kw">else</span> {
-                <span class="kw">break</span>;
-            }
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">start</span>) <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">ast</span>()
+            .<span class="ident">syntax</span>()
+            .<span class="ident">children_with_tokens</span>()
+            .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">ATTR</span> <span class="op">||</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">COMMENT</span>)
+        {
+            <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">start</span>.<span class="ident">next_sibling_or_token</span>() {
+                <span class="prelude-val">Some</span>(<span class="ident">el</span>) <span class="kw">if</span> <span class="ident">el</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">WHITESPACE</span> <span class="op">=&gt;</span> <span class="ident">el</span>,
+                <span class="prelude-val">Some</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">start</span>,
+            };
+            <span class="self">self</span>.<span class="ident">ast</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">replace_children</span>(<span class="ident">RangeInclusive</span>::<span class="ident">new</span>(<span class="ident">start</span>, <span class="ident">end</span>), <span class="ident">iter</span>::<span class="ident">empty</span>());
         }
     }
 }

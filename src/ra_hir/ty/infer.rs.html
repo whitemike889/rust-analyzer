@@ -1432,11 +1432,6 @@
 <span id="1432">1432</span>
 <span id="1433">1433</span>
 <span id="1434">1434</span>
-<span id="1435">1435</span>
-<span id="1436">1436</span>
-<span id="1437">1437</span>
-<span id="1438">1438</span>
-<span id="1439">1439</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Type inference, i.e. the process of walking through the code and determining</span>
 <span class="doccomment">//! the type of each expression and pattern.</span>
@@ -1902,7 +1897,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolved</span> <span class="op">=</span>
             <span class="kw">if</span> <span class="ident">remaining_index</span>.<span class="ident">is_none</span>() { <span class="ident">def</span>.<span class="ident">take_values</span>()<span class="question-mark">?</span> } <span class="kw">else</span> { <span class="ident">def</span>.<span class="ident">take_types</span>()<span class="question-mark">?</span> };
 
-        <span class="kw">let</span> <span class="ident">remaining_index</span> <span class="op">=</span> <span class="ident">remaining_index</span>.<span class="ident">unwrap_or</span>(<span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">len</span>());
+        <span class="kw">let</span> <span class="ident">remaining_index</span> <span class="op">=</span> <span class="ident">remaining_index</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">len</span>());
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actual_def_ty</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Ty</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 
         <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">resolver</span>.<span class="ident">krate</span>()<span class="question-mark">?</span>;
@@ -1979,7 +1974,7 @@
                 }
             })<span class="question-mark">?</span>;
 
-            <span class="ident">resolved</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">Def</span>(<span class="ident">item</span>.<span class="ident">into</span>());
+            <span class="ident">resolved</span> <span class="op">=</span> <span class="ident">Resolution</span>::<span class="ident">Def</span>(<span class="ident">item</span>);
         }
 
         <span class="kw">match</span> <span class="ident">resolved</span> {
@@ -2202,7 +2197,7 @@
                     <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Ty</span>::<span class="ident">Unknown</span>,
                 };
                 <span class="kw">let</span> <span class="ident">subty</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">infer_pat</span>(<span class="kw-2">*</span><span class="ident">pat</span>, <span class="ident">expectation</span>, <span class="ident">default_bm</span>);
-                <span class="ident">Ty</span>::<span class="ident">apply_one</span>(<span class="ident">TypeCtor</span>::<span class="ident">Ref</span>(<span class="kw-2">*</span><span class="ident">mutability</span>), <span class="ident">subty</span>.<span class="ident">into</span>())
+                <span class="ident">Ty</span>::<span class="ident">apply_one</span>(<span class="ident">TypeCtor</span>::<span class="ident">Ref</span>(<span class="kw-2">*</span><span class="ident">mutability</span>), <span class="ident">subty</span>)
             }
             <span class="ident">Pat</span>::<span class="ident">TupleStruct</span> { <span class="ident">path</span>: <span class="kw-2">ref</span> <span class="ident">p</span>, <span class="ident">args</span>: <span class="kw-2">ref</span> <span class="ident">subpats</span> } <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">infer_tuple_struct_pat</span>(<span class="ident">p</span>.<span class="ident">as_ref</span>(), <span class="ident">subpats</span>, <span class="ident">expected</span>, <span class="ident">default_bm</span>)
@@ -2230,7 +2225,7 @@
 
                 <span class="kw">let</span> <span class="ident">bound_ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">mode</span> {
                     <span class="ident">BindingMode</span>::<span class="ident">Ref</span>(<span class="ident">mutability</span>) <span class="op">=&gt;</span> {
-                        <span class="ident">Ty</span>::<span class="ident">apply_one</span>(<span class="ident">TypeCtor</span>::<span class="ident">Ref</span>(<span class="ident">mutability</span>), <span class="ident">inner_ty</span>.<span class="ident">clone</span>().<span class="ident">into</span>())
+                        <span class="ident">Ty</span>::<span class="ident">apply_one</span>(<span class="ident">TypeCtor</span>::<span class="ident">Ref</span>(<span class="ident">mutability</span>), <span class="ident">inner_ty</span>.<span class="ident">clone</span>())
                     }
                     <span class="ident">BindingMode</span>::<span class="ident">Move</span> <span class="op">=&gt;</span> <span class="ident">inner_ty</span>.<span class="ident">clone</span>(),
                 };
@@ -2288,28 +2283,23 @@
     }
 
     <span class="kw">fn</span> <span class="ident">register_obligations_for_call</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">callable_ty</span>: <span class="kw-2">&amp;</span><span class="ident">Ty</span>) {
-        <span class="kw">match</span> <span class="ident">callable_ty</span> {
-            <span class="ident">Ty</span>::<span class="ident">Apply</span>(<span class="ident">a_ty</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">a_ty</span>.<span class="ident">ctor</span> {
-                <span class="ident">TypeCtor</span>::<span class="ident">FnDef</span>(<span class="ident">def</span>) <span class="op">=&gt;</span> {
-                    <span class="comment">// add obligation for trait implementation, if this is a trait method</span>
-                    <span class="comment">// FIXME also register obligations from where clauses from the trait or impl and method</span>
-                    <span class="kw">match</span> <span class="ident">def</span> {
-                        <span class="ident">CallableDef</span>::<span class="ident">Function</span>(<span class="ident">f</span>) <span class="op">=&gt;</span> {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">trait_</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">parent_trait</span>(<span class="self">self</span>.<span class="ident">db</span>) {
-                                <span class="comment">// construct a TraitDef</span>
-                                <span class="kw">let</span> <span class="ident">substs</span> <span class="op">=</span> <span class="ident">a_ty</span>.<span class="ident">parameters</span>.<span class="ident">prefix</span>(
-                                    <span class="ident">trait_</span>.<span class="ident">generic_params</span>(<span class="self">self</span>.<span class="ident">db</span>).<span class="ident">count_params_including_parent</span>(),
-                                );
-                                <span class="self">self</span>.<span class="ident">obligations</span>
-                                    .<span class="ident">push</span>(<span class="ident">Obligation</span>::<span class="ident">Trait</span>(<span class="ident">TraitRef</span> { <span class="ident">trait_</span>, <span class="ident">substs</span> }));
-                            }
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Ty</span>::<span class="ident">Apply</span>(<span class="ident">a_ty</span>) <span class="op">=</span> <span class="ident">callable_ty</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TypeCtor</span>::<span class="ident">FnDef</span>(<span class="ident">def</span>) <span class="op">=</span> <span class="ident">a_ty</span>.<span class="ident">ctor</span> {
+                <span class="comment">// add obligation for trait implementation, if this is a trait method</span>
+                <span class="comment">// FIXME also register obligations from where clauses from the trait or impl and method</span>
+                <span class="kw">match</span> <span class="ident">def</span> {
+                    <span class="ident">CallableDef</span>::<span class="ident">Function</span>(<span class="ident">f</span>) <span class="op">=&gt;</span> {
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">trait_</span>) <span class="op">=</span> <span class="ident">f</span>.<span class="ident">parent_trait</span>(<span class="self">self</span>.<span class="ident">db</span>) {
+                            <span class="comment">// construct a TraitDef</span>
+                            <span class="kw">let</span> <span class="ident">substs</span> <span class="op">=</span> <span class="ident">a_ty</span>.<span class="ident">parameters</span>.<span class="ident">prefix</span>(
+                                <span class="ident">trait_</span>.<span class="ident">generic_params</span>(<span class="self">self</span>.<span class="ident">db</span>).<span class="ident">count_params_including_parent</span>(),
+                            );
+                            <span class="self">self</span>.<span class="ident">obligations</span>.<span class="ident">push</span>(<span class="ident">Obligation</span>::<span class="ident">Trait</span>(<span class="ident">TraitRef</span> { <span class="ident">trait_</span>, <span class="ident">substs</span> }));
                         }
-                        <span class="ident">CallableDef</span>::<span class="ident">Struct</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">CallableDef</span>::<span class="ident">EnumVariant</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {}
                     }
+                    <span class="ident">CallableDef</span>::<span class="ident">Struct</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">CallableDef</span>::<span class="ident">EnumVariant</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {}
                 }
-                <span class="kw">_</span> <span class="op">=&gt;</span> {}
-            },
-            <span class="kw">_</span> <span class="op">=&gt;</span> {}
+            }
         }
     }
 
@@ -2489,7 +2479,7 @@
             <span class="ident">Expr</span>::<span class="ident">StructLit</span> { <span class="ident">path</span>, <span class="ident">fields</span>, <span class="ident">spread</span> } <span class="op">=&gt;</span> {
                 <span class="kw">let</span> (<span class="ident">ty</span>, <span class="ident">def_id</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_variant</span>(<span class="ident">path</span>.<span class="ident">as_ref</span>());
                 <span class="kw">let</span> <span class="ident">substs</span> <span class="op">=</span> <span class="ident">ty</span>.<span class="ident">substs</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">Substs</span>::<span class="ident">empty</span>);
-                <span class="kw">for</span> (<span class="ident">field_idx</span>, <span class="ident">field</span>) <span class="kw">in</span> <span class="ident">fields</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
+                <span class="kw">for</span> (<span class="ident">field_idx</span>, <span class="ident">field</span>) <span class="kw">in</span> <span class="ident">fields</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
                     <span class="kw">let</span> <span class="ident">field_ty</span> <span class="op">=</span> <span class="ident">def_id</span>
                         .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">it</span>.<span class="ident">field</span>(<span class="self">self</span>.<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">field</span>.<span class="ident">name</span>) {
                             <span class="prelude-val">Some</span>(<span class="ident">field</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">field</span>),

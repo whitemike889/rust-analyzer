@@ -664,7 +664,7 @@
 <span class="doccomment">/// so this should always be correct.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_text</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
     <span class="ident">fs</span>::<span class="ident">read_to_string</span>(<span class="ident">path</span>)
-        .<span class="ident">expect</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;File at {:?} should be valid&quot;</span>, <span class="ident">path</span>))
+        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;File at {:?} should be valid&quot;</span>, <span class="ident">path</span>))
         .<span class="ident">replace</span>(<span class="string">&quot;\r\n&quot;</span>, <span class="string">&quot;\n&quot;</span>)
 }
 
