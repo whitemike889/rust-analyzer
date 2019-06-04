@@ -515,13 +515,13 @@
 <span class="doccomment">/// Allows to check if the current code is withing some dynamic scope, can be</span>
 <span class="doccomment">/// useful during debugging to figure out why a function is called.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Scope</span> {
-    <span class="ident">_hidden</span>: (),
+    <span class="ident">prev</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Scope</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enter</span>() <span class="op">-&gt;</span> <span class="ident">Scope</span> {
-        <span class="ident">IN_SCOPE</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">slot</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">slot</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="bool-val">true</span>);
-        <span class="ident">Scope</span> { <span class="ident">_hidden</span>: () }
+        <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">IN_SCOPE</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">slot</span><span class="op">|</span> <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">slot</span>.<span class="ident">borrow_mut</span>(), <span class="bool-val">true</span>));
+        <span class="ident">Scope</span> { <span class="ident">prev</span> }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_active</span>() <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="ident">IN_SCOPE</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">slot</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">slot</span>.<span class="ident">borrow</span>())
@@ -530,7 +530,7 @@
 
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Scope</span> {
     <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="ident">IN_SCOPE</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">slot</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">slot</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="bool-val">false</span>);
+        <span class="ident">IN_SCOPE</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">slot</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">slot</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="self">self</span>.<span class="ident">prev</span>);
     }
 }
 
