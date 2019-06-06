@@ -1033,6 +1033,14 @@
 <span id="1033">1033</span>
 <span id="1034">1034</span>
 <span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
+<span id="1042">1042</span>
+<span id="1043">1043</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -1042,7 +1050,7 @@
 <span class="kw">use</span> <span class="ident">ra_arena</span>::{<span class="ident">Arena</span>, <span class="ident">RawId</span>, <span class="ident">impl_arena_id</span>, <span class="ident">map</span>::<span class="ident">ArenaMap</span>};
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
     <span class="ident">SyntaxNodePtr</span>, <span class="ident">AstPtr</span>, <span class="ident">AstNode</span>,
-    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">LoopBodyOwner</span>, <span class="ident">ArgListOwner</span>, <span class="ident">NameOwner</span>, <span class="ident">LiteralKind</span>,<span class="ident">ArrayExprKind</span>, <span class="ident">TypeAscriptionOwner</span>},
+    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">TryBlockBodyOwner</span>, <span class="ident">LoopBodyOwner</span>, <span class="ident">ArgListOwner</span>, <span class="ident">NameOwner</span>, <span class="ident">LiteralKind</span>,<span class="ident">ArrayExprKind</span>, <span class="ident">TypeAscriptionOwner</span>},
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -1252,6 +1260,9 @@
     <span class="ident">Try</span> {
         <span class="ident">expr</span>: <span class="ident">ExprId</span>,
     },
+    <span class="ident">TryBlock</span> {
+        <span class="ident">body</span>: <span class="ident">ExprId</span>,
+    },
     <span class="ident">Cast</span> {
         <span class="ident">expr</span>: <span class="ident">ExprId</span>,
         <span class="ident">type_ref</span>: <span class="ident">TypeRef</span>,
@@ -1335,6 +1346,7 @@
                     <span class="ident">f</span>(<span class="kw-2">*</span><span class="ident">expr</span>);
                 }
             }
+            <span class="ident">Expr</span>::<span class="ident">TryBlock</span> { <span class="ident">body</span> } <span class="op">=&gt;</span> <span class="ident">f</span>(<span class="kw-2">*</span><span class="ident">body</span>),
             <span class="ident">Expr</span>::<span class="ident">Loop</span> { <span class="ident">body</span> } <span class="op">=&gt;</span> <span class="ident">f</span>(<span class="kw-2">*</span><span class="ident">body</span>),
             <span class="ident">Expr</span>::<span class="ident">While</span> { <span class="ident">condition</span>, <span class="ident">body</span> } <span class="op">=&gt;</span> {
                 <span class="ident">f</span>(<span class="kw-2">*</span><span class="ident">condition</span>);
@@ -1613,6 +1625,10 @@
                     });
                     <span class="self">self</span>.<span class="ident">alloc_expr</span>(<span class="ident">Expr</span>::<span class="ident">If</span> { <span class="ident">condition</span>, <span class="ident">then_branch</span>, <span class="ident">else_branch</span> }, <span class="ident">syntax_ptr</span>)
                 }
+            }
+            <span class="ident">ast</span>::<span class="ident">ExprKind</span>::<span class="ident">TryBlockExpr</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">collect_block_opt</span>(<span class="ident">e</span>.<span class="ident">try_body</span>());
+                <span class="self">self</span>.<span class="ident">alloc_expr</span>(<span class="ident">Expr</span>::<span class="ident">TryBlock</span> { <span class="ident">body</span> }, <span class="ident">syntax_ptr</span>)
             }
             <span class="ident">ast</span>::<span class="ident">ExprKind</span>::<span class="ident">BlockExpr</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_block_opt</span>(<span class="ident">e</span>.<span class="ident">block</span>()),
             <span class="ident">ast</span>::<span class="ident">ExprKind</span>::<span class="ident">LoopExpr</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {

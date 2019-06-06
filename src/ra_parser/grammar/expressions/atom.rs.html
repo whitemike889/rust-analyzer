@@ -491,6 +491,22 @@
 <span id="491">491</span>
 <span id="492">492</span>
 <span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -546,6 +562,7 @@
         <span class="ident">CONTINUE_KW</span>,
         <span class="ident">LIFETIME</span>,
         <span class="ident">ASYNC_KW</span>,
+        <span class="ident">TRY_KW</span>,
     ]);
 
 <span class="kw">const</span> <span class="ident">EXPR_RECOVERY_SET</span>: <span class="ident">TokenSet</span> <span class="op">=</span> <span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">LET_KW</span>];
@@ -569,6 +586,7 @@
         <span class="macro">T</span><span class="macro">!</span>[<span class="kw">loop</span>] <span class="op">=&gt;</span> <span class="ident">loop_expr</span>(<span class="ident">p</span>, <span class="prelude-val">None</span>),
         <span class="macro">T</span><span class="macro">!</span>[<span class="kw">for</span>] <span class="op">=&gt;</span> <span class="ident">for_expr</span>(<span class="ident">p</span>, <span class="prelude-val">None</span>),
         <span class="macro">T</span><span class="macro">!</span>[<span class="kw">while</span>] <span class="op">=&gt;</span> <span class="ident">while_expr</span>(<span class="ident">p</span>, <span class="prelude-val">None</span>),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw">try</span>] <span class="op">=&gt;</span> <span class="ident">try_block_expr</span>(<span class="ident">p</span>, <span class="prelude-val">None</span>),
         <span class="ident">LIFETIME</span> <span class="kw">if</span> <span class="ident">la</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:] <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
             <span class="ident">label</span>(<span class="ident">p</span>);
@@ -610,7 +628,9 @@
         }
     };
     <span class="kw">let</span> <span class="ident">blocklike</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">done</span>.<span class="ident">kind</span>() {
-        <span class="ident">IF_EXPR</span> <span class="op">|</span> <span class="ident">WHILE_EXPR</span> <span class="op">|</span> <span class="ident">FOR_EXPR</span> <span class="op">|</span> <span class="ident">LOOP_EXPR</span> <span class="op">|</span> <span class="ident">MATCH_EXPR</span> <span class="op">|</span> <span class="ident">BLOCK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">BlockLike</span>::<span class="ident">Block</span>,
+        <span class="ident">IF_EXPR</span> <span class="op">|</span> <span class="ident">WHILE_EXPR</span> <span class="op">|</span> <span class="ident">FOR_EXPR</span> <span class="op">|</span> <span class="ident">LOOP_EXPR</span> <span class="op">|</span> <span class="ident">MATCH_EXPR</span> <span class="op">|</span> <span class="ident">BLOCK_EXPR</span> <span class="op">|</span> <span class="ident">TRY_BLOCK_EXPR</span> <span class="op">=&gt;</span> {
+            <span class="ident">BlockLike</span>::<span class="ident">Block</span>
+        }
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">BlockLike</span>::<span class="ident">NotBlock</span>,
     };
     <span class="prelude-val">Some</span>((<span class="ident">done</span>, <span class="ident">blocklike</span>))
@@ -984,6 +1004,18 @@
         <span class="ident">expr</span>(<span class="ident">p</span>);
     }
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">BREAK_EXPR</span>)
+}
+
+<span class="comment">// test try_block_expr</span>
+<span class="comment">// fn foo() {</span>
+<span class="comment">//     let _ = try {};</span>
+<span class="comment">// }</span>
+<span class="kw">fn</span> <span class="ident">try_block_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Marker</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">try</span>]));
+    <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">p</span>.<span class="ident">start</span>());
+    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">block</span>(<span class="ident">p</span>);
+    <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">TRY_EXPR</span>)
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../";window.currentCrate = "ra_parser";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>
