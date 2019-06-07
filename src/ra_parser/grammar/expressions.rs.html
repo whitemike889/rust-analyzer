@@ -581,6 +581,8 @@
 <span id="581">581</span>
 <span id="582">582</span>
 <span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">atom</span>;
 
@@ -721,12 +723,14 @@
         <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">EXPR_STMT</span>);
     }
 
-    <span class="comment">// test let_stmt;</span>
+    <span class="comment">// test let_stmt</span>
     <span class="comment">// fn foo() {</span>
     <span class="comment">//     let a;</span>
     <span class="comment">//     let b: i32;</span>
     <span class="comment">//     let c = 92;</span>
     <span class="comment">//     let d: i32 = 92;</span>
+    <span class="comment">//     let e: !;</span>
+    <span class="comment">//     let _: ! = {};</span>
     <span class="comment">// }</span>
     <span class="kw">fn</span> <span class="ident">let_stmt</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="ident">Marker</span>, <span class="ident">with_semi</span>: <span class="ident">StmtWithSemi</span>) {
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">let</span>]));
