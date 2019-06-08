@@ -188,6 +188,9 @@
 <span id="188">188</span>
 <span id="189">189</span>
 <span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -318,6 +321,9 @@
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">lang_item</span>::<span class="ident">LangItems</span>::<span class="ident">lang_item_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">lang_item</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">start_crate</span>: <span class="ident">Crate</span>, <span class="ident">item</span>: <span class="ident">SmolStr</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">LangItemTarget</span><span class="op">&gt;</span>;
+
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">docs</span>::<span class="ident">documentation_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">documentation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">def</span>: <span class="kw">crate</span>::<span class="ident">docs</span>::<span class="ident">DocDef</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">docs</span>::<span class="ident">Documentation</span><span class="op">&gt;</span>;
 }
 
 <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">HirDatabaseStorage</span>)]</span>

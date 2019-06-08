@@ -577,6 +577,8 @@
 <span id="577">577</span>
 <span id="578">578</span>
 <span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">///</span>
@@ -903,6 +905,8 @@
         (<span class="ident">res</span>.<span class="ident">resolved_def</span>, <span class="ident">res</span>.<span class="ident">segment_index</span>)
     }
 
+    <span class="comment">// FIXME: This seems to do the same work as `resolve_path_with_macro`, but</span>
+    <span class="comment">// using a completely different code path. Seems bad, huh?</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">find_macro</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,

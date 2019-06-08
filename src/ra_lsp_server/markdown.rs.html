@@ -27,39 +27,24 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
-<span id="32">32</span>
-<span id="33">33</span>
-<span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">ra_ide_api</span>::<span class="ident">Documentation</span>;
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">sanitize_markdown</span>(<span class="ident">docs</span>: <span class="ident">Documentation</span>) <span class="op">-&gt;</span> <span class="ident">Documentation</span> {
-    <span class="kw">let</span> <span class="ident">docs</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">docs</span>.<span class="ident">into</span>();
-
-    <span class="comment">// Massage markdown</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">mark_fenced_blocks_as_rust</span>(<span class="ident">src</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">processed_lines</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_code_block</span> <span class="op">=</span> <span class="bool-val">false</span>;
-    <span class="kw">for</span> <span class="ident">line</span> <span class="kw">in</span> <span class="ident">docs</span>.<span class="ident">lines</span>() {
+    <span class="kw">for</span> <span class="ident">line</span> <span class="kw">in</span> <span class="ident">src</span>.<span class="ident">lines</span>() {
         <span class="kw">if</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;```&quot;</span>) {
-            <span class="ident">in_code_block</span> <span class="op">=</span> <span class="op">!</span><span class="ident">in_code_block</span>;
+            <span class="ident">in_code_block</span> <span class="op">^=</span> <span class="bool-val">true</span>
         }
 
         <span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">in_code_block</span> <span class="op">&amp;&amp;</span> <span class="ident">line</span>.<span class="ident">starts_with</span>(<span class="string">&quot;```&quot;</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">line</span>.<span class="ident">contains</span>(<span class="string">&quot;rust&quot;</span>) {
-            <span class="string">&quot;```rust&quot;</span>.<span class="ident">into</span>()
+            <span class="string">&quot;```rust&quot;</span>
         } <span class="kw">else</span> {
-            <span class="ident">line</span>.<span class="ident">to_string</span>()
+            <span class="ident">line</span>
         };
 
         <span class="ident">processed_lines</span>.<span class="ident">push</span>(<span class="ident">line</span>);
     }
-
-    <span class="ident">Documentation</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">processed_lines</span>.<span class="ident">join</span>(<span class="string">&quot;\n&quot;</span>))
+    <span class="ident">processed_lines</span>.<span class="ident">join</span>(<span class="string">&quot;\n&quot;</span>)
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -69,10 +54,7 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_codeblock_adds_rust</span>() {
         <span class="kw">let</span> <span class="ident">comment</span> <span class="op">=</span> <span class="string">&quot;```\nfn some_rust() {}\n```&quot;</span>;
-        <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">sanitize_markdown</span>(<span class="ident">Documentation</span>::<span class="ident">new</span>(<span class="ident">comment</span>)).<span class="ident">contents</span>(),
-            <span class="string">&quot;```rust\nfn some_rust() {}\n```&quot;</span>
-        );
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">mark_fenced_blocks_as_rust</span>(<span class="ident">comment</span>), <span class="string">&quot;```rust\nfn some_rust() {}\n```&quot;</span>);
     }
 }
 </pre></div>
