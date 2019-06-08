@@ -317,16 +317,23 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Name resolution.</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::{<span class="ident">FxHashMap</span>, <span class="ident">FxHashSet</span>};
+<span class="kw">use</span> <span class="ident">either</span>::<span class="ident">Either</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">ModuleDef</span>, <span class="ident">Trait</span>,
+    <span class="ident">ModuleDef</span>, <span class="ident">Trait</span>, <span class="ident">MacroDef</span>,
     <span class="ident">code_model</span>::<span class="ident">Crate</span>,
-    <span class="ident">MacroDefId</span>,
     <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
     <span class="ident">name</span>::{<span class="ident">Name</span>, <span class="ident">KnownName</span>},
     <span class="ident">nameres</span>::{<span class="ident">PerNs</span>, <span class="ident">CrateDefMap</span>, <span class="ident">CrateModuleId</span>},
@@ -450,13 +457,16 @@
         <span class="ident">resolution</span>
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">resolve_macro_call</span>(
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">resolve_path_as_macro</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>,
-        <span class="ident">path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MacroDefId</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">module</span>()<span class="question-mark">?</span>;
-        <span class="ident">m</span>.<span class="number">0</span>.<span class="ident">find_macro</span>(<span class="ident">db</span>, <span class="ident">m</span>.<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">path</span><span class="question-mark">?</span>)
+        <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MacroDef</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> (<span class="ident">item_map</span>, <span class="ident">module</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">module</span>()<span class="question-mark">?</span>;
+        <span class="kw">match</span> <span class="ident">item_map</span>.<span class="ident">resolve_path_with_macro</span>(<span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">path</span>) {
+            (<span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">macro_def</span>), <span class="prelude-val">None</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">macro_def</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+        }
     }
 
     <span class="doccomment">/// Returns the resolved path segments</span>
@@ -485,7 +495,11 @@
 
     <span class="doccomment">/// Returns the fully resolved path if we were able to resolve it.</span>
     <span class="doccomment">/// otherwise returns `PerNs::none`</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">resolve_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">resolve_path_without_assoc_items</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>,
+        <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">Resolution</span><span class="op">&gt;</span> {
         <span class="comment">// into_fully_resolved() returns the fully resolved path or PerNs::none() otherwise</span>
         <span class="self">self</span>.<span class="ident">resolve_path_segments</span>(<span class="ident">db</span>, <span class="ident">path</span>).<span class="ident">into_fully_resolved</span>()
     }

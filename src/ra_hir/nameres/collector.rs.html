@@ -756,6 +756,24 @@
 <span id="756">756</span>
 <span id="757">757</span>
 <span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">arrayvec</span>::<span class="ident">ArrayVec</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
@@ -897,15 +915,35 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">define_macro</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Name</span>, <span class="ident">macro_id</span>: <span class="ident">MacroDefId</span>, <span class="ident">export</span>: <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="ident">export</span> {
-            <span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">public_macros</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>);
+    <span class="kw">fn</span> <span class="ident">define_macro</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">module_id</span>: <span class="ident">CrateModuleId</span>,
+        <span class="ident">name</span>: <span class="ident">Name</span>,
+        <span class="ident">macro_id</span>: <span class="ident">MacroDefId</span>,
+        <span class="ident">export</span>: <span class="ident">bool</span>,
+    ) {
+        <span class="comment">// macro-by-example in Rust have completely weird name resolution logic,</span>
+        <span class="comment">// unlike anything else in the language. We&#39;d don&#39;t fully implement yet,</span>
+        <span class="comment">// just give a somewhat precise approximation.</span>
+        <span class="comment">//</span>
+        <span class="comment">// Specifically, we store a set of visible macros in each module, just</span>
+        <span class="comment">// like how we do with usual items. This is wrong, however, because</span>
+        <span class="comment">// macros can be shadowed and their scopes are mostly unrelated to</span>
+        <span class="comment">// modules. To paper over the second problem, we also maintain</span>
+        <span class="comment">// `global_macro_scope` which works when we construct `CrateDefMap`, but</span>
+        <span class="comment">// is completely ignored in expressions.</span>
+        <span class="comment">//</span>
+        <span class="comment">// What we should do is that, in CrateDefMap, we should maintain a</span>
+        <span class="comment">// separate tower of macro scopes, with ids. Then, for each item in the</span>
+        <span class="comment">// module, we need to store it&#39;s macro scope.</span>
+        <span class="kw">let</span> <span class="ident">def</span> <span class="op">=</span> <span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">MacroDef</span> { <span class="ident">id</span>: <span class="ident">macro_id</span> });
 
-            <span class="kw">let</span> <span class="ident">def</span> <span class="op">=</span> <span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">MacroDef</span> { <span class="ident">id</span>: <span class="ident">macro_id</span> });
-            <span class="self">self</span>.<span class="ident">update</span>(<span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">root</span>, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>[(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">def</span>)]);
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">local_macros</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>);
+        <span class="comment">// In Rust, `#[macro_export]` macros are unconditionally visible at the</span>
+        <span class="comment">// crate root, even if the parent modules is **not** visible.</span>
+        <span class="kw">if</span> <span class="ident">export</span> {
+            <span class="self">self</span>.<span class="ident">update</span>(<span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">root</span>, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>[(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">def</span>.<span class="ident">clone</span>())]);
         }
+        <span class="self">self</span>.<span class="ident">update</span>(<span class="ident">module_id</span>, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>[(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">def</span>)]);
         <span class="self">self</span>.<span class="ident">global_macro_scope</span>.<span class="ident">insert</span>(<span class="ident">name</span>, <span class="ident">macro_id</span>);
     }
 
@@ -1348,7 +1386,7 @@
         <span class="kw">if</span> <span class="ident">is_macro_rules</span>(<span class="kw-2">&amp;</span><span class="ident">mac</span>.<span class="ident">path</span>) {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">mac</span>.<span class="ident">name</span> {
                 <span class="kw">let</span> <span class="ident">macro_id</span> <span class="op">=</span> <span class="ident">MacroDefId</span>(<span class="ident">mac</span>.<span class="ident">ast_id</span>.<span class="ident">with_file_id</span>(<span class="self">self</span>.<span class="ident">file_id</span>));
-                <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">define_macro</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>, <span class="ident">mac</span>.<span class="ident">export</span>)
+                <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">define_macro</span>(<span class="self">self</span>.<span class="ident">module_id</span>, <span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>, <span class="ident">mac</span>.<span class="ident">export</span>)
             }
             <span class="kw">return</span>;
         }
@@ -1453,9 +1491,7 @@
                 <span class="ident">prelude</span>: <span class="prelude-val">None</span>,
                 <span class="ident">root</span>,
                 <span class="ident">modules</span>,
-                <span class="ident">public_macros</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
                 <span class="ident">poison_macros</span>: <span class="ident">FxHashSet</span>::<span class="ident">default</span>(),
-                <span class="ident">local_macros</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
                 <span class="ident">diagnostics</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             }
         };
