@@ -660,13 +660,13 @@
         <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">goto_definition</span>::{<span class="ident">ReferenceResult</span>::<span class="kw-2">*</span>, <span class="ident">reference_definition</span>};
         <span class="kw">let</span> <span class="ident">ref_result</span> <span class="op">=</span> <span class="ident">reference_definition</span>(<span class="ident">db</span>, <span class="ident">position</span>.<span class="ident">file_id</span>, <span class="ident">name_ref</span>);
         <span class="kw">match</span> <span class="ident">ref_result</span> {
-            <span class="ident">Exact</span>(<span class="ident">nav</span>) <span class="op">=&gt;</span> <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">doc_text_for</span>(<span class="ident">db</span>, <span class="ident">nav</span>)),
+            <span class="ident">Exact</span>(<span class="ident">nav</span>) <span class="op">=&gt;</span> <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">doc_text_for</span>(<span class="ident">nav</span>)),
             <span class="ident">Approximate</span>(<span class="ident">navs</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// We are no longer exact</span>
                 <span class="ident">res</span>.<span class="ident">exact</span> <span class="op">=</span> <span class="bool-val">false</span>;
 
                 <span class="kw">for</span> <span class="ident">nav</span> <span class="kw">in</span> <span class="ident">navs</span> {
-                    <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">doc_text_for</span>(<span class="ident">db</span>, <span class="ident">nav</span>))
+                    <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">doc_text_for</span>(<span class="ident">nav</span>))
                 }
             }
         }
@@ -678,7 +678,7 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">navs</span>) <span class="op">=</span> <span class="ident">navs</span> {
             <span class="kw">for</span> <span class="ident">nav</span> <span class="kw">in</span> <span class="ident">navs</span> {
-                <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">doc_text_for</span>(<span class="ident">db</span>, <span class="ident">nav</span>))
+                <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">doc_text_for</span>(<span class="ident">nav</span>))
             }
         }
 

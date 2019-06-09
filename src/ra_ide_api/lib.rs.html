@@ -907,7 +907,7 @@
         <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> {
             <span class="ident">symbol_index</span>::<span class="ident">world_symbols</span>(<span class="ident">db</span>, <span class="ident">query</span>)
                 .<span class="ident">into_iter</span>()
-                .<span class="ident">map</span>(<span class="ident">NavigationTarget</span>::<span class="ident">from_symbol</span>)
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">NavigationTarget</span>::<span class="ident">from_symbol</span>(<span class="ident">db</span>, <span class="ident">s</span>))
                 .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>()
         })
     }
