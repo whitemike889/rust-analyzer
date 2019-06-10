@@ -872,7 +872,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">docs_from_symbol</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="ident">FileSymbol</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">docs_from_symbol</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="ident">FileSymbol</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">symbol</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">symbol</span>.<span class="ident">ptr</span>.<span class="ident">to_node</span>(<span class="ident">file</span>.<span class="ident">syntax</span>()).<span class="ident">to_owned</span>();
 
@@ -898,7 +898,7 @@
 <span class="doccomment">/// Get a description of a symbol.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// e.g. `struct Name`, `enum Name`, `fn Name`</span>
-<span class="kw">fn</span> <span class="ident">description_from_symbol</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="ident">FileSymbol</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">description_from_symbol</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">symbol</span>: <span class="kw-2">&amp;</span><span class="ident">FileSymbol</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">symbol</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">symbol</span>.<span class="ident">ptr</span>.<span class="ident">to_node</span>(<span class="ident">file</span>.<span class="ident">syntax</span>()).<span class="ident">to_owned</span>();
 
