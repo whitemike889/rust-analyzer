@@ -552,8 +552,6 @@
 <span id="552">552</span>
 <span id="553">553</span>
 <span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">///</span>
@@ -613,7 +611,6 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::{<span class="ident">FxHashMap</span>, <span class="ident">FxHashSet</span>};
-<span class="kw">use</span> <span class="ident">either</span>::<span class="ident">Either</span>;
 <span class="kw">use</span> <span class="ident">ra_arena</span>::{<span class="ident">Arena</span>, <span class="ident">RawId</span>, <span class="ident">impl_arena_id</span>};
 <span class="kw">use</span> <span class="ident">ra_db</span>::{<span class="ident">FileId</span>, <span class="ident">Edition</span>};
 <span class="kw">use</span> <span class="ident">test_utils</span>::<span class="ident">tested_by</span>;
@@ -627,6 +624,7 @@
     <span class="ident">ids</span>::<span class="ident">MacroDefId</span>,
     <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>,
     <span class="ident">nameres</span>::<span class="ident">diagnostics</span>::<span class="ident">DefDiagnostic</span>,
+    <span class="ident">either</span>::<span class="ident">Either</span>,
     <span class="ident">AstId</span>,
 };
 
@@ -721,8 +719,8 @@
     }
     <span class="kw">fn</span> <span class="ident">get_item_or_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ItemOrMacro</span><span class="op">&gt;</span> {
         <span class="kw">match</span> (<span class="self">self</span>.<span class="ident">get</span>(<span class="ident">name</span>), <span class="self">self</span>.<span class="ident">macros</span>.<span class="ident">get</span>(<span class="ident">name</span>)) {
-            (<span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="kw">_</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">def</span>.<span class="ident">is_none</span>() <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">item</span>.<span class="ident">def</span>)),
-            (<span class="kw">_</span>, <span class="prelude-val">Some</span>(<span class="ident">macro_</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Either</span>::<span class="ident">Right</span>(<span class="kw-2">*</span><span class="ident">macro_</span>)),
+            (<span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="kw">_</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">def</span>.<span class="ident">is_none</span>() <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">item</span>.<span class="ident">def</span>)),
+            (<span class="kw">_</span>, <span class="prelude-val">Some</span>(<span class="ident">macro_</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Either</span>::<span class="ident">B</span>(<span class="kw-2">*</span><span class="ident">macro_</span>)),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
         }
     }
@@ -747,7 +745,7 @@
 
 <span class="kw">impl</span> <span class="ident">ResolvePathResult</span> {
     <span class="kw">fn</span> <span class="ident">empty</span>(<span class="ident">reached_fixedpoint</span>: <span class="ident">ReachedFixedPoint</span>) <span class="op">-&gt;</span> <span class="ident">ResolvePathResult</span> {
-        <span class="ident">ResolvePathResult</span>::<span class="ident">with</span>(<span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()), <span class="ident">reached_fixedpoint</span>, <span class="prelude-val">None</span>)
+        <span class="ident">ResolvePathResult</span>::<span class="ident">with</span>(<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()), <span class="ident">reached_fixedpoint</span>, <span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">with</span>(
@@ -774,13 +772,13 @@
 <span class="doccomment">/// helper function for select item or macro to use</span>
 <span class="kw">fn</span> <span class="ident">or</span>(<span class="ident">left</span>: <span class="ident">ItemOrMacro</span>, <span class="ident">right</span>: <span class="ident">ItemOrMacro</span>) <span class="op">-&gt;</span> <span class="ident">ItemOrMacro</span> {
     <span class="kw">match</span> (<span class="ident">left</span>, <span class="ident">right</span>) {
-        (<span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">s</span>), <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">o</span>)) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">s</span>.<span class="ident">or</span>(<span class="ident">o</span>)),
-        (<span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">s</span>), <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">s</span>),
-        (<span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">s</span>), <span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">o</span>)) <span class="op">=&gt;</span> {
+        (<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">s</span>), <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">o</span>)) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">s</span>.<span class="ident">or</span>(<span class="ident">o</span>)),
+        (<span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">s</span>), <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">s</span>),
+        (<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">s</span>), <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">o</span>)) <span class="op">=&gt;</span> {
             <span class="kw">if</span> <span class="op">!</span><span class="ident">s</span>.<span class="ident">is_none</span>() {
-                <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">s</span>)
+                <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">s</span>)
             } <span class="kw">else</span> {
-                <span class="ident">Either</span>::<span class="ident">Right</span>(<span class="ident">o</span>)
+                <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">o</span>)
             }
         }
     }
@@ -863,7 +861,7 @@
         <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
     ) <span class="op">-&gt;</span> (<span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">ModuleDef</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_path_fp_with_macro</span>(<span class="ident">db</span>, <span class="ident">ResolveMode</span>::<span class="ident">Other</span>, <span class="ident">original_module</span>, <span class="ident">path</span>);
-        (<span class="ident">res</span>.<span class="ident">resolved_def</span>.<span class="ident">left</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>), <span class="ident">res</span>.<span class="ident">segment_index</span>)
+        (<span class="ident">res</span>.<span class="ident">resolved_def</span>.<span class="ident">a</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>), <span class="ident">res</span>.<span class="ident">segment_index</span>)
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">resolve_path_with_macro</span>(
@@ -887,10 +885,10 @@
     ) <span class="op">-&gt;</span> <span class="ident">ResolvePathResult</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">segments</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">curr_per_ns</span>: <span class="ident">ItemOrMacro</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">path</span>.<span class="ident">kind</span> {
-            <span class="ident">PathKind</span>::<span class="ident">Crate</span> <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(
-                <span class="ident">Module</span> { <span class="ident">krate</span>: <span class="self">self</span>.<span class="ident">krate</span>, <span class="ident">module_id</span>: <span class="self">self</span>.<span class="ident">root</span> }.<span class="ident">into</span>(),
-            )),
-            <span class="ident">PathKind</span>::<span class="ident">Self_</span> <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(
+            <span class="ident">PathKind</span>::<span class="ident">Crate</span> <span class="op">=&gt;</span> {
+                <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Module</span> { <span class="ident">krate</span>: <span class="self">self</span>.<span class="ident">krate</span>, <span class="ident">module_id</span>: <span class="self">self</span>.<span class="ident">root</span> }.<span class="ident">into</span>()))
+            }
+            <span class="ident">PathKind</span>::<span class="ident">Self_</span> <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(
                 <span class="ident">Module</span> { <span class="ident">krate</span>: <span class="self">self</span>.<span class="ident">krate</span>, <span class="ident">module_id</span>: <span class="ident">original_module</span> }.<span class="ident">into</span>(),
             )),
             <span class="comment">// plain import or absolute path in 2015: crate-relative with</span>
@@ -918,7 +916,7 @@
             }
             <span class="ident">PathKind</span>::<span class="ident">Super</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">modules</span>[<span class="ident">original_module</span>].<span class="ident">parent</span> {
-                    <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Module</span> { <span class="ident">krate</span>: <span class="self">self</span>.<span class="ident">krate</span>, <span class="ident">module_id</span>: <span class="ident">p</span> }.<span class="ident">into</span>()))
+                    <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Module</span> { <span class="ident">krate</span>: <span class="self">self</span>.<span class="ident">krate</span>, <span class="ident">module_id</span>: <span class="ident">p</span> }.<span class="ident">into</span>()))
                 } <span class="kw">else</span> {
                     <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;super path in root module&quot;</span>);
                     <span class="kw">return</span> <span class="ident">ResolvePathResult</span>::<span class="ident">empty</span>(<span class="ident">ReachedFixedPoint</span>::<span class="ident">Yes</span>);
@@ -932,7 +930,7 @@
                 };
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">def</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">extern_prelude</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">segment</span>.<span class="ident">name</span>) {
                     <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;absolute path {:?} resolved to crate {:?}&quot;</span>, <span class="ident">path</span>, <span class="ident">def</span>);
-                    <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="kw-2">*</span><span class="ident">def</span>))
+                    <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="kw-2">*</span><span class="ident">def</span>))
                 } <span class="kw">else</span> {
                     <span class="kw">return</span> <span class="ident">ResolvePathResult</span>::<span class="ident">empty</span>(<span class="ident">ReachedFixedPoint</span>::<span class="ident">No</span>); <span class="comment">// extern crate declarations can add to the extern prelude</span>
                 }
@@ -940,7 +938,7 @@
         };
 
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">segment</span>) <span class="kw">in</span> <span class="ident">segments</span> {
-            <span class="kw">let</span> <span class="ident">curr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">curr_per_ns</span>.<span class="ident">as_ref</span>().<span class="ident">left</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">as_ref</span>().<span class="ident">take_types</span>()) {
+            <span class="kw">let</span> <span class="ident">curr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">curr_per_ns</span>.<span class="ident">as_ref</span>().<span class="ident">a</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">as_ref</span>().<span class="ident">take_types</span>()) {
                 <span class="prelude-val">Some</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="ident">r</span>,
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
                     <span class="comment">// we still have path segments left, but the path so far</span>
@@ -981,10 +979,10 @@
                     <span class="comment">// enum variant</span>
                     <span class="macro">tested_by</span><span class="macro">!</span>(<span class="ident">can_import_enum_variant</span>);
                     <span class="kw">match</span> <span class="ident">e</span>.<span class="ident">variant</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">segment</span>.<span class="ident">name</span>) {
-                        <span class="prelude-val">Some</span>(<span class="ident">variant</span>) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">both</span>(<span class="ident">variant</span>.<span class="ident">into</span>(), <span class="ident">variant</span>.<span class="ident">into</span>())),
+                        <span class="prelude-val">Some</span>(<span class="ident">variant</span>) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">both</span>(<span class="ident">variant</span>.<span class="ident">into</span>(), <span class="ident">variant</span>.<span class="ident">into</span>())),
                         <span class="prelude-val">None</span> <span class="op">=&gt;</span> {
                             <span class="kw">return</span> <span class="ident">ResolvePathResult</span>::<span class="ident">with</span>(
-                                <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>((<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">into</span>())),
+                                <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>((<span class="kw-2">*</span><span class="ident">e</span>).<span class="ident">into</span>())),
                                 <span class="ident">ReachedFixedPoint</span>::<span class="ident">Yes</span>,
                                 <span class="prelude-val">Some</span>(<span class="ident">i</span>),
                             );
@@ -1001,7 +999,7 @@
                     );
 
                     <span class="kw">return</span> <span class="ident">ResolvePathResult</span>::<span class="ident">with</span>(
-                        <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="kw-2">*</span><span class="ident">s</span>)),
+                        <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="kw-2">*</span><span class="ident">s</span>)),
                         <span class="ident">ReachedFixedPoint</span>::<span class="ident">Yes</span>,
                         <span class="prelude-val">Some</span>(<span class="ident">i</span>),
                     );
@@ -1015,10 +1013,10 @@
         <span class="kw">let</span> <span class="ident">from_crate_root</span> <span class="op">=</span> <span class="self">self</span>[<span class="self">self</span>.<span class="ident">root</span>]
             .<span class="ident">scope</span>
             .<span class="ident">get_item_or_macro</span>(<span class="ident">name</span>)
-            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()));
+            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()));
         <span class="kw">let</span> <span class="ident">from_extern_prelude</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_name_in_extern_prelude</span>(<span class="ident">name</span>);
 
-        <span class="ident">or</span>(<span class="ident">from_crate_root</span>, <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">from_extern_prelude</span>))
+        <span class="ident">or</span>(<span class="ident">from_crate_root</span>, <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">from_extern_prelude</span>))
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">resolve_name_in_module</span>(
@@ -1027,7 +1025,7 @@
         <span class="ident">module</span>: <span class="ident">CrateModuleId</span>,
         <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>,
     ) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">ModuleDef</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">resolve_name_in_module_with_macro</span>(<span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">name</span>).<span class="ident">left</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>)
+        <span class="self">self</span>.<span class="ident">resolve_name_in_module_with_macro</span>(<span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">name</span>).<span class="ident">a</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_name_in_module_with_macro</span>(
@@ -1040,15 +1038,13 @@
         <span class="comment">//  - current module / scope</span>
         <span class="comment">//  - extern prelude</span>
         <span class="comment">//  - std prelude</span>
-        <span class="kw">let</span> <span class="ident">from_scope</span> <span class="op">=</span> <span class="self">self</span>[<span class="ident">module</span>]
-            .<span class="ident">scope</span>
-            .<span class="ident">get_item_or_macro</span>(<span class="ident">name</span>)
-            .<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()));
+        <span class="kw">let</span> <span class="ident">from_scope</span> <span class="op">=</span>
+            <span class="self">self</span>[<span class="ident">module</span>].<span class="ident">scope</span>.<span class="ident">get_item_or_macro</span>(<span class="ident">name</span>).<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()));
         <span class="kw">let</span> <span class="ident">from_extern_prelude</span> <span class="op">=</span>
             <span class="self">self</span>.<span class="ident">extern_prelude</span>.<span class="ident">get</span>(<span class="ident">name</span>).<span class="ident">map_or</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>(), <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">it</span><span class="op">|</span> <span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">it</span>));
         <span class="kw">let</span> <span class="ident">from_prelude</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_in_prelude</span>(<span class="ident">db</span>, <span class="ident">name</span>);
 
-        <span class="ident">or</span>(<span class="ident">from_scope</span>, <span class="ident">or</span>(<span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">from_extern_prelude</span>), <span class="ident">from_prelude</span>))
+        <span class="ident">or</span>(<span class="ident">from_scope</span>, <span class="ident">or</span>(<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">from_extern_prelude</span>), <span class="ident">from_prelude</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_name_in_extern_prelude</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">ModuleDef</span><span class="op">&gt;</span> {
@@ -1062,9 +1058,9 @@
             } <span class="kw">else</span> {
                 <span class="ident">db</span>.<span class="ident">crate_def_map</span>(<span class="ident">prelude</span>.<span class="ident">krate</span>)[<span class="ident">prelude</span>.<span class="ident">module_id</span>].<span class="ident">scope</span>.<span class="ident">get_item_or_macro</span>(<span class="ident">name</span>)
             };
-            <span class="ident">resolution</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()))
+            <span class="ident">resolution</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()))
         } <span class="kw">else</span> {
-            <span class="ident">Either</span>::<span class="ident">Left</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>())
+            <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>())
         }
     }
 }
