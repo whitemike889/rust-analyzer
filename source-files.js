@@ -16,6 +16,7 @@ sourcesIndex["ra_prof"] = {"name":"","dirs":[],"files":["lib.rs"]};
 sourcesIndex["ra_project_model"] = {"name":"","dirs":[],"files":["cargo_workspace.rs","json_project.rs","lib.rs","sysroot.rs"]};
 sourcesIndex["ra_syntax"] = {"name":"","dirs":[{"name":"algo","dirs":[],"files":["visit.rs"]},{"name":"ast","dirs":[],"files":["expr_extensions.rs","extensions.rs","generated.rs","tokens.rs","traits.rs"]},{"name":"parsing","dirs":[{"name":"lexer","dirs":[],"files":["classes.rs","comments.rs","numbers.rs","ptr.rs","strings.rs"]}],"files":["lexer.rs","reparsing.rs","text_token_source.rs","text_tree_sink.rs"]},{"name":"validation","dirs":[],"files":["block.rs","field_expr.rs","unescape.rs"]}],"files":["algo.rs","ast.rs","fuzz.rs","lib.rs","parsing.rs","ptr.rs","syntax_error.rs","syntax_node.rs","syntax_text.rs","validation.rs"]};
 sourcesIndex["ra_text_edit"] = {"name":"","dirs":[],"files":["lib.rs","test_utils.rs","text_edit.rs"]};
+sourcesIndex["ra_tools"] = {"name":"","dirs":[],"files":["lib.rs"]};
 sourcesIndex["ra_tt"] = {"name":"","dirs":[],"files":["buffer.rs","lib.rs"]};
 sourcesIndex["test_utils"] = {"name":"","dirs":[],"files":["lib.rs","marks.rs"]};
 sourcesIndex["thread_worker"] = {"name":"","dirs":[],"files":["lib.rs"]};

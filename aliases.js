@@ -16,6 +16,7 @@ ALIASES["ra_prof"] = {};
 ALIASES["ra_project_model"] = {};
 ALIASES["ra_syntax"] = {};
 ALIASES["ra_text_edit"] = {};
+ALIASES["ra_tools"] = {};
 ALIASES["ra_tt"] = {};
 ALIASES["test_utils"] = {};
 ALIASES["thread_worker"] = {};
