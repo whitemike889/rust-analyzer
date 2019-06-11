@@ -20,5 +20,4 @@ sourcesIndex["ra_tools"] = {"name":"","dirs":[],"files":["lib.rs"]};
 sourcesIndex["ra_tt"] = {"name":"","dirs":[],"files":["buffer.rs","lib.rs"]};
 sourcesIndex["test_utils"] = {"name":"","dirs":[],"files":["lib.rs","marks.rs"]};
 sourcesIndex["thread_worker"] = {"name":"","dirs":[],"files":["lib.rs"]};
-sourcesIndex["tools"] = {"name":"","dirs":[],"files":["lib.rs"]};
 createSourceSidebar();

@@ -20,4 +20,3 @@ ALIASES["ra_tools"] = {};
 ALIASES["ra_tt"] = {};
 ALIASES["test_utils"] = {};
 ALIASES["thread_worker"] = {};
-ALIASES["tools"] = {};
