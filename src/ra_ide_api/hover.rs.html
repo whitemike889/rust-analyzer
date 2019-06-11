@@ -676,6 +676,23 @@
 <span id="676">676</span>
 <span id="677">677</span>
 <span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
+<span id="692">692</span>
+<span id="693">693</span>
+<span id="694">694</span>
+<span id="695">695</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">SourceDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
@@ -774,6 +791,8 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name_ref</span>) <span class="op">=</span> <span class="ident">find_node_at_offset</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">NameRef</span><span class="op">&gt;</span>(<span class="ident">file</span>.<span class="ident">syntax</span>(), <span class="ident">position</span>.<span class="ident">offset</span>) {
         <span class="kw">let</span> <span class="ident">analyzer</span> <span class="op">=</span> <span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">position</span>.<span class="ident">file_id</span>, <span class="ident">name_ref</span>.<span class="ident">syntax</span>(), <span class="prelude-val">None</span>);
 
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">no_fallback</span> <span class="op">=</span> <span class="bool-val">false</span>;
+
         <span class="kw">match</span> <span class="ident">classify_name_ref</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">analyzer</span>, <span class="ident">name_ref</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">Method</span>(<span class="ident">it</span>)) <span class="op">=&gt;</span> <span class="ident">res</span>.<span class="ident">extend</span>(<span class="ident">from_def_source</span>(<span class="ident">db</span>, <span class="ident">it</span>)),
             <span class="prelude-val">Some</span>(<span class="ident">Macro</span>(<span class="ident">it</span>)) <span class="op">=&gt;</span> {
@@ -821,11 +840,9 @@
                     })
                 }
             }
-            <span class="prelude-val">Some</span>(<span class="ident">Pat</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> {
-                <span class="ident">res</span>.<span class="ident">extend</span>(<span class="prelude-val">None</span>);
-            }
-            <span class="prelude-val">Some</span>(<span class="ident">SelfParam</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> {
-                <span class="ident">res</span>.<span class="ident">extend</span>(<span class="prelude-val">None</span>);
+            <span class="prelude-val">Some</span>(<span class="ident">Pat</span>(<span class="kw">_</span>)) <span class="op">|</span> <span class="prelude-val">Some</span>(<span class="ident">SelfParam</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> {
+                <span class="comment">// Hover for these shows type names</span>
+                <span class="ident">no_fallback</span> <span class="op">=</span> <span class="bool-val">true</span>;
             }
             <span class="prelude-val">Some</span>(<span class="ident">GenericParam</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> {
                 <span class="comment">// FIXME: Hover for generic param</span>
@@ -833,7 +850,7 @@
             <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
         }
 
-        <span class="kw">if</span> <span class="ident">res</span>.<span class="ident">is_empty</span>() {
+        <span class="kw">if</span> <span class="ident">res</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">no_fallback</span> {
             <span class="comment">// Fallback index based approach:</span>
             <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">symbol_index</span>::<span class="ident">index_resolve</span>(<span class="ident">db</span>, <span class="ident">name_ref</span>);
             <span class="kw">for</span> <span class="ident">sym</span> <span class="kw">in</span> <span class="ident">symbols</span> {
@@ -1352,6 +1369,23 @@ fn func(foo: i32) { if true { &lt;|&gt;foo; }; }
         );
         <span class="kw">let</span> <span class="ident">hover</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">hover</span>(<span class="ident">position</span>).<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">trim_markup_opt</span>(<span class="ident">hover</span>.<span class="ident">info</span>.<span class="ident">first</span>()), <span class="prelude-val">Some</span>(<span class="string">&quot;enum Thing&quot;</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">hover</span>.<span class="ident">info</span>.<span class="ident">is_exact</span>(), <span class="bool-val">true</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_hover_shadowing_pat</span>() {
+        <span class="kw">let</span> (<span class="ident">analysis</span>, <span class="ident">position</span>) <span class="op">=</span> <span class="ident">single_file_with_position</span>(
+            <span class="string">&quot;
+            fn x() {}
+
+            fn y() {
+                let x = 0i32;
+                x&lt;|&gt;;
+            }
+            &quot;</span>,
+        );
+        <span class="kw">let</span> <span class="ident">hover</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">hover</span>(<span class="ident">position</span>).<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">trim_markup_opt</span>(<span class="ident">hover</span>.<span class="ident">info</span>.<span class="ident">first</span>()), <span class="prelude-val">Some</span>(<span class="string">&quot;i32&quot;</span>));
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">hover</span>.<span class="ident">info</span>.<span class="ident">is_exact</span>(), <span class="bool-val">true</span>);
     }
 }
