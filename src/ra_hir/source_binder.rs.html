@@ -540,13 +540,13 @@
     <span class="ident">module</span>: <span class="ident">Module</span>,
     <span class="ident">struct_def</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">StructDef</span>,
 ) <span class="op">-&gt;</span> <span class="ident">Struct</span> {
-    <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>);
+    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>).<span class="ident">file_id</span>;
     <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LocationCtx</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">file_id</span>);
     <span class="ident">Struct</span> { <span class="ident">id</span>: <span class="ident">ctx</span>.<span class="ident">to_def</span>(<span class="ident">struct_def</span>) }
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enum_from_module</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>, <span class="ident">module</span>: <span class="ident">Module</span>, <span class="ident">enum_def</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">EnumDef</span>) <span class="op">-&gt;</span> <span class="ident">Enum</span> {
-    <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>);
+    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>).<span class="ident">file_id</span>;
     <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LocationCtx</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">file_id</span>);
     <span class="ident">Enum</span> { <span class="ident">id</span>: <span class="ident">ctx</span>.<span class="ident">to_def</span>(<span class="ident">enum_def</span>) }
 }
@@ -556,7 +556,7 @@
     <span class="ident">module</span>: <span class="ident">Module</span>,
     <span class="ident">trait_def</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">TraitDef</span>,
 ) <span class="op">-&gt;</span> <span class="ident">Trait</span> {
-    <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>);
+    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>).<span class="ident">file_id</span>;
     <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">LocationCtx</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">module</span>, <span class="ident">file_id</span>);
     <span class="ident">Trait</span> { <span class="ident">id</span>: <span class="ident">ctx</span>.<span class="ident">to_def</span>(<span class="ident">trait_def</span>) }
 }

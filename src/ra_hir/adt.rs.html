@@ -235,11 +235,6 @@
 <span id="235">235</span>
 <span id="236">236</span>
 <span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module contains the implementation details of the HIR for ADTs, i.e.</span>
 <span class="doccomment">//! structs and enums (and unions).</span>
@@ -254,7 +249,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">Name</span>, <span class="ident">AsName</span>, <span class="ident">Struct</span>, <span class="ident">Union</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">Crate</span>, <span class="ident">AstDatabase</span>,
-    <span class="ident">HirDatabase</span>, <span class="ident">HirFileId</span>, <span class="ident">StructField</span>, <span class="ident">FieldSource</span>,
+    <span class="ident">HirDatabase</span>, <span class="ident">StructField</span>, <span class="ident">FieldSource</span>, <span class="ident">Source</span>, <span class="ident">HasSource</span>,
     <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>, <span class="ident">DefDatabase</span>,
 };
 
@@ -302,8 +297,8 @@
         <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">struct_</span>: <span class="ident">Struct</span>,
     ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">StructData</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="kw">_</span>, <span class="ident">struct_def</span>) <span class="op">=</span> <span class="ident">struct_</span>.<span class="ident">source</span>(<span class="ident">db</span>);
-        <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">StructData</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">struct_def</span>))
+        <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">struct_</span>.<span class="ident">source</span>(<span class="ident">db</span>);
+        <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">StructData</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">src</span>.<span class="ident">ast</span>))
     }
 }
 
@@ -315,15 +310,15 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">source_impl</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
-    ) <span class="op">-&gt;</span> (<span class="ident">HirFileId</span>, <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">EnumVariant</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">enum_def</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent</span>.<span class="ident">source</span>(<span class="ident">db</span>);
-        <span class="kw">let</span> <span class="ident">var</span> <span class="op">=</span> <span class="ident">variants</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">enum_def</span>)
+    ) <span class="op">-&gt;</span> <span class="ident">Source</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">EnumVariant</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent</span>.<span class="ident">source</span>(<span class="ident">db</span>);
+        <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">variants</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">src</span>.<span class="ident">ast</span>)
             .<span class="ident">zip</span>(<span class="ident">db</span>.<span class="ident">enum_data</span>(<span class="self">self</span>.<span class="ident">parent</span>).<span class="ident">variants</span>.<span class="ident">iter</span>())
             .<span class="ident">find</span>(<span class="op">|</span>(<span class="ident">_syntax</span>, (<span class="ident">id</span>, <span class="kw">_</span>))<span class="op">|</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">id</span>)
             .<span class="ident">unwrap</span>()
             .<span class="number">0</span>
             .<span class="ident">to_owned</span>();
-        (<span class="ident">file_id</span>, <span class="ident">var</span>)
+        <span class="ident">Source</span> { <span class="ident">file_id</span>: <span class="ident">src</span>.<span class="ident">file_id</span>, <span class="ident">ast</span> }
     }
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">variant_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VariantData</span><span class="op">&gt;</span> {
         <span class="ident">db</span>.<span class="ident">enum_data</span>(<span class="self">self</span>.<span class="ident">parent</span>).<span class="ident">variants</span>[<span class="self">self</span>.<span class="ident">id</span>].<span class="ident">variant_data</span>.<span class="ident">clone</span>()
@@ -338,9 +333,9 @@
 
 <span class="kw">impl</span> <span class="ident">EnumData</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">enum_data_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>), <span class="ident">e</span>: <span class="ident">Enum</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">EnumData</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">_file_id</span>, <span class="ident">enum_def</span>) <span class="op">=</span> <span class="ident">e</span>.<span class="ident">source</span>(<span class="ident">db</span>);
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">enum_def</span>.<span class="ident">name</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">as_name</span>());
-        <span class="kw">let</span> <span class="ident">variants</span> <span class="op">=</span> <span class="ident">variants</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">enum_def</span>)
+        <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">source</span>(<span class="ident">db</span>);
+        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">ast</span>.<span class="ident">name</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">as_name</span>());
+        <span class="kw">let</span> <span class="ident">variants</span> <span class="op">=</span> <span class="ident">variants</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">src</span>.<span class="ident">ast</span>)
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">var</span><span class="op">|</span> <span class="ident">EnumVariantData</span> {
                 <span class="ident">name</span>: <span class="ident">var</span>.<span class="ident">name</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">as_name</span>()),
                 <span class="ident">variant_data</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">VariantData</span>::<span class="ident">new</span>(<span class="ident">var</span>.<span class="ident">kind</span>())),
@@ -444,24 +439,19 @@
 }
 
 <span class="kw">impl</span> <span class="ident">StructField</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">source_impl</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
-    ) <span class="op">-&gt;</span> (<span class="ident">HirFileId</span>, <span class="ident">FieldSource</span>) {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">source_impl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>)) <span class="op">-&gt;</span> <span class="ident">Source</span><span class="op">&lt;</span><span class="ident">FieldSource</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">var_data</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent</span>.<span class="ident">variant_data</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">fields</span> <span class="op">=</span> <span class="ident">var_data</span>.<span class="ident">fields</span>().<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">ss</span>;
         <span class="kw">let</span> <span class="ident">es</span>;
         <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">struct_kind</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">parent</span> {
             <span class="ident">VariantDef</span>::<span class="ident">Struct</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="ident">s</span>.<span class="ident">source</span>(<span class="ident">db</span>);
-                <span class="ident">ss</span> <span class="op">=</span> <span class="ident">source</span>;
-                (<span class="ident">file_id</span>, <span class="ident">ss</span>.<span class="ident">kind</span>())
+                <span class="ident">ss</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">source</span>(<span class="ident">db</span>);
+                (<span class="ident">ss</span>.<span class="ident">file_id</span>, <span class="ident">ss</span>.<span class="ident">ast</span>.<span class="ident">kind</span>())
             }
             <span class="ident">VariantDef</span>::<span class="ident">EnumVariant</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="ident">e</span>.<span class="ident">source</span>(<span class="ident">db</span>);
-                <span class="ident">es</span> <span class="op">=</span> <span class="ident">source</span>;
-                (<span class="ident">file_id</span>, <span class="ident">es</span>.<span class="ident">kind</span>())
+                <span class="ident">es</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">source</span>(<span class="ident">db</span>);
+                (<span class="ident">es</span>.<span class="ident">file_id</span>, <span class="ident">es</span>.<span class="ident">ast</span>.<span class="ident">kind</span>())
             }
         };
 
@@ -474,13 +464,13 @@
             }
             <span class="ident">ast</span>::<span class="ident">StructKind</span>::<span class="ident">Unit</span> <span class="op">=&gt;</span> <span class="ident">Vec</span>::<span class="ident">new</span>(),
         };
-        <span class="kw">let</span> <span class="ident">field</span> <span class="op">=</span> <span class="ident">field_sources</span>
+        <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">field_sources</span>
             .<span class="ident">into_iter</span>()
             .<span class="ident">zip</span>(<span class="ident">fields</span>.<span class="ident">iter</span>())
             .<span class="ident">find</span>(<span class="op">|</span>(<span class="ident">_syntax</span>, (<span class="ident">id</span>, <span class="kw">_</span>))<span class="op">|</span> <span class="kw-2">*</span><span class="ident">id</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">id</span>)
             .<span class="ident">unwrap</span>()
             .<span class="number">0</span>;
-        (<span class="ident">file_id</span>, <span class="ident">field</span>)
+        <span class="ident">Source</span> { <span class="ident">file_id</span>, <span class="ident">ast</span> }
     }
 }
 </pre></div>

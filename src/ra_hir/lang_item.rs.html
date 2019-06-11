@@ -194,7 +194,7 @@
     ) {
         <span class="comment">// Look for impl targets</span>
         <span class="kw">let</span> (<span class="ident">impl_blocks</span>, <span class="ident">source_map</span>) <span class="op">=</span> <span class="ident">db</span>.<span class="ident">impls_in_module_with_source_map</span>(<span class="ident">module</span>.<span class="ident">clone</span>());
-        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>).<span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">source</span> <span class="op">=</span> <span class="ident">module</span>.<span class="ident">definition_source</span>(<span class="ident">db</span>).<span class="ident">ast</span>;
         <span class="kw">for</span> (<span class="ident">impl_id</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">impl_blocks</span>.<span class="ident">impls</span>.<span class="ident">iter</span>() {
             <span class="kw">let</span> <span class="ident">impl_block</span> <span class="op">=</span> <span class="ident">source_map</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="ident">impl_id</span>);
             <span class="kw">let</span> <span class="ident">lang_item_name</span> <span class="op">=</span> <span class="ident">impl_block</span>

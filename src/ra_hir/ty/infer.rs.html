@@ -2858,7 +2858,7 @@
     <span class="kw">use</span> <span class="kw">crate</span>::{
         <span class="ident">expr</span>::<span class="ident">ExprId</span>,
         <span class="ident">diagnostics</span>::{<span class="ident">DiagnosticSink</span>, <span class="ident">NoSuchField</span>},
-        <span class="ident">HirDatabase</span>, <span class="ident">Function</span>,
+        <span class="ident">HirDatabase</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>,
 };
 
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>)]</span>
@@ -2875,7 +2875,7 @@
         ) {
             <span class="kw">match</span> <span class="self">self</span> {
                 <span class="ident">InferenceDiagnostic</span>::<span class="ident">NoSuchField</span> { <span class="ident">expr</span>, <span class="ident">field</span> } <span class="op">=&gt;</span> {
-                    <span class="kw">let</span> (<span class="ident">file</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">owner</span>.<span class="ident">source</span>(<span class="ident">db</span>);
+                    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">owner</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">file_id</span>;
                     <span class="kw">let</span> <span class="ident">field</span> <span class="op">=</span> <span class="ident">owner</span>.<span class="ident">body_source_map</span>(<span class="ident">db</span>).<span class="ident">field_syntax</span>(<span class="kw-2">*</span><span class="ident">expr</span>, <span class="kw-2">*</span><span class="ident">field</span>);
                     <span class="ident">sink</span>.<span class="ident">push</span>(<span class="ident">NoSuchField</span> { <span class="ident">file</span>, <span class="ident">field</span> })
                 }

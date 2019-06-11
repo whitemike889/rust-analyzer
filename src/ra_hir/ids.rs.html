@@ -404,7 +404,7 @@
 <span class="kw">use</span> <span class="ident">mbe</span>::<span class="ident">MacroRules</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">Module</span>, <span class="ident">DefDatabase</span>, <span class="ident">AstId</span>, <span class="ident">FileAstId</span>, <span class="ident">AstDatabase</span>,
+    <span class="ident">Module</span>, <span class="ident">DefDatabase</span>, <span class="ident">AstId</span>, <span class="ident">FileAstId</span>, <span class="ident">AstDatabase</span>, <span class="ident">Source</span>,
 };
 
 <span class="doccomment">/// hir makes heavy use of ids: integer (u32) handlers to various things. You</span>
@@ -660,10 +660,10 @@
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="ident">ItemLoc</span> { <span class="ident">module</span>: <span class="ident">ctx</span>.<span class="ident">module</span>, <span class="ident">ast_id</span>: <span class="ident">ast_id</span>.<span class="ident">with_file_id</span>(<span class="ident">ctx</span>.<span class="ident">file_id</span>) };
         <span class="self">Self</span>::<span class="ident">intern</span>(<span class="ident">ctx</span>.<span class="ident">db</span>, <span class="ident">loc</span>)
     }
-    <span class="kw">fn</span> <span class="ident">source</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">AstDatabase</span> <span class="op">+</span> <span class="ident">DefDatabase</span>)) <span class="op">-&gt;</span> (<span class="ident">HirFileId</span>, <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>) {
+    <span class="kw">fn</span> <span class="ident">source</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">AstDatabase</span> <span class="op">+</span> <span class="ident">DefDatabase</span>)) <span class="op">-&gt;</span> <span class="ident">Source</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lookup_intern</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
-        (<span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">file_id</span>(), <span class="ident">ast</span>)
+        <span class="ident">Source</span> { <span class="ident">file_id</span>: <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">file_id</span>(), <span class="ident">ast</span> }
     }
     <span class="kw">fn</span> <span class="ident">module</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Module</span> {
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">lookup_intern</span>(<span class="ident">db</span>);

@@ -563,10 +563,10 @@
     <span class="kw">let</span> <span class="ident">analyzer</span> <span class="op">=</span> <span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">file_id</span>, <span class="ident">name_ref</span>.<span class="ident">syntax</span>(), <span class="prelude-val">None</span>);
 
     <span class="kw">match</span> <span class="ident">classify_name_ref</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">analyzer</span>, <span class="ident">name_ref</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">Method</span>(<span class="ident">func</span>)) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Exact</span>(<span class="ident">NavigationTarget</span>::<span class="ident">from_function</span>(<span class="ident">db</span>, <span class="ident">func</span>)),
         <span class="prelude-val">Some</span>(<span class="ident">Macro</span>(<span class="ident">mac</span>)) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Exact</span>(<span class="ident">NavigationTarget</span>::<span class="ident">from_macro_def</span>(<span class="ident">db</span>, <span class="ident">mac</span>)),
         <span class="prelude-val">Some</span>(<span class="ident">FieldAccess</span>(<span class="ident">field</span>)) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Exact</span>(<span class="ident">NavigationTarget</span>::<span class="ident">from_field</span>(<span class="ident">db</span>, <span class="ident">field</span>)),
         <span class="prelude-val">Some</span>(<span class="ident">AssocItem</span>(<span class="ident">assoc</span>)) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Exact</span>(<span class="ident">NavigationTarget</span>::<span class="ident">from_impl_item</span>(<span class="ident">db</span>, <span class="ident">assoc</span>)),
+        <span class="prelude-val">Some</span>(<span class="ident">Method</span>(<span class="ident">func</span>)) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Exact</span>(<span class="ident">NavigationTarget</span>::<span class="ident">from_def_source</span>(<span class="ident">db</span>, <span class="ident">func</span>)),
         <span class="prelude-val">Some</span>(<span class="ident">Def</span>(<span class="ident">def</span>)) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">NavigationTarget</span>::<span class="ident">from_def</span>(<span class="ident">db</span>, <span class="ident">def</span>) {
             <span class="prelude-val">Some</span>(<span class="ident">nav</span>) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Exact</span>(<span class="ident">nav</span>),
             <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">Approximate</span>(<span class="macro">vec</span><span class="macro">!</span>[]),
@@ -757,12 +757,12 @@
             //- /foo/lib.rs
             #[macro_export]
             macro_rules! foo {
-                () =&gt; {             
+                () =&gt; {
                     {}
                 };
-            }            
+            }
             &quot;</span>,
-            <span class="string">&quot;foo MACRO_CALL FileId(2) [0; 79) [29; 32)&quot;</span>,
+            <span class="string">&quot;foo MACRO_CALL FileId(2) [0; 66) [29; 32)&quot;</span>,
         );
     }
 
