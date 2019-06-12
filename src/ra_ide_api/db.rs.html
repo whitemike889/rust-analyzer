@@ -81,6 +81,10 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">sync</span>::<span class="ident">Arc</span>,
@@ -117,8 +121,12 @@
         <span class="ident">Canceled</span>::<span class="ident">throw</span>()
     }
     <span class="kw">fn</span> <span class="ident">salsa_event</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">event</span>: <span class="kw">impl</span> <span class="ident">Fn</span>() <span class="op">-&gt;</span> <span class="ident">salsa</span>::<span class="ident">Event</span><span class="op">&lt;</span><span class="ident">RootDatabase</span><span class="op">&gt;</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">salsa</span>::<span class="ident">EventKind</span>::<span class="ident">DidValidateMemoizedValue</span> { .. } <span class="op">=</span> <span class="ident">event</span>().<span class="ident">kind</span> {
-            <span class="self">self</span>.<span class="ident">check_canceled</span>();
+        <span class="kw">match</span> <span class="ident">event</span>().<span class="ident">kind</span> {
+            <span class="ident">salsa</span>::<span class="ident">EventKind</span>::<span class="ident">DidValidateMemoizedValue</span> { .. }
+            <span class="op">|</span> <span class="ident">salsa</span>::<span class="ident">EventKind</span>::<span class="ident">WillExecute</span> { .. } <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">check_canceled</span>();
+            }
+            <span class="kw">_</span> <span class="op">=&gt;</span> (),
         }
     }
 }

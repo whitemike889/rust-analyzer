@@ -1439,7 +1439,6 @@
 <span id="1439">1439</span>
 <span id="1440">1440</span>
 <span id="1441">1441</span>
-<span id="1442">1442</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Type inference, i.e. the process of walking through the code and determining</span>
 <span class="doccomment">//! the type of each expression and pattern.</span>
@@ -1497,7 +1496,6 @@
 <span class="doccomment">/// The entry point of type inference.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">infer_query</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>, <span class="ident">def</span>: <span class="ident">DefWithBody</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">InferenceResult</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;infer_query&quot;</span>);
-    <span class="ident">db</span>.<span class="ident">check_canceled</span>();
     <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="ident">def</span>.<span class="ident">body</span>(<span class="ident">db</span>);
     <span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">def</span>.<span class="ident">resolver</span>(<span class="ident">db</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">InferenceContext</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">body</span>, <span class="ident">resolver</span>);
