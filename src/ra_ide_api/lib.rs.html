@@ -511,6 +511,15 @@
 <span id="511">511</span>
 <span id="512">512</span>
 <span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! ra_ide_api crate provides &quot;ide-centric&quot; APIs for the rust-analyzer. That is,</span>
 <span class="doccomment">//! it generally operates with files and text ranges, and returns results as</span>
@@ -756,12 +765,21 @@
 }
 
 <span class="doccomment">/// `AnalysisHost` stores the current state of the world.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AnalysisHost</span> {
     <span class="ident">db</span>: <span class="ident">db</span>::<span class="ident">RootDatabase</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">AnalysisHost</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
+        <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>)
+    }
+}
+
 <span class="kw">impl</span> <span class="ident">AnalysisHost</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lru_capcity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
+        <span class="ident">AnalysisHost</span> { <span class="ident">db</span>: <span class="ident">db</span>::<span class="ident">RootDatabase</span>::<span class="ident">new</span>(<span class="ident">lru_capcity</span>) }
+    }
     <span class="doccomment">/// Returns a snapshot of the current state, which you can query for</span>
     <span class="doccomment">/// semantic information.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">analysis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Analysis</span> {

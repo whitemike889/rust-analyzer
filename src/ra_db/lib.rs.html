@@ -103,6 +103,8 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! ra_db defines basic database traits. The concrete DB is defined by ra_ide_api.</span>
 <span class="kw">mod</span> <span class="ident">cancellation</span>;
@@ -170,6 +172,8 @@
     <span class="kw">pub</span> <span class="ident">file_id</span>: <span class="ident">FileId</span>,
     <span class="kw">pub</span> <span class="ident">range</span>: <span class="ident">TextRange</span>,
 }
+
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_LRU_CAP</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">128</span>;
 
 <span class="doccomment">/// Database which stores all significant input facts: source code and project</span>
 <span class="doccomment">/// model. Everything else in rust-analyzer is derived from these queries.</span>

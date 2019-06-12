@@ -678,7 +678,7 @@
         <span class="ident">loaded_workspaces</span>
     };
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(<span class="ident">ws_roots</span>, <span class="ident">workspaces</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(<span class="ident">ws_roots</span>, <span class="ident">workspaces</span>, <span class="ident">options</span>.<span class="ident">lru_capacity</span>);
 
     <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">THREADPOOL_SIZE</span>);
     <span class="kw">let</span> (<span class="ident">task_sender</span>, <span class="ident">task_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>::<span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>();

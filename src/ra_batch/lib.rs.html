@@ -136,6 +136,12 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">vfs_filter</span>;
 
@@ -146,7 +152,7 @@
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
 <span class="kw">use</span> <span class="ident">ra_db</span>::{
-    <span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">SourceRoot</span>, <span class="ident">SourceRootId</span>, <span class="ident">SourceDatabase</span>, <span class="ident">salsa</span>,
+    <span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">SourceRoot</span>, <span class="ident">SourceRootId</span>, <span class="ident">SourceDatabase</span>, <span class="ident">salsa</span>::{<span class="self">self</span>, <span class="ident">Database</span>},
 };
 <span class="kw">use</span> <span class="ident">ra_hir</span>::<span class="ident">db</span>;
 <span class="kw">use</span> <span class="ident">ra_project_model</span>::<span class="ident">ProjectWorkspace</span>;
@@ -182,6 +188,12 @@
 <span class="kw">impl</span> <span class="ident">BatchDatabase</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span>(<span class="ident">crate_graph</span>: <span class="ident">CrateGraph</span>, <span class="ident">vfs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vfs</span>) <span class="op">-&gt;</span> <span class="ident">BatchDatabase</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">BatchDatabase</span> { <span class="ident">runtime</span>: <span class="ident">salsa</span>::<span class="ident">Runtime</span>::<span class="ident">default</span>() };
+        <span class="kw">let</span> <span class="ident">lru_cap</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">var</span>(<span class="string">&quot;RA_LRU_CAP&quot;</span>)
+            .<span class="ident">ok</span>()
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>().<span class="ident">ok</span>())
+            .<span class="ident">unwrap_or</span>(<span class="ident">ra_db</span>::<span class="ident">DEFAULT_LRU_CAP</span>);
+        <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">ra_db</span>::<span class="ident">ParseQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_cap</span>);
+        <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">ra_hir</span>::<span class="ident">db</span>::<span class="ident">ParseMacroQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_cap</span>);
         <span class="ident">db</span>.<span class="ident">set_crate_graph</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">crate_graph</span>));
 
         <span class="comment">// wait until Vfs has loaded all roots</span>
