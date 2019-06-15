@@ -175,14 +175,12 @@
 <span id="175">175</span>
 <span id="176">176</span>
 <span id="177">177</span>
-<span id="178">178</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 
 <span class="kw">use</span> <span class="ident">cargo_metadata</span>::{<span class="ident">MetadataCommand</span>, <span class="ident">CargoOpt</span>};
 <span class="kw">use</span> <span class="ident">ra_arena</span>::{<span class="ident">Arena</span>, <span class="ident">RawId</span>, <span class="ident">impl_arena_id</span>};
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
-<span class="kw">use</span> <span class="ident">failure</span>::<span class="ident">format_err</span>;
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">Edition</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="prelude-ty">Result</span>;
@@ -306,7 +304,7 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parent</span>) <span class="op">=</span> <span class="ident">cargo_toml</span>.<span class="ident">parent</span>() {
             <span class="ident">meta</span>.<span class="ident">current_dir</span>(<span class="ident">parent</span>);
         }
-        <span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">meta</span>.<span class="ident">exec</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format_err</span><span class="macro">!</span>(<span class="string">&quot;cargo metadata failed: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">meta</span> <span class="op">=</span> <span class="ident">meta</span>.<span class="ident">exec</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;cargo metadata failed: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pkg_by_id</span> <span class="op">=</span> <span class="ident">FxHashMap</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">packages</span> <span class="op">=</span> <span class="ident">Arena</span>::<span class="ident">default</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">targets</span> <span class="op">=</span> <span class="ident">Arena</span>::<span class="ident">default</span>();

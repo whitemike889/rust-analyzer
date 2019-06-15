@@ -71,7 +71,7 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">analysis_stats</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io</span>::<span class="ident">Read</span>, <span class="ident">error</span>::<span class="ident">Error</span>};
 
 <span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">App</span>, <span class="ident">Arg</span>, <span class="ident">SubCommand</span>};
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">file_structure</span>, <span class="ident">Analysis</span>};
@@ -79,7 +79,7 @@
 <span class="kw">use</span> <span class="ident">flexi_logger</span>::<span class="ident">Logger</span>;
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 
-<span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> ::<span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">failure</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+<span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;&gt;</span>;
 
 <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="ident">Logger</span>::<span class="ident">with_env</span>().<span class="ident">start</span>()<span class="question-mark">?</span>;

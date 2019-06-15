@@ -214,7 +214,6 @@
 <span id="214">214</span>
 <span id="215">215</span>
 <span id="216">216</span>
-<span id="217">217</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -229,7 +228,6 @@
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>};
 <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 <span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">RwLock</span>;
-<span class="kw">use</span> <span class="ident">failure</span>::{<span class="ident">Error</span>, <span class="ident">format_err</span>};
 <span class="kw">use</span> <span class="ident">gen_lsp_server</span>::<span class="ident">ErrorCode</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -387,13 +385,13 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">uri_to_file_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">uri</span>: <span class="kw-2">&amp;</span><span class="ident">Url</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">uri</span>.<span class="ident">to_file_path</span>().<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> <span class="macro">format_err</span><span class="macro">!</span>(<span class="string">&quot;invalid uri: {}&quot;</span>, <span class="ident">uri</span>))<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">uri</span>.<span class="ident">to_file_path</span>().<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;invalid uri: {}&quot;</span>, <span class="ident">uri</span>))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vfs</span>.<span class="ident">read</span>().<span class="ident">path2file</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>).<span class="ident">ok_or_else</span>(<span class="op">||</span> {
             <span class="comment">// Show warning as this file is outside current workspace</span>
-            <span class="ident">Error</span>::<span class="ident">from</span>(<span class="ident">LspError</span> {
+            <span class="ident">LspError</span> {
                 <span class="ident">code</span>: <span class="ident">ErrorCode</span>::<span class="ident">InvalidRequest</span> <span class="kw">as</span> <span class="ident">i32</span>,
                 <span class="ident">message</span>: <span class="string">&quot;Rust file outside current workspace is not supported yet.&quot;</span>.<span class="ident">to_string</span>(),
-            })
+            }
         })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">FileId</span>(<span class="ident">file</span>.<span class="number">0</span>))
     }
@@ -401,7 +399,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_id_to_uri</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Url</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vfs</span>.<span class="ident">read</span>().<span class="ident">file2path</span>(<span class="ident">VfsFile</span>(<span class="ident">id</span>.<span class="number">0</span>));
         <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url</span>::<span class="ident">from_file_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format_err</span><span class="macro">!</span>(<span class="string">&quot;can&#39;t convert path to url: {}&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>()))<span class="question-mark">?</span>;
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;can&#39;t convert path to url: {}&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>()))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">url</span>)
     }
 
@@ -409,7 +407,7 @@
         <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vfs</span>.<span class="ident">read</span>().<span class="ident">root2path</span>(<span class="ident">VfsRoot</span>(<span class="ident">root</span>.<span class="number">0</span>));
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">to_path</span>(<span class="ident">base</span>);
         <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url</span>::<span class="ident">from_file_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format_err</span><span class="macro">!</span>(<span class="string">&quot;can&#39;t convert path to url: {}&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>()))<span class="question-mark">?</span>;
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;can&#39;t convert path to url: {}&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>()))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">url</span>)
     }
 
