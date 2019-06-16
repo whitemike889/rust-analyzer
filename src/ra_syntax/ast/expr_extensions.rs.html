@@ -273,6 +273,17 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various extension methods to ast Expr Nodes, which are hard to code-generate.</span>
 
@@ -505,8 +516,12 @@
 
 <span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">Literal</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxToken</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">first_child_or_token</span>().<span class="ident">unwrap</span>() {
-            <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">token</span>) <span class="op">=&gt;</span> <span class="ident">token</span>,
+        <span class="kw">let</span> <span class="ident">elem</span> <span class="op">=</span> <span class="self">self</span>
+            .<span class="ident">syntax</span>()
+            .<span class="ident">children_with_tokens</span>()
+            .<span class="ident">find</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">kind</span>() <span class="op">!=</span> <span class="ident">ATTR</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">e</span>.<span class="ident">kind</span>().<span class="ident">is_trivia</span>());
+        <span class="kw">match</span> <span class="ident">elem</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">token</span>)) <span class="op">=&gt;</span> <span class="ident">token</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
@@ -542,6 +557,13 @@
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
+}
+
+<span class="attribute">#[<span class="ident">test</span>]</span>
+<span class="kw">fn</span> <span class="ident">test_literal_with_attr</span>() {
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">SourceFile</span>::<span class="ident">parse</span>(<span class="string">r#&quot;const _: &amp;str = { #[attr] &quot;Hello&quot; };&quot;#</span>);
+    <span class="kw">let</span> <span class="ident">lit</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>.<span class="ident">syntax</span>().<span class="ident">descendants</span>().<span class="ident">find_map</span>(<span class="ident">ast</span>::<span class="ident">Literal</span>::<span class="ident">cast</span>).<span class="ident">unwrap</span>();
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">lit</span>.<span class="ident">token</span>().<span class="ident">text</span>(), <span class="string">r#&quot;&quot;Hello&quot;&quot;#</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">NamedField</span> {
