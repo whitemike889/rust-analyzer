@@ -300,6 +300,7 @@
 <span id="300">300</span>
 <span id="301">301</span>
 <span id="302">302</span>
+<span id="303">303</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">cargo_workspace</span>;
 <span class="kw">mod</span> <span class="ident">json_project</span>;
@@ -340,6 +341,7 @@
 <span class="doccomment">/// `ProjectRoot` describes a workspace root folder.</span>
 <span class="doccomment">/// Which may be an external dependency, or a member of</span>
 <span class="doccomment">/// the current workspace.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProjectRoot</span> {
     <span class="doccomment">/// Path to the root folder</span>
     <span class="ident">path</span>: <span class="ident">PathBuf</span>,

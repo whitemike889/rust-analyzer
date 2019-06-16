@@ -278,6 +278,8 @@
 <span id="278">278</span>
 <span id="279">279</span>
 <span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">TextUnit</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
@@ -291,7 +293,9 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LineCol</span> {
+    <span class="doccomment">/// Zero-based</span>
     <span class="kw">pub</span> <span class="ident">line</span>: <span class="ident">u32</span>,
+    <span class="doccomment">/// Zero-based</span>
     <span class="kw">pub</span> <span class="ident">col_utf16</span>: <span class="ident">u32</span>,
 }
 
