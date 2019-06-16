@@ -581,6 +581,28 @@
 <span id="581">581</span>
 <span id="582">582</span>
 <span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! The type system. We currently use this to infer types for completion, hover</span>
 <span class="doccomment">//! information and various assists.</span>
@@ -600,12 +622,14 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Deref</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">mem</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Name</span>, <span class="ident">AdtDef</span>, <span class="ident">type_ref</span>::<span class="ident">Mutability</span>, <span class="ident">db</span>::<span class="ident">HirDatabase</span>, <span class="ident">Trait</span>, <span class="ident">GenericParams</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Name</span>, <span class="ident">AdtDef</span>, <span class="ident">type_ref</span>::<span class="ident">Mutability</span>, <span class="ident">db</span>::<span class="ident">HirDatabase</span>, <span class="ident">Trait</span>, <span class="ident">GenericParams</span>, <span class="ident">TypeAlias</span>};
 <span class="kw">use</span> <span class="ident">display</span>::{<span class="ident">HirDisplay</span>, <span class="ident">HirFormatter</span>};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">lower</span>::{<span class="ident">TypableDef</span>, <span class="ident">type_for_def</span>, <span class="ident">type_for_field</span>, <span class="ident">callable_item_sig</span>, <span class="ident">generic_predicates</span>, <span class="ident">generic_defaults</span>};
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">infer</span>::{<span class="ident">infer_query</span>, <span class="ident">InferenceResult</span>, <span class="ident">InferTy</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">lower</span>::<span class="ident">CallableDef</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">autoderef</span>::<span class="ident">autoderef</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">traits</span>::<span class="ident">ProjectionPredicate</span>;
 
 <span class="doccomment">/// A type constructor or type name: this might be something like the primitive</span>
 <span class="doccomment">/// type `bool`, a struct like `Vec`, or things like function pointers or</span>
@@ -681,6 +705,15 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ApplicationTy</span> {
     <span class="kw">pub</span> <span class="ident">ctor</span>: <span class="ident">TypeCtor</span>,
+    <span class="kw">pub</span> <span class="ident">parameters</span>: <span class="ident">Substs</span>,
+}
+
+<span class="doccomment">/// A &quot;projection&quot; type corresponds to an (unnormalized)</span>
+<span class="doccomment">/// projection like `&lt;P0 as Trait&lt;P1..Pn&gt;&gt;::Foo`. Note that the</span>
+<span class="doccomment">/// trait and all its parameters are fully known.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProjectionTy</span> {
+    <span class="kw">pub</span> <span class="ident">associated_ty</span>: <span class="ident">TypeAlias</span>,
     <span class="kw">pub</span> <span class="ident">parameters</span>: <span class="ident">Substs</span>,
 }
 
@@ -800,8 +833,8 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Debug</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TraitRef</span> {
     <span class="doccomment">/// FIXME name?</span>
-    <span class="ident">trait_</span>: <span class="ident">Trait</span>,
-    <span class="ident">substs</span>: <span class="ident">Substs</span>,
+    <span class="kw">pub</span> <span class="ident">trait_</span>: <span class="ident">Trait</span>,
+    <span class="kw">pub</span> <span class="ident">substs</span>: <span class="ident">Substs</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">TraitRef</span> {
@@ -1047,6 +1080,17 @@
             <span class="ident">Ty</span>::<span class="ident">Apply</span>(<span class="ident">ApplicationTy</span> { <span class="ident">parameters</span>, .. }) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">parameters</span>.<span class="ident">clone</span>()),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
         }
+    }
+
+    <span class="doccomment">/// Shifts up `Ty::Bound` vars by `n`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shift_bound_vars</span>(<span class="self">self</span>, <span class="ident">n</span>: <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Ty</span> {
+        <span class="self">self</span>.<span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="op">|</span><span class="ident">ty</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">ty</span> {
+            <span class="ident">Ty</span>::<span class="ident">Bound</span>(<span class="ident">idx</span>) <span class="op">=&gt;</span> {
+                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">idx</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">&gt;=</span> <span class="op">-</span><span class="ident">n</span>);
+                <span class="ident">Ty</span>::<span class="ident">Bound</span>((<span class="ident">idx</span> <span class="kw">as</span> <span class="ident">i32</span> <span class="op">+</span> <span class="ident">n</span>) <span class="kw">as</span> <span class="ident">u32</span>)
+            }
+            <span class="ident">ty</span> <span class="op">=&gt;</span> <span class="ident">ty</span>,
+        })
     }
 }
 

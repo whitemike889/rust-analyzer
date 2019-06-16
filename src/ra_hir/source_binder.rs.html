@@ -440,6 +440,17 @@
 <span id="440">440</span>
 <span id="441">441</span>
 <span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Lookup hir elements using positions in the source code. This is a lossy</span>
 <span class="doccomment">/// transformation: in general, a single source might correspond to several</span>
@@ -810,6 +821,17 @@
             <span class="ident">name</span>,
             <span class="ident">callback</span>,
         )
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">autoderef</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">impl</span> <span class="ident">HirDatabase</span>,
+        <span class="ident">ty</span>: <span class="ident">Ty</span>,
+    ) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Ty</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+        <span class="comment">// There should be no inference vars in types passed here</span>
+        <span class="comment">// FIXME check that?</span>
+        <span class="kw">let</span> <span class="ident">canonical</span> <span class="op">=</span> <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Canonical</span> { <span class="ident">value</span>: <span class="ident">ty</span>, <span class="ident">num_vars</span>: <span class="number">0</span> };
+        <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">autoderef</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">resolver</span>, <span class="ident">canonical</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">canonical</span><span class="op">|</span> <span class="ident">canonical</span>.<span class="ident">value</span>)
     }
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

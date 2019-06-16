@@ -191,6 +191,12 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -210,9 +216,8 @@
     <span class="ident">adt</span>::{<span class="ident">StructData</span>, <span class="ident">EnumData</span>},
     <span class="ident">impl_block</span>::{<span class="ident">ModuleImplBlocks</span>, <span class="ident">ImplSourceMap</span>, <span class="ident">ImplBlock</span>},
     <span class="ident">generics</span>::{<span class="ident">GenericParams</span>, <span class="ident">GenericDef</span>},
-    <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>,
     <span class="ident">traits</span>::<span class="ident">TraitData</span>,
-    <span class="ident">lang_item</span>::{<span class="ident">LangItems</span>, <span class="ident">LangItemTarget</span>},
+    <span class="ident">lang_item</span>::{<span class="ident">LangItems</span>, <span class="ident">LangItemTarget</span>}, <span class="ident">type_alias</span>::<span class="ident">TypeAliasData</span>,
 };
 
 <span class="comment">// This database has access to source code, so queries here are not really</span>
@@ -307,8 +312,8 @@
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">FnSignature</span>::<span class="ident">fn_signature_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">fn_signature</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">Function</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnSignature</span><span class="op">&gt;</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">type_alias</span>::<span class="ident">type_alias_ref_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">type_alias_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">TypeAlias</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TypeRef</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">type_alias</span>::<span class="ident">type_alias_data_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">type_alias_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">TypeAlias</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TypeAliasData</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ConstSignature</span>::<span class="ident">const_signature_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">const_signature</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">konst</span>: <span class="ident">Const</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span>;
@@ -378,6 +383,13 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">krate</span>: <span class="ident">Crate</span>,
         <span class="ident">goal</span>: <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Canonical</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">TraitRef</span><span class="op">&gt;</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">Solution</span><span class="op">&gt;</span>;
+
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">normalize_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">normalize</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">krate</span>: <span class="ident">Crate</span>,
+        <span class="ident">goal</span>: <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Canonical</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">ProjectionPredicate</span><span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">Solution</span><span class="op">&gt;</span>;
 }
 

@@ -179,6 +179,11 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 
@@ -226,6 +231,11 @@
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">tuple_field_name</span>(<span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Name</span> {
         <span class="ident">Name</span>::<span class="ident">new</span>(<span class="ident">idx</span>.<span class="ident">to_string</span>().<span class="ident">into</span>())
+    }
+
+    <span class="comment">// Needed for Deref</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">target</span>() <span class="op">-&gt;</span> <span class="ident">Name</span> {
+        <span class="ident">Name</span>::<span class="ident">new</span>(<span class="string">&quot;Target&quot;</span>.<span class="ident">into</span>())
     }
 
     <span class="comment">// There&#39;s should be no way to extract a string out of `Name`: `Name` in the</span>
