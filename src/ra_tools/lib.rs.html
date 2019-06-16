@@ -294,15 +294,15 @@
     <span class="ident">collections</span>::<span class="ident">HashMap</span>,
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
     <span class="ident">process</span>::{<span class="ident">Command</span>, <span class="ident">Output</span>, <span class="ident">Stdio</span>},
-    <span class="ident">io</span>::{<span class="ident">Error</span>, <span class="ident">ErrorKind</span>}
+    <span class="ident">io</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">IoError</span>, <span class="ident">ErrorKind</span>},
+    <span class="ident">error</span>::<span class="ident">Error</span>
 };
 
-<span class="kw">use</span> <span class="ident">failure</span>::<span class="ident">bail</span>;
 <span class="kw">use</span> <span class="ident">itertools</span>::<span class="ident">Itertools</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">teraron</span>::{<span class="ident">Mode</span>, <span class="ident">Overwrite</span>, <span class="ident">Verify</span>};
 
-<span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">failure</span>::<span class="ident">Error</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Error</span><span class="op">&gt;&gt;</span>;
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">GRAMMAR</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;crates/ra_syntax/src/grammar.ron&quot;</span>;
 <span class="kw">const</span> <span class="ident">GRAMMAR_DIR</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;crates/ra_parser/src/grammar&quot;</span>;
@@ -419,7 +419,7 @@
             <span class="ident">fs</span>::<span class="ident">copy</span>(<span class="string">&quot;./target/debug/pre-commit&quot;</span>, <span class="ident">result_path</span>)<span class="question-mark">?</span>;
         }
     } <span class="kw">else</span> {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error</span>::<span class="ident">new</span>(<span class="ident">ErrorKind</span>::<span class="ident">AlreadyExists</span>, <span class="string">&quot;Git hook already created&quot;</span>).<span class="ident">into</span>());
+        <span class="prelude-val">Err</span>(<span class="ident">IoError</span>::<span class="ident">new</span>(<span class="ident">ErrorKind</span>::<span class="ident">AlreadyExists</span>, <span class="string">&quot;Git hook already created&quot;</span>))<span class="question-mark">?</span>;
     }
     <span class="prelude-val">Ok</span>(())
 }
@@ -515,7 +515,7 @@
     <span class="ident">f</span>(<span class="ident">cmd</span>.<span class="ident">args</span>(<span class="ident">args</span>).<span class="ident">current_dir</span>(<span class="ident">proj_dir</span>).<span class="ident">stderr</span>(<span class="ident">Stdio</span>::<span class="ident">inherit</span>()));
     <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">cmd</span>.<span class="ident">output</span>()<span class="question-mark">?</span>;
     <span class="kw">if</span> <span class="op">!</span><span class="ident">output</span>.<span class="ident">status</span>.<span class="ident">success</span>() {
-        <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;`{}` exited with {}&quot;</span>, <span class="ident">cmdline</span>, <span class="ident">output</span>.<span class="ident">status</span>);
+        <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;`{}` exited with {}&quot;</span>, <span class="ident">cmdline</span>, <span class="ident">output</span>.<span class="ident">status</span>))<span class="question-mark">?</span>;
     }
     <span class="prelude-val">Ok</span>(<span class="ident">output</span>)
 }
@@ -547,11 +547,11 @@
         <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">test</span>) <span class="kw">in</span> <span class="ident">collect_tests</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>) {
             <span class="kw">if</span> <span class="ident">test</span>.<span class="ident">ok</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old_test</span>) <span class="op">=</span> <span class="ident">res</span>.<span class="ident">ok</span>.<span class="ident">insert</span>(<span class="ident">test</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">test</span>) {
-                    <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Duplicate test: {}&quot;</span>, <span class="ident">old_test</span>.<span class="ident">name</span>)
+                    <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Duplicate test: {}&quot;</span>, <span class="ident">old_test</span>.<span class="ident">name</span>))<span class="question-mark">?</span>
                 }
             } <span class="kw">else</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old_test</span>) <span class="op">=</span> <span class="ident">res</span>.<span class="ident">err</span>.<span class="ident">insert</span>(<span class="ident">test</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">test</span>) {
-                    <span class="macro">bail</span><span class="macro">!</span>(<span class="string">&quot;Duplicate test: {}&quot;</span>, <span class="ident">old_test</span>.<span class="ident">name</span>)
+                    <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Duplicate test: {}&quot;</span>, <span class="ident">old_test</span>.<span class="ident">name</span>))<span class="question-mark">?</span>
                 }
             }
         }
