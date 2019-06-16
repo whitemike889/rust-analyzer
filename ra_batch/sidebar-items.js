@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BatchDatabase",""]]});
+initSidebarItems({"fn":[["load",""],["load_cargo",""]]});
