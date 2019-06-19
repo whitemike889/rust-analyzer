@@ -475,7 +475,7 @@
 
     <span class="comment">// If we have a calling expression let&#39;s find which argument we are on</span>
     <span class="kw">let</span> <span class="ident">num_params</span> <span class="op">=</span> <span class="ident">call_info</span>.<span class="ident">parameters</span>().<span class="ident">len</span>();
-    <span class="kw">let</span> <span class="ident">has_self</span> <span class="op">=</span> <span class="ident">function</span>.<span class="ident">signature</span>(<span class="ident">db</span>).<span class="ident">has_self_param</span>();
+    <span class="kw">let</span> <span class="ident">has_self</span> <span class="op">=</span> <span class="ident">function</span>.<span class="ident">data</span>(<span class="ident">db</span>).<span class="ident">has_self_param</span>();
 
     <span class="kw">if</span> <span class="ident">num_params</span> <span class="op">==</span> <span class="number">1</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="ident">has_self</span> {

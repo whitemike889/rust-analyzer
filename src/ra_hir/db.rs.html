@@ -206,9 +206,9 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">HirFileId</span>, <span class="ident">MacroDefId</span>, <span class="ident">AstIdMap</span>, <span class="ident">ErasedFileAstId</span>, <span class="ident">Crate</span>, <span class="ident">Module</span>, <span class="ident">MacroCallLoc</span>,
-    <span class="ident">Function</span>, <span class="ident">FnSignature</span>, <span class="ident">ExprScopes</span>, <span class="ident">TypeAlias</span>,
+    <span class="ident">Function</span>, <span class="ident">FnData</span>, <span class="ident">ExprScopes</span>, <span class="ident">TypeAlias</span>,
     <span class="ident">Struct</span>, <span class="ident">Enum</span>, <span class="ident">StructField</span>,
-    <span class="ident">Const</span>, <span class="ident">ConstSignature</span>, <span class="ident">Static</span>,
+    <span class="ident">Const</span>, <span class="ident">ConstData</span>, <span class="ident">Static</span>,
     <span class="ident">DefWithBody</span>, <span class="ident">Trait</span>,
     <span class="ident">ids</span>,
     <span class="ident">nameres</span>::{<span class="ident">Namespace</span>, <span class="ident">ImportSourceMap</span>, <span class="ident">RawItems</span>, <span class="ident">CrateDefMap</span>},
@@ -309,17 +309,17 @@
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">generics</span>::<span class="ident">GenericParams</span>::<span class="ident">generic_params_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">generic_params</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">def</span>: <span class="ident">GenericDef</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">GenericParams</span><span class="op">&gt;</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">FnSignature</span>::<span class="ident">fn_signature_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">fn_signature</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">Function</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnSignature</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">FnData</span>::<span class="ident">fn_data_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">fn_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">func</span>: <span class="ident">Function</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnData</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">type_alias</span>::<span class="ident">type_alias_data_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">type_alias_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">typ</span>: <span class="ident">TypeAlias</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">TypeAliasData</span><span class="op">&gt;</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ConstSignature</span>::<span class="ident">const_signature_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">const_signature</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">konst</span>: <span class="ident">Const</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ConstData</span>::<span class="ident">const_data_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">const_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">konst</span>: <span class="ident">Const</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ConstSignature</span>::<span class="ident">static_signature_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">static_signature</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">konst</span>: <span class="ident">Static</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ConstData</span>::<span class="ident">static_data_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">static_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">konst</span>: <span class="ident">Static</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">lang_item</span>::<span class="ident">LangItems</span>::<span class="ident">lang_items_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">lang_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">krate</span>: <span class="ident">Crate</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">LangItems</span><span class="op">&gt;</span>;

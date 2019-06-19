@@ -884,8 +884,6 @@
 <span id="884">884</span>
 <span id="885">885</span>
 <span id="886">886</span>
-<span id="887">887</span>
-<span id="888">888</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">src</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">docs</span>;
@@ -1408,9 +1406,8 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">id</span>: <span class="ident">FunctionId</span>,
 }
 
-<span class="doccomment">/// The declared signature of a function.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FnSignature</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FnData</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">name</span>: <span class="ident">Name</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">params</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TypeRef</span><span class="op">&gt;</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">ret_type</span>: <span class="ident">TypeRef</span>,
@@ -1419,11 +1416,11 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">has_self_param</span>: <span class="ident">bool</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">FnSignature</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">fn_signature_query</span>(
+<span class="kw">impl</span> <span class="ident">FnData</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">fn_data_query</span>(
         <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">func</span>: <span class="ident">Function</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnSignature</span><span class="op">&gt;</span> {
+    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnData</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">source</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">src</span>.<span class="ident">ast</span>.<span class="ident">name</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">as_name</span>()).<span class="ident">unwrap_or_else</span>(<span class="ident">Name</span>::<span class="ident">missing</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
@@ -1458,7 +1455,7 @@
             <span class="ident">TypeRef</span>::<span class="ident">unit</span>()
         };
 
-        <span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">FnSignature</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">ret_type</span>, <span class="ident">has_self_param</span> };
+        <span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">FnData</span> { <span class="ident">name</span>, <span class="ident">params</span>, <span class="ident">ret_type</span>, <span class="ident">has_self_param</span> };
         <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">sig</span>)
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Name</span> {
@@ -1486,7 +1483,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Name</span> {
-        <span class="self">self</span>.<span class="ident">signature</span>(<span class="ident">db</span>).<span class="ident">name</span>.<span class="ident">clone</span>()
+        <span class="self">self</span>.<span class="ident">data</span>(<span class="ident">db</span>).<span class="ident">name</span>.<span class="ident">clone</span>()
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">body_source_map</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">BodySourceMap</span><span class="op">&gt;</span> {
@@ -1501,8 +1498,8 @@
         <span class="ident">db</span>.<span class="ident">type_for_def</span>(<span class="self">self</span>.<span class="ident">into</span>(), <span class="ident">Namespace</span>::<span class="ident">Values</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">signature</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnSignature</span><span class="op">&gt;</span> {
-        <span class="ident">db</span>.<span class="ident">fn_signature</span>(<span class="self">self</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">data</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FnData</span><span class="op">&gt;</span> {
+        <span class="ident">db</span>.<span class="ident">fn_data</span>(<span class="self">self</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">infer</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">InferenceResult</span><span class="op">&gt;</span> {
@@ -1559,8 +1556,8 @@
         <span class="self">self</span>.<span class="ident">id</span>.<span class="ident">module</span>(<span class="ident">db</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">signature</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span> {
-        <span class="ident">db</span>.<span class="ident">const_signature</span>(<span class="self">self</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">data</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span> {
+        <span class="ident">db</span>.<span class="ident">const_data</span>(<span class="self">self</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">infer</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">InferenceResult</span><span class="op">&gt;</span> {
@@ -1585,14 +1582,13 @@
     }
 }
 
-<span class="doccomment">/// The declared signature of a const.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConstSignature</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConstData</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">name</span>: <span class="ident">Name</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">type_ref</span>: <span class="ident">TypeRef</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">ConstSignature</span> {
+<span class="kw">impl</span> <span class="ident">ConstData</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Name</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">name</span>
     }
@@ -1601,27 +1597,27 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">type_ref</span>
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">const_signature_query</span>(
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">const_data_query</span>(
         <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">konst</span>: <span class="ident">Const</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span> {
+    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">konst</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>;
-        <span class="ident">const_signature_for</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">node</span>)
+        <span class="ident">const_data_for</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">node</span>)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">static_signature_query</span>(
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">static_data_query</span>(
         <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
         <span class="ident">konst</span>: <span class="ident">Static</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span> {
+    ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">konst</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>;
-        <span class="ident">const_signature_for</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">node</span>)
+        <span class="ident">const_data_for</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">node</span>)
     }
 }
 
-<span class="kw">fn</span> <span class="ident">const_signature_for</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">TypeAscriptionOwner</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">const_data_for</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">TypeAscriptionOwner</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">name</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">as_name</span>()).<span class="ident">unwrap_or_else</span>(<span class="ident">Name</span>::<span class="ident">missing</span>);
     <span class="kw">let</span> <span class="ident">type_ref</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">node</span>.<span class="ident">ascribed_type</span>());
-    <span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">ConstSignature</span> { <span class="ident">name</span>, <span class="ident">type_ref</span> };
+    <span class="kw">let</span> <span class="ident">sig</span> <span class="op">=</span> <span class="ident">ConstData</span> { <span class="ident">name</span>, <span class="ident">type_ref</span> };
     <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">sig</span>)
 }
 
@@ -1635,8 +1631,8 @@
         <span class="self">self</span>.<span class="ident">id</span>.<span class="ident">module</span>(<span class="ident">db</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">signature</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstSignature</span><span class="op">&gt;</span> {
-        <span class="ident">db</span>.<span class="ident">static_signature</span>(<span class="self">self</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">data</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span> {
+        <span class="ident">db</span>.<span class="ident">static_data</span>(<span class="self">self</span>)
     }
 
     <span class="doccomment">/// Builds a resolver for code inside this item.</span>
