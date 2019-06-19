@@ -197,6 +197,9 @@
 <span id="197">197</span>
 <span id="198">198</span>
 <span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -320,6 +323,9 @@
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ConstData</span>::<span class="ident">static_data_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">static_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">konst</span>: <span class="ident">Static</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ConstData</span><span class="op">&gt;</span>;
+
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">lang_item</span>::<span class="ident">LangItems</span>::<span class="ident">module_lang_items_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">module_lang_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">LangItems</span><span class="op">&gt;&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">lang_item</span>::<span class="ident">LangItems</span>::<span class="ident">lang_items_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">lang_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">krate</span>: <span class="ident">Crate</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">LangItems</span><span class="op">&gt;</span>;
