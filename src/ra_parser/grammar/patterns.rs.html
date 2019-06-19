@@ -271,6 +271,9 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -334,6 +337,7 @@
     <span class="kw">let</span> <span class="ident">la1</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>);
     <span class="kw">if</span> <span class="ident">la0</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">ref</span>]
         <span class="op">||</span> <span class="ident">la0</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>]
+        <span class="op">||</span> <span class="ident">la0</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>]
         <span class="op">||</span> (<span class="ident">la0</span> <span class="op">==</span> <span class="ident">IDENT</span> <span class="op">&amp;&amp;</span> <span class="op">!</span>(<span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">||</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">||</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">||</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>]))
     {
         <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">bind_pat</span>(<span class="ident">p</span>, <span class="bool-val">true</span>));
@@ -534,9 +538,11 @@
 <span class="comment">//     let ref mut d = ();</span>
 <span class="comment">//     let e @ _ = ();</span>
 <span class="comment">//     let ref mut f @ g @ _ = ();</span>
+<span class="comment">//     let box i = Box::new(1i32);</span>
 <span class="comment">// }</span>
 <span class="kw">fn</span> <span class="ident">bind_pat</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">with_at</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
+    <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>]);
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">ref</span>]);
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>]);
     <span class="ident">name</span>(<span class="ident">p</span>);
