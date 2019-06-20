@@ -240,6 +240,9 @@
 <span id="240">240</span>
 <span id="241">241</span>
 <span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>, <span class="ident">time</span>,
@@ -469,9 +472,12 @@
 
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">ra_db</span>::<span class="ident">ParseQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ParseMacroQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
-        <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">MacroDefQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
-        <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">MacroArgQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
-        <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">MacroExpandQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
+
+        <span class="comment">// Macros do take significant space, but less then the syntax trees</span>
+        <span class="comment">// self.query(hir::db::MacroDefQuery).sweep(sweep);</span>
+        <span class="comment">// self.query(hir::db::MacroArgQuery).sweep(sweep);</span>
+        <span class="comment">// self.query(hir::db::MacroExpandQuery).sweep(sweep);</span>
+
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">AstIdMapQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
 
         <span class="self">self</span>.<span class="ident">query</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">RawItemsWithSourceMapQuery</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>);
