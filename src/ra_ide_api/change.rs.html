@@ -243,6 +243,7 @@
 <span id="243">243</span>
 <span id="244">244</span>
 <span id="245">245</span>
+<span id="246">246</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fmt</span>, <span class="ident">time</span>,
@@ -409,7 +410,8 @@
         <span class="kw">if</span> <span class="op">!</span><span class="ident">change</span>.<span class="ident">new_roots</span>.<span class="ident">is_empty</span>() {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">local_roots</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">local_roots</span>());
             <span class="kw">for</span> (<span class="ident">root_id</span>, <span class="ident">is_local</span>) <span class="kw">in</span> <span class="ident">change</span>.<span class="ident">new_roots</span> {
-                <span class="self">self</span>.<span class="ident">set_source_root</span>(<span class="ident">root_id</span>, <span class="ident">Default</span>::<span class="ident">default</span>());
+                <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_local</span> { <span class="ident">SourceRoot</span>::<span class="ident">new</span>() } <span class="kw">else</span> { <span class="ident">SourceRoot</span>::<span class="ident">new_library</span>() };
+                <span class="self">self</span>.<span class="ident">set_source_root</span>(<span class="ident">root_id</span>, <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">root</span>));
                 <span class="kw">if</span> <span class="ident">is_local</span> {
                     <span class="ident">local_roots</span>.<span class="ident">push</span>(<span class="ident">root_id</span>);
                 }
