@@ -551,6 +551,8 @@
 <span id="551">551</span>
 <span id="552">552</span>
 <span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">///</span>
@@ -785,7 +787,9 @@
 
 <span class="kw">impl</span> <span class="ident">CrateDefMap</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">crate_def_map_query</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
+        <span class="comment">// Note that this doesn&#39;t have `+ AstDatabase`!</span>
+        <span class="comment">// This gurantess that `CrateDefMap` is stable across reparses.</span>
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>,
         <span class="ident">krate</span>: <span class="ident">Crate</span>,
     ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CrateDefMap</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;crate_def_map_query&quot;</span>);

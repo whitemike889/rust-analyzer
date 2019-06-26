@@ -220,6 +220,12 @@
 <span id="220">220</span>
 <span id="221">221</span>
 <span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -243,38 +249,15 @@
     <span class="ident">lang_item</span>::{<span class="ident">LangItems</span>, <span class="ident">LangItemTarget</span>}, <span class="ident">type_alias</span>::<span class="ident">TypeAliasData</span>,
 };
 
-<span class="comment">// This database has access to source code, so queries here are not really</span>
-<span class="comment">// incremental.</span>
-<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">AstDatabaseStorage</span>)]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AstDatabase</span>: <span class="ident">SourceDatabase</span> {
+<span class="doccomment">/// We store all interned things in the single QueryGroup.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This is done mainly to allow both &quot;volatile&quot; `AstDatabase` and &quot;stable&quot;</span>
+<span class="doccomment">/// `DefDatabase` to access macros, without adding hard dependencies between the</span>
+<span class="doccomment">/// two.</span>
+<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">InternDatabaseStorage</span>)]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InternDatabase</span>: <span class="ident">SourceDatabase</span> {
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">interned</span>]</span>
     <span class="kw">fn</span> <span class="ident">intern_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_call</span>: <span class="ident">MacroCallLoc</span>) <span class="op">-&gt;</span> <span class="ident">ids</span>::<span class="ident">MacroCallId</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">source_id</span>::<span class="ident">AstIdMap</span>::<span class="ident">ast_id_map_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ast_id_map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AstIdMap</span><span class="op">&gt;</span>;
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">source_id</span>::<span class="ident">AstIdMap</span>::<span class="ident">file_item_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">ast_id_to_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>, <span class="ident">ast_id</span>: <span class="ident">ErasedFileAstId</span>) <span class="op">-&gt;</span> <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span>;
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">HirFileId</span>::<span class="ident">parse_or_expand_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">parse_or_expand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span>;
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">HirFileId</span>::<span class="ident">parse_macro_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">parse_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_file</span>: <span class="ident">ids</span>::<span class="ident">MacroFile</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_def_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">macro_def</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_id</span>: <span class="ident">MacroDefId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">mbe</span>::<span class="ident">MacroRules</span><span class="op">&gt;&gt;</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_arg_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">macro_arg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_call</span>: <span class="ident">ids</span>::<span class="ident">MacroCallId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;&gt;</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_expand_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">macro_expand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_call</span>: <span class="ident">ids</span>::<span class="ident">MacroCallId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span>;
-}
-
-<span class="comment">// This database uses `AstDatabase` internally,</span>
-<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">DefDatabaseStorage</span>)]</span>
-<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">requires</span>(<span class="ident">AstDatabase</span>)]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DefDatabase</span>: <span class="ident">SourceDatabase</span> {
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">interned</span>]</span>
     <span class="kw">fn</span> <span class="ident">intern_function</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">loc</span>: <span class="ident">ids</span>::<span class="ident">ItemLoc</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">FnDef</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ids</span>::<span class="ident">FunctionId</span>;
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">interned</span>]</span>
@@ -295,7 +278,36 @@
     <span class="kw">fn</span> <span class="ident">intern_type_ctor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">type_ctor</span>: <span class="ident">TypeCtor</span>) <span class="op">-&gt;</span> <span class="ident">ids</span>::<span class="ident">TypeCtorId</span>;
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">interned</span>]</span>
     <span class="kw">fn</span> <span class="ident">intern_impl_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">impl_block</span>: <span class="ident">ImplBlock</span>) <span class="op">-&gt;</span> <span class="ident">ids</span>::<span class="ident">GlobalImplId</span>;
+}
 
+<span class="doccomment">/// This database has access to source code, so queries here are not really</span>
+<span class="doccomment">/// incremental.</span>
+<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">AstDatabaseStorage</span>)]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AstDatabase</span>: <span class="ident">InternDatabase</span> {
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">source_id</span>::<span class="ident">AstIdMap</span>::<span class="ident">ast_id_map_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">ast_id_map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AstIdMap</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">source_id</span>::<span class="ident">AstIdMap</span>::<span class="ident">file_item_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">ast_id_to_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>, <span class="ident">ast_id</span>: <span class="ident">ErasedFileAstId</span>) <span class="op">-&gt;</span> <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">transparent</span>]</span>
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">HirFileId</span>::<span class="ident">parse_or_expand_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">parse_or_expand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">HirFileId</span>::<span class="ident">parse_macro_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">parse_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_file</span>: <span class="ident">ids</span>::<span class="ident">MacroFile</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;&gt;</span>;
+
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_def_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">macro_def</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_id</span>: <span class="ident">MacroDefId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">mbe</span>::<span class="ident">MacroRules</span><span class="op">&gt;&gt;</span>;
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_arg_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">macro_arg</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_call</span>: <span class="ident">ids</span>::<span class="ident">MacroCallId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;&gt;</span>;
+
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ids</span>::<span class="ident">macro_expand_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">macro_expand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">macro_call</span>: <span class="ident">ids</span>::<span class="ident">MacroCallId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span>;
+}
+
+<span class="comment">// This database uses `AstDatabase` internally,</span>
+<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">DefDatabaseStorage</span>)]</span>
+<span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">requires</span>(<span class="ident">AstDatabase</span>)]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DefDatabase</span>: <span class="ident">InternDatabase</span> {
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">adt</span>::<span class="ident">StructData</span>::<span class="ident">struct_data_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">struct_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">Struct</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">StructData</span><span class="op">&gt;</span>;
 
