@@ -276,6 +276,39 @@
 <span id="276">276</span>
 <span id="277">277</span>
 <span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">cell</span>::<span class="ident">RefCell</span>,
@@ -531,6 +564,39 @@
 <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Scope</span> {
     <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="ident">IN_SCOPE</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">slot</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">slot</span>.<span class="ident">borrow_mut</span>() <span class="op">=</span> <span class="self">self</span>.<span class="ident">prev</span>);
+    }
+}
+
+<span class="doccomment">/// A wrapper around https://github.com/AtheMathmo/cpuprofiler</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// It can be used to capture sampling profiles of sections of code.</span>
+<span class="doccomment">/// It is not exactly out-of-the-box, as it relies on gperftools.</span>
+<span class="doccomment">/// See the docs for the crate for more!</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CpuProfiler</span> {
+    <span class="ident">_private</span>: (),
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cpu_profiler</span>() <span class="op">-&gt;</span> <span class="ident">CpuProfiler</span> {
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cpuprofiler&quot;</span>)]</span>
+    {
+        <span class="ident">cpuprofiler</span>::<span class="ident">PROFILER</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">start</span>(<span class="string">&quot;./out.profile&quot;</span>).<span class="ident">unwrap</span>();
+    }
+
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cpuprofiler&quot;</span>))]</span>
+    {
+        <span class="macro">eprintln</span><span class="macro">!</span>(<span class="string">&quot;cpuprofiler feature is disabled&quot;</span>)
+    }
+
+    <span class="ident">CpuProfiler</span> { <span class="ident">_private</span>: () }
+}
+
+<span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">CpuProfiler</span> {
+    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cpuprofiler&quot;</span>)]</span>
+        {
+            <span class="ident">cpuprofiler</span>::<span class="ident">PROFILER</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">stop</span>().<span class="ident">unwrap</span>();
+        }
     }
 }
 
