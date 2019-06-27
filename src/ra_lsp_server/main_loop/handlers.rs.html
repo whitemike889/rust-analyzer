@@ -897,6 +897,21 @@
 <span id="897">897</span>
 <span id="898">898</span>
 <span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
@@ -1521,17 +1536,32 @@
 
     <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">rustfmt</span>.<span class="ident">wait_with_output</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">captured_stdout</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from_utf8</span>(<span class="ident">output</span>.<span class="ident">stdout</span>)<span class="question-mark">?</span>;
+
     <span class="kw">if</span> <span class="op">!</span><span class="ident">output</span>.<span class="ident">status</span>.<span class="ident">success</span>() {
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LspError</span>::<span class="ident">new</span>(
-            <span class="op">-</span><span class="number">32900</span>,
-            <span class="macro">format</span><span class="macro">!</span>(
-                <span class="string">r#&quot;rustfmt exited with:
-            Status: {}
-            stdout: {}&quot;#</span>,
-                <span class="ident">output</span>.<span class="ident">status</span>, <span class="ident">captured_stdout</span>,
-            ),
-        )
-        .<span class="ident">into</span>());
+        <span class="kw">match</span> <span class="ident">output</span>.<span class="ident">status</span>.<span class="ident">code</span>() {
+            <span class="prelude-val">Some</span>(<span class="number">1</span>) <span class="op">=&gt;</span> {
+                <span class="comment">// While `rustfmt` doesn&#39;t have a specific exit code for parse errors this is the</span>
+                <span class="comment">// likely cause exiting with 1. Most Language Servers swallow parse errors on</span>
+                <span class="comment">// formatting because otherwise an error is surfaced to the user on top of the</span>
+                <span class="comment">// syntax error diagnostics they&#39;re already receiving. This is especially jarring</span>
+                <span class="comment">// if they have format on save enabled.</span>
+                <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;rustfmt exited with status 1, assuming parse error and ignoring&quot;</span>);
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
+            }
+            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                <span class="comment">// Something else happened - e.g. `rustfmt` is missing or caught a signal</span>
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LspError</span>::<span class="ident">new</span>(
+                    <span class="op">-</span><span class="number">32900</span>,
+                    <span class="macro">format</span><span class="macro">!</span>(
+                        <span class="string">r#&quot;rustfmt exited with:
+                           Status: {}
+                           stdout: {}&quot;#</span>,
+                        <span class="ident">output</span>.<span class="ident">status</span>, <span class="ident">captured_stdout</span>,
+                    ),
+                )
+                .<span class="ident">into</span>());
+            }
+        }
     }
 
     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">TextEdit</span> {
