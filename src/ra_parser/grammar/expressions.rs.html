@@ -583,6 +583,17 @@
 <span id="583">583</span>
 <span id="584">584</span>
 <span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">atom</span>;
 
@@ -767,6 +778,17 @@
         <span class="comment">// fn foo(){</span>
         <span class="comment">//     ;;;some_expr();;;;{;;;};;;;Ok(())</span>
         <span class="comment">// }</span>
+
+        <span class="comment">// test nocontentexpr_after_item</span>
+        <span class="comment">// fn simple_function() {</span>
+        <span class="comment">//     enum LocalEnum {</span>
+        <span class="comment">//         One,</span>
+        <span class="comment">//         Two,</span>
+        <span class="comment">//     };</span>
+        <span class="comment">//     fn f() {};</span>
+        <span class="comment">//     struct S {};</span>
+        <span class="comment">// }</span>
+
         <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">current</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[;] {
             <span class="ident">p</span>.<span class="ident">bump</span>();
             <span class="kw">continue</span>;
