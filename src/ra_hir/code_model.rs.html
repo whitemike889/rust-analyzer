@@ -884,6 +884,10 @@
 <span id="884">884</span>
 <span id="885">885</span>
 <span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">src</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">docs</span>;
@@ -1275,6 +1279,10 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">module</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Module</span> {
         <span class="self">self</span>.<span class="ident">id</span>.<span class="ident">module</span>(<span class="ident">db</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ty</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Ty</span> {
+        <span class="ident">db</span>.<span class="ident">type_for_def</span>(<span class="self">self</span>.<span class="ident">into</span>(), <span class="ident">Namespace</span>::<span class="ident">Types</span>)
     }
 
     <span class="comment">// FIXME move to a more general type</span>
