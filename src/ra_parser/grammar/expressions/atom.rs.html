@@ -522,6 +522,23 @@
 <span id="522">522</span>
 <span id="523">523</span>
 <span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -695,6 +712,15 @@
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;]&#39;</span>]) {
         <span class="kw">return</span> <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ARRAY_EXPR</span>);
     }
+
+    <span class="comment">// test first_array_member_attributes</span>
+    <span class="comment">// pub const A: &amp;[i64] = &amp;[</span>
+    <span class="comment">//    #[cfg(test)]</span>
+    <span class="comment">//    1,</span>
+    <span class="comment">//    2,</span>
+    <span class="comment">// ];</span>
+    <span class="ident">attributes</span>::<span class="ident">outer_attributes</span>(<span class="ident">p</span>);
+
     <span class="ident">expr</span>(<span class="ident">p</span>);
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[;]) {
         <span class="ident">expr</span>(<span class="ident">p</span>);
@@ -706,6 +732,14 @@
         <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;]&#39;</span>]) {
             <span class="kw">break</span>;
         }
+
+        <span class="comment">// test subsequent_array_member_attributes</span>
+        <span class="comment">// pub const A: &amp;[i64] = &amp;[</span>
+        <span class="comment">//    1,</span>
+        <span class="comment">//    #[cfg(test)]</span>
+        <span class="comment">//    2,</span>
+        <span class="comment">// ];</span>
+        <span class="ident">attributes</span>::<span class="ident">outer_attributes</span>(<span class="ident">p</span>);
         <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at_ts</span>(<span class="ident">EXPR_FIRST</span>) {
             <span class="ident">p</span>.<span class="ident">error</span>(<span class="string">&quot;expected expression&quot;</span>);
             <span class="kw">break</span>;
