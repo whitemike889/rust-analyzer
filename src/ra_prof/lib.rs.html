@@ -309,7 +309,23 @@
 <span id="309">309</span>
 <span id="310">310</span>
 <span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">mod</span> <span class="ident">memory_usage</span>;
+
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">cell</span>::<span class="ident">RefCell</span>,
     <span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">Instant</span>},
@@ -322,6 +338,14 @@
 
 <span class="kw">use</span> <span class="ident">once_cell</span>::<span class="ident">sync</span>::<span class="ident">Lazy</span>;
 <span class="kw">use</span> <span class="ident">itertools</span>::<span class="ident">Itertools</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">memory_usage</span>::{<span class="ident">MemoryUsage</span>, <span class="ident">Bytes</span>};
+
+<span class="comment">// We use jemalloc mainly to get heap usage statistics, actual performance</span>
+<span class="comment">// difference is not measures.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;jemalloc&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">global_allocator</span>]</span>
+<span class="kw">static</span> <span class="ident">ALLOC</span>: <span class="ident">jemallocator</span>::<span class="ident">Jemalloc</span> <span class="op">=</span> <span class="ident">jemallocator</span>::<span class="ident">Jemalloc</span>;
 
 <span class="doccomment">/// Set profiling filter. It specifies descriptions allowed to profile.</span>
 <span class="doccomment">/// This is helpful when call stack has too many nested profiling scopes.</span>
@@ -598,6 +622,10 @@
             <span class="ident">cpuprofiler</span>::<span class="ident">PROFILER</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">stop</span>().<span class="ident">unwrap</span>();
         }
     }
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">memory_usage</span>() <span class="op">-&gt;</span> <span class="ident">MemoryUsage</span> {
+    <span class="ident">MemoryUsage</span>::<span class="ident">current</span>()
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

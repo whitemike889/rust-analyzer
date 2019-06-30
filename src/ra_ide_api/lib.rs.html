@@ -517,12 +517,6 @@
 <span id="517">517</span>
 <span id="518">518</span>
 <span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! ra_ide_api crate provides &quot;ide-centric&quot; APIs for the rust-analyzer. That is,</span>
 <span class="doccomment">//! it generally operates with files and text ranges, and returns results as</span>
@@ -599,12 +593,6 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ra_db</span>::{<span class="ident">Canceled</span>, <span class="ident">CrateGraph</span>, <span class="ident">CrateId</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">SourceRootId</span>, <span class="ident">Edition</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">hir</span>::<span class="ident">Documentation</span>;
-
-<span class="comment">// We use jemalloc mainly to get heap usage statistics, actual performance</span>
-<span class="comment">// difference is not measures.</span>
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;jemalloc&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">global_allocator</span>]</span>
-<span class="kw">static</span> <span class="ident">ALLOC</span>: <span class="ident">jemallocator</span>::<span class="ident">Jemalloc</span> <span class="op">=</span> <span class="ident">jemallocator</span>::<span class="ident">Jemalloc</span>;
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Canceled</span><span class="op">&gt;</span>;
 

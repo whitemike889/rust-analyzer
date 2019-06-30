@@ -230,7 +230,7 @@
         <span class="ident">num_exprs_partially_unknown</span>,
         (<span class="ident">num_exprs_partially_unknown</span> <span class="op">*</span> <span class="number">100</span> <span class="op">/</span> <span class="ident">num_exprs</span>)
     );
-    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Analysis: {:?}&quot;</span>, <span class="ident">analysis_time</span>.<span class="ident">elapsed</span>());
+    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Analysis: {:?}, {}&quot;</span>, <span class="ident">analysis_time</span>.<span class="ident">elapsed</span>(), <span class="ident">ra_prof</span>::<span class="ident">memory_usage</span>());
     <span class="prelude-val">Ok</span>(())
 }
 </pre></div>
