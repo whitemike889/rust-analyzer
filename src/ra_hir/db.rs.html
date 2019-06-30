@@ -328,26 +328,26 @@
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">traits</span>::<span class="ident">TraitItemsIndex</span>::<span class="ident">trait_items_index</span>)]</span>
     <span class="kw">fn</span> <span class="ident">trait_items_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="kw">crate</span>::<span class="ident">traits</span>::<span class="ident">TraitItemsIndex</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="ident">RawItems</span>::<span class="ident">raw_items_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">raw_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span>;
-
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="ident">RawItems</span>::<span class="ident">raw_items_with_source_map_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">raw_items_with_source_map</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">file_id</span>: <span class="ident">HirFileId</span>,
     ) <span class="op">-&gt;</span> (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ImportSourceMap</span><span class="op">&gt;</span>);
 
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="ident">RawItems</span>::<span class="ident">raw_items_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">raw_items</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">HirFileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RawItems</span><span class="op">&gt;</span>;
+
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="ident">CrateDefMap</span>::<span class="ident">crate_def_map_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">crate_def_map</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">krate</span>: <span class="ident">Crate</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CrateDefMap</span><span class="op">&gt;</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">impl_block</span>::<span class="ident">impls_in_module</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">impls_in_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ModuleImplBlocks</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">impl_block</span>::<span class="ident">impls_in_module_with_source_map_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">impls_in_module_with_source_map</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">module</span>: <span class="ident">Module</span>,
     ) <span class="op">-&gt;</span> (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ModuleImplBlocks</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ImplSourceMap</span><span class="op">&gt;</span>);
+
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">impl_block</span>::<span class="ident">impls_in_module</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">impls_in_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">ModuleImplBlocks</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">generics</span>::<span class="ident">GenericParams</span>::<span class="ident">generic_params_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">generic_params</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">def</span>: <span class="ident">GenericDef</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">GenericParams</span><span class="op">&gt;</span>;
