@@ -86,6 +86,7 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
+<span id="89">89</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">sync</span>::<span class="ident">Arc</span>,
@@ -152,6 +153,7 @@
         <span class="kw">let</span> <span class="ident">lru_capacity</span> <span class="op">=</span> <span class="ident">lru_capacity</span>.<span class="ident">unwrap_or</span>(<span class="ident">ra_db</span>::<span class="ident">DEFAULT_LRU_CAP</span>);
         <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">ra_db</span>::<span class="ident">ParseQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_capacity</span>);
         <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ParseMacroQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_capacity</span>);
+        <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">MacroExpandQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_capacity</span>);
         <span class="ident">db</span>
     }
 }
