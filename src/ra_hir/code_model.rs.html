@@ -888,6 +888,10 @@
 <span id="888">888</span>
 <span id="889">889</span>
 <span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">src</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">docs</span>;
@@ -1738,6 +1742,10 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">type_ref</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TypeRef</span><span class="op">&gt;</span> {
         <span class="ident">db</span>.<span class="ident">type_alias_data</span>(<span class="self">self</span>).<span class="ident">type_ref</span>.<span class="ident">clone</span>()
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ty</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Ty</span> {
+        <span class="ident">db</span>.<span class="ident">type_for_def</span>(<span class="self">self</span>.<span class="ident">into</span>(), <span class="ident">Namespace</span>::<span class="ident">Types</span>)
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Name</span> {

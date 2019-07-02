@@ -548,6 +548,46 @@
 <span id="548">548</span>
 <span id="549">549</span>
 <span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::{<span class="ident">Resolution</span>, <span class="ident">Either</span>};
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">AstNode</span>;
@@ -588,7 +628,10 @@
                 <span class="ident">acc</span>.<span class="ident">add_resolution</span>(<span class="ident">ctx</span>, <span class="ident">name</span>.<span class="ident">to_string</span>(), <span class="kw-2">&amp;</span><span class="ident">res</span>.<span class="ident">def</span>.<span class="ident">map</span>(<span class="ident">hir</span>::<span class="ident">Resolution</span>::<span class="ident">Def</span>));
             }
         }
-        <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Enum</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Struct</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Union</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
+        <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Enum</span>(<span class="kw">_</span>)
+        <span class="op">|</span> <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Struct</span>(<span class="kw">_</span>)
+        <span class="op">|</span> <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Union</span>(<span class="kw">_</span>)
+        <span class="op">|</span> <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">TypeAlias</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Enum</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">def</span> {
                 <span class="kw">for</span> <span class="ident">variant</span> <span class="kw">in</span> <span class="ident">e</span>.<span class="ident">variants</span>(<span class="ident">ctx</span>.<span class="ident">db</span>) {
                     <span class="ident">acc</span>.<span class="ident">add_enum_variant</span>(<span class="ident">ctx</span>, <span class="ident">variant</span>);
@@ -598,6 +641,7 @@
                 <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Enum</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="ident">e</span>.<span class="ident">ty</span>(<span class="ident">ctx</span>.<span class="ident">db</span>),
                 <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Struct</span>(<span class="ident">s</span>) <span class="op">=&gt;</span> <span class="ident">s</span>.<span class="ident">ty</span>(<span class="ident">ctx</span>.<span class="ident">db</span>),
                 <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">Union</span>(<span class="ident">u</span>) <span class="op">=&gt;</span> <span class="ident">u</span>.<span class="ident">ty</span>(<span class="ident">ctx</span>.<span class="ident">db</span>),
+                <span class="ident">hir</span>::<span class="ident">ModuleDef</span>::<span class="ident">TypeAlias</span>(<span class="ident">a</span>) <span class="op">=&gt;</span> <span class="ident">a</span>.<span class="ident">ty</span>(<span class="ident">ctx</span>.<span class="ident">db</span>),
                 <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
             };
             <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">module</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">m</span><span class="op">|</span> <span class="ident">m</span>.<span class="ident">krate</span>(<span class="ident">ctx</span>.<span class="ident">db</span>));
@@ -1094,6 +1138,42 @@
         delete: [9; 9),
         insert: &quot;bar&quot;,
         kind: Module,
+    },
+]&quot;###</span>
+        );
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">completes_type_alias</span>() {
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">&quot;
+                struct S;
+                impl S { fn foo() {} }
+                type T = S;
+                impl T { fn bar() {} }
+
+                fn main() {
+                    T::&lt;|&gt;;
+                }
+                &quot;</span>
+            ),
+            @<span class="string">r###&quot;[
+    CompletionItem {
+        label: &quot;bar&quot;,
+        source_range: [185; 185),
+        delete: [185; 185),
+        insert: &quot;bar()$0&quot;,
+        kind: Function,
+        detail: &quot;fn bar()&quot;,
+    },
+    CompletionItem {
+        label: &quot;foo&quot;,
+        source_range: [185; 185),
+        delete: [185; 185),
+        insert: &quot;foo()$0&quot;,
+        kind: Function,
+        detail: &quot;fn foo()&quot;,
     },
 ]&quot;###</span>
         );
