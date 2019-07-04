@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `crates/ra_hir/src/expr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>expr.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ra_hir/index.html'><img src='../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `crates/ra_hir/src/expr.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>expr.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ra_hir/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1042,25 +1042,37 @@
 <span id="1042">1042</span>
 <span id="1043">1043</span>
 <span id="1044">1044</span>
+<span id="1045">1045</span>
+<span id="1046">1046</span>
+<span id="1047">1047</span>
+<span id="1048">1048</span>
+<span id="1049">1049</span>
+<span id="1050">1050</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
-<span class="kw">use</span> <span class="ident">ra_arena</span>::{<span class="ident">Arena</span>, <span class="ident">RawId</span>, <span class="ident">impl_arena_id</span>, <span class="ident">map</span>::<span class="ident">ArenaMap</span>};
+<span class="kw">use</span> <span class="ident">ra_arena</span>::{<span class="ident">impl_arena_id</span>, <span class="ident">map</span>::<span class="ident">ArenaMap</span>, <span class="ident">Arena</span>, <span class="ident">RawId</span>};
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
-    <span class="ident">SyntaxNodePtr</span>, <span class="ident">AstPtr</span>, <span class="ident">AstNode</span>,
-    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">TryBlockBodyOwner</span>, <span class="ident">LoopBodyOwner</span>, <span class="ident">ArgListOwner</span>, <span class="ident">NameOwner</span>, <span class="ident">LiteralKind</span>,<span class="ident">ArrayExprKind</span>, <span class="ident">TypeAscriptionOwner</span>},
+    <span class="ident">ast</span>::{
+        <span class="self">self</span>, <span class="ident">ArgListOwner</span>, <span class="ident">ArrayExprKind</span>, <span class="ident">LiteralKind</span>, <span class="ident">LoopBodyOwner</span>, <span class="ident">NameOwner</span>,
+        <span class="ident">TryBlockBodyOwner</span>, <span class="ident">TypeAscriptionOwner</span>,
+    },
+    <span class="ident">AstNode</span>, <span class="ident">AstPtr</span>, <span class="ident">SyntaxNodePtr</span>,
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">Path</span>, <span class="ident">Name</span>, <span class="ident">HirDatabase</span>, <span class="ident">Resolver</span>,<span class="ident">DefWithBody</span>, <span class="ident">Either</span>, <span class="ident">HirFileId</span>, <span class="ident">MacroCallLoc</span>, <span class="ident">MacroFileKind</span>,
-    <span class="ident">HasSource</span>,
     <span class="ident">name</span>::<span class="ident">AsName</span>,
     <span class="ident">type_ref</span>::{<span class="ident">Mutability</span>, <span class="ident">TypeRef</span>},
+    <span class="ident">DefWithBody</span>, <span class="ident">Either</span>, <span class="ident">HasSource</span>, <span class="ident">HirDatabase</span>, <span class="ident">HirFileId</span>, <span class="ident">MacroCallLoc</span>, <span class="ident">MacroFileKind</span>, <span class="ident">Name</span>,
+    <span class="ident">Path</span>, <span class="ident">Resolver</span>,
 };
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">path</span>::<span class="ident">GenericArgs</span>, <span class="ident">ty</span>::<span class="ident">primitive</span>::{<span class="ident">IntTy</span>, <span class="ident">UncertainIntTy</span>, <span class="ident">FloatTy</span>, <span class="ident">UncertainFloatTy</span>}};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">path</span>::<span class="ident">GenericArgs</span>,
+    <span class="ident">ty</span>::<span class="ident">primitive</span>::{<span class="ident">FloatTy</span>, <span class="ident">IntTy</span>, <span class="ident">UncertainFloatTy</span>, <span class="ident">UncertainIntTy</span>},
+};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">scope</span>::<span class="ident">ExprScopes</span>;
 
@@ -1294,8 +1306,8 @@
     <span class="ident">Literal</span>(<span class="ident">Literal</span>),
 }
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::<span class="ident">PrefixOp</span> <span class="kw">as</span> <span class="ident">UnaryOp</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::<span class="ident">BinOp</span> <span class="kw">as</span> <span class="ident">BinaryOp</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::<span class="ident">PrefixOp</span> <span class="kw">as</span> <span class="ident">UnaryOp</span>;
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Array</span> {
     <span class="ident">ElementList</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ExprId</span><span class="op">&gt;</span>),

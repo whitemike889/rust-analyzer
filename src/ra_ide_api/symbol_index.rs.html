@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `crates/ra_ide_api/src/symbol_index.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>symbol_index.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ra_ide_api/index.html'><img src='../../rust-logo.png' alt='logo' width='100'></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `crates/ra_ide_api/src/symbol_index.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>symbol_index.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../ra_ide_api/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -372,14 +372,6 @@
 <span id="372">372</span>
 <span id="373">373</span>
 <span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
-<span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module handles fuzzy-searching of functions, structs and other symbols</span>
 <span class="doccomment">//! by name across the whole workspace and dependencies.</span>
@@ -403,31 +395,27 @@
 <span class="doccomment">//! file in the current workspace, and run a query against the union of all</span>
 <span class="doccomment">//! those FSTs.</span>
 <span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
-    <span class="ident">sync</span>::<span class="ident">Arc</span>,
-    <span class="ident">mem</span>,
     <span class="ident">fmt</span>,
+    <span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
+    <span class="ident">mem</span>,
+    <span class="ident">sync</span>::<span class="ident">Arc</span>,
 };
 
 <span class="kw">use</span> <span class="ident">fst</span>::{<span class="self">self</span>, <span class="ident">Streamer</span>};
-<span class="kw">use</span> <span class="ident">ra_syntax</span>::{
-    <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">SourceFile</span>, <span class="ident">SmolStr</span>, <span class="ident">TreeArc</span>, <span class="ident">AstNode</span>,
-    <span class="ident">algo</span>::{<span class="ident">visit</span>::{<span class="ident">visitor</span>, <span class="ident">Visitor</span>}},
-    <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="kw-2">*</span>},
-    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>},
-    <span class="ident">WalkEvent</span>,
-    <span class="ident">TextRange</span>,
-};
 <span class="kw">use</span> <span class="ident">ra_db</span>::{
-    <span class="ident">SourceRootId</span>, <span class="ident">SourceDatabase</span>,
     <span class="ident">salsa</span>::{<span class="self">self</span>, <span class="ident">ParallelDatabase</span>},
+    <span class="ident">SourceDatabase</span>, <span class="ident">SourceRootId</span>,
+};
+<span class="kw">use</span> <span class="ident">ra_syntax</span>::{
+    <span class="ident">algo</span>::<span class="ident">visit</span>::{<span class="ident">visitor</span>, <span class="ident">Visitor</span>},
+    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>},
+    <span class="ident">AstNode</span>, <span class="ident">SmolStr</span>, <span class="ident">SourceFile</span>,
+    <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="kw-2">*</span>},
+    <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">TextRange</span>, <span class="ident">TreeArc</span>, <span class="ident">WalkEvent</span>,
 };
 <span class="kw">use</span> <span class="ident">rayon</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">FileId</span>, <span class="ident">Query</span>,
-    <span class="ident">db</span>::<span class="ident">RootDatabase</span>,
-};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>::<span class="ident">RootDatabase</span>, <span class="ident">FileId</span>, <span class="ident">Query</span>};
 
 <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">SymbolsDatabaseStorage</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait</span> <span class="ident">SymbolsDatabase</span>: <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">HirDatabase</span> {
@@ -688,15 +676,11 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">display</span>::<span class="ident">NavigationTarget</span>, <span class="ident">mock_analysis</span>::<span class="ident">single_file</span>, <span class="ident">Query</span>};
     <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
         <span class="ident">SmolStr</span>,
-        <span class="ident">SyntaxKind</span>::{<span class="ident">FN_DEF</span>, <span class="ident">STRUCT_DEF</span>}
-};
-    <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">display</span>::<span class="ident">NavigationTarget</span>,
-        <span class="ident">mock_analysis</span>::<span class="ident">single_file</span>,
-        <span class="ident">Query</span>,
-};
+        <span class="ident">SyntaxKind</span>::{<span class="ident">FN_DEF</span>, <span class="ident">STRUCT_DEF</span>},
+    };
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_world_symbols_with_no_container</span>() {
