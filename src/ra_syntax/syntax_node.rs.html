@@ -980,7 +980,7 @@
         <span class="comment">// `range` private afterwards</span>
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">SyntaxNodePtr</span>::<span class="ident">new</span>(<span class="self">self</span>);
         <span class="ident">ptr</span>.<span class="ident">range</span> <span class="op">=</span> <span class="ident">TextRange</span>::<span class="ident">offset_len</span>(<span class="ident">ptr</span>.<span class="ident">range</span>().<span class="ident">start</span>(), <span class="ident">len</span>);
-        <span class="kw">return</span> <span class="ident">ptr</span>.<span class="ident">to_node</span>(<span class="ident">file</span>.<span class="ident">syntax</span>()).<span class="ident">to_owned</span>();
+        <span class="ident">ptr</span>.<span class="ident">to_node</span>(<span class="ident">file</span>.<span class="ident">syntax</span>()).<span class="ident">to_owned</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">position_of_child</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">child</span>: <span class="ident">SyntaxElement</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {

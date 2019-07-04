@@ -695,7 +695,7 @@
                         }
 
                         <span class="kw">break</span> <span class="ident">std</span>::<span class="ident">char</span>::<span class="ident">from_u32</span>(<span class="ident">value</span>).<span class="ident">ok_or_else</span>(<span class="op">||</span> {
-                            <span class="kw">if</span> <span class="ident">value</span> <span class="op">&gt;</span> <span class="number">0x10FFFF</span> {
+                            <span class="kw">if</span> <span class="ident">value</span> <span class="op">&gt;</span> <span class="number">0x0010_FFFF</span> {
                                 <span class="ident">EscapeError</span>::<span class="ident">OutOfRangeUnicodeEscape</span>
                             } <span class="kw">else</span> {
                                 <span class="ident">EscapeError</span>::<span class="ident">LoneSurrogateUnicodeEscape</span>

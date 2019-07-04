@@ -267,7 +267,7 @@
         <span class="prelude-val">Ok</span>(<span class="ident">RawMessage</span>::<span class="ident">Notification</span>(<span class="ident">n</span>)) <span class="op">=&gt;</span> {
             <span class="ident">n</span>.<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">Initialized</span><span class="op">&gt;</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;expected initialized notification&quot;</span>)<span class="question-mark">?</span>;
         }
-        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;expected initialized notification&quot;</span>))<span class="question-mark">?</span>,
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;expected initialized notification&quot;</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>,
     }
     <span class="prelude-val">Ok</span>(<span class="ident">params</span>)
 }

@@ -114,7 +114,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;t</span><span class="op">&gt;</span> <span class="ident">TokenSource</span> <span class="kw">for</span> <span class="ident">TextTokenSource</span><span class="op">&lt;</span><span class="lifetime">&#39;t</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">current</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PToken</span> {
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">curr</span>.<span class="number">0</span>;
+        <span class="self">self</span>.<span class="ident">curr</span>.<span class="number">0</span>
     }
 
     <span class="kw">fn</span> <span class="ident">lookahead_nth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">PToken</span> {

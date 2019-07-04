@@ -601,6 +601,7 @@
 <span id="601">601</span>
 <span id="602">602</span>
 <span id="603">603</span>
+<span id="604">604</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -1002,7 +1003,8 @@
         <span class="prelude-val">Ok</span>(<span class="kw-2">mut</span> <span class="ident">params</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">uri</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">uri</span>;
             <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">uri</span>.<span class="ident">to_file_path</span>().<span class="ident">map_err</span>(<span class="op">|</span>()<span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;invalid uri: {}&quot;</span>, <span class="ident">uri</span>))<span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">content_changes</span>.<span class="ident">pop</span>().<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;empty changes&quot;</span>))<span class="question-mark">?</span>.<span class="ident">text</span>;
+            <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span>
+                <span class="ident">params</span>.<span class="ident">content_changes</span>.<span class="ident">pop</span>().<span class="ident">ok_or_else</span>(<span class="op">||</span> <span class="string">&quot;empty changes&quot;</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>.<span class="ident">text</span>;
             <span class="ident">state</span>.<span class="ident">vfs</span>.<span class="ident">write</span>().<span class="ident">change_file_overlay</span>(<span class="ident">path</span>.<span class="ident">as_path</span>(), <span class="ident">text</span>);
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
         }

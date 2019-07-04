@@ -162,8 +162,8 @@
     <span class="kw">fn</span> <span class="ident">snapshot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">salsa</span>::<span class="ident">Snapshot</span><span class="op">&lt;</span><span class="ident">RootDatabase</span><span class="op">&gt;</span> {
         <span class="ident">salsa</span>::<span class="ident">Snapshot</span>::<span class="ident">new</span>(<span class="ident">RootDatabase</span> {
             <span class="ident">runtime</span>: <span class="self">self</span>.<span class="ident">runtime</span>.<span class="ident">snapshot</span>(<span class="self">self</span>),
-            <span class="ident">last_gc</span>: <span class="self">self</span>.<span class="ident">last_gc</span>.<span class="ident">clone</span>(),
-            <span class="ident">last_gc_check</span>: <span class="self">self</span>.<span class="ident">last_gc_check</span>.<span class="ident">clone</span>(),
+            <span class="ident">last_gc</span>: <span class="self">self</span>.<span class="ident">last_gc</span>,
+            <span class="ident">last_gc_check</span>: <span class="self">self</span>.<span class="ident">last_gc_check</span>,
         })
     }
 }

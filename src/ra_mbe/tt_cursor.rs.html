@@ -487,14 +487,14 @@
     }
 
     <span class="kw">fn</span> <span class="ident">eat_punct3</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">tt</span>::<span class="ident">Punct</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SmallVec</span><span class="op">&lt;</span>[<span class="ident">tt</span>::<span class="ident">Punct</span>; <span class="number">3</span>]<span class="op">&gt;&gt;</span> {
-        <span class="kw">let</span> <span class="ident">sec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_punct</span>()<span class="question-mark">?</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> <span class="ident">third</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_punct</span>()<span class="question-mark">?</span>.<span class="ident">clone</span>();
-        <span class="prelude-val">Some</span>(<span class="macro">smallvec</span><span class="macro">!</span>[<span class="ident">p</span>.<span class="ident">clone</span>(), <span class="ident">sec</span>, <span class="ident">third</span>])
+        <span class="kw">let</span> <span class="ident">sec</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">eat_punct</span>()<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">third</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">eat_punct</span>()<span class="question-mark">?</span>;
+        <span class="prelude-val">Some</span>(<span class="macro">smallvec</span><span class="macro">!</span>[<span class="kw-2">*</span><span class="ident">p</span>, <span class="ident">sec</span>, <span class="ident">third</span>])
     }
 
     <span class="kw">fn</span> <span class="ident">eat_punct2</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">tt</span>::<span class="ident">Punct</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SmallVec</span><span class="op">&lt;</span>[<span class="ident">tt</span>::<span class="ident">Punct</span>; <span class="number">3</span>]<span class="op">&gt;&gt;</span> {
-        <span class="kw">let</span> <span class="ident">sec</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_punct</span>()<span class="question-mark">?</span>.<span class="ident">clone</span>();
-        <span class="prelude-val">Some</span>(<span class="macro">smallvec</span><span class="macro">!</span>[<span class="ident">p</span>.<span class="ident">clone</span>(), <span class="ident">sec</span>])
+        <span class="kw">let</span> <span class="ident">sec</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">eat_punct</span>()<span class="question-mark">?</span>;
+        <span class="prelude-val">Some</span>(<span class="macro">smallvec</span><span class="macro">!</span>[<span class="kw-2">*</span><span class="ident">p</span>, <span class="ident">sec</span>])
     }
 
     <span class="kw">fn</span> <span class="ident">eat_multi_char_punct</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span>, <span class="ident">I</span><span class="op">&gt;</span>(
@@ -567,7 +567,7 @@
                 <span class="comment">// So we by pass that check here.</span>
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peekable</span> <span class="op">=</span> <span class="ident">TokenPeek</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">subtree</span>.<span class="ident">token_trees</span>[<span class="self">self</span>.<span class="ident">pos</span>..].<span class="ident">iter</span>());
                 <span class="kw">let</span> <span class="ident">puncts</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eat_multi_char_punct</span>(<span class="ident">punct</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">peekable</span>);
-                <span class="kw">let</span> <span class="ident">puncts</span> <span class="op">=</span> <span class="ident">puncts</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="macro">smallvec</span><span class="macro">!</span>[<span class="ident">punct</span>.<span class="ident">clone</span>()]);
+                <span class="kw">let</span> <span class="ident">puncts</span> <span class="op">=</span> <span class="ident">puncts</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="macro">smallvec</span><span class="macro">!</span>[<span class="kw-2">*</span><span class="ident">punct</span>]);
 
                 <span class="prelude-val">Some</span>(<span class="kw">crate</span>::<span class="ident">Separator</span>::<span class="ident">Puncts</span>(<span class="ident">puncts</span>))
             }

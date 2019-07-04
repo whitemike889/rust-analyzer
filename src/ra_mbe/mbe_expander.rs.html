@@ -1117,7 +1117,7 @@
                 <span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="ident">tt</span>::<span class="ident">Ident</span> { <span class="ident">text</span>: <span class="ident">ident</span>.<span class="ident">text</span>.<span class="ident">clone</span>(), <span class="ident">id</span>: <span class="ident">TokenId</span>::<span class="ident">unspecified</span>() })
                     .<span class="ident">into</span>()
             }
-            <span class="kw">crate</span>::<span class="ident">Leaf</span>::<span class="ident">Punct</span>(<span class="ident">punct</span>) <span class="op">=&gt;</span> <span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="ident">punct</span>.<span class="ident">clone</span>()).<span class="ident">into</span>(),
+            <span class="kw">crate</span>::<span class="ident">Leaf</span>::<span class="ident">Punct</span>(<span class="ident">punct</span>) <span class="op">=&gt;</span> <span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">punct</span>).<span class="ident">into</span>(),
             <span class="kw">crate</span>::<span class="ident">Leaf</span>::<span class="ident">Var</span>(<span class="ident">v</span>) <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">text</span> <span class="op">==</span> <span class="string">&quot;crate&quot;</span> {
                     <span class="comment">// FIXME: Properly handle $crate token</span>

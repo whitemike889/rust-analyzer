@@ -602,7 +602,7 @@
             },
             <span class="ident">Scope</span>::<span class="ident">ImplBlockScope</span>(<span class="ident">i</span>) <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="ident">name</span>.<span class="ident">as_known_name</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="ident">KnownName</span>::<span class="ident">SelfType</span>) {
-                    <span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Resolution</span>::<span class="ident">SelfType</span>(<span class="ident">i</span>.<span class="ident">clone</span>()))
+                    <span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Resolution</span>::<span class="ident">SelfType</span>(<span class="kw-2">*</span><span class="ident">i</span>))
                 } <span class="kw">else</span> {
                     <span class="ident">PerNs</span>::<span class="ident">none</span>()
                 }
@@ -647,7 +647,7 @@
                 }
             }
             <span class="ident">Scope</span>::<span class="ident">ImplBlockScope</span>(<span class="ident">i</span>) <span class="op">=&gt;</span> {
-                <span class="ident">f</span>(<span class="ident">Name</span>::<span class="ident">self_type</span>(), <span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Resolution</span>::<span class="ident">SelfType</span>(<span class="ident">i</span>.<span class="ident">clone</span>())));
+                <span class="ident">f</span>(<span class="ident">Name</span>::<span class="ident">self_type</span>(), <span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">Resolution</span>::<span class="ident">SelfType</span>(<span class="kw-2">*</span><span class="ident">i</span>)));
             }
             <span class="ident">Scope</span>::<span class="ident">ExprScope</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
                 <span class="ident">e</span>.<span class="ident">expr_scopes</span>.<span class="ident">entries</span>(<span class="ident">e</span>.<span class="ident">scope_id</span>).<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
