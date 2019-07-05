@@ -271,8 +271,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Struct</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">variant_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VariantData</span><span class="op">&gt;</span> {
-        <span class="ident">db</span>.<span class="ident">struct_data</span>(<span class="kw-2">*</span><span class="self">self</span>).<span class="ident">variant_data</span>.<span class="ident">clone</span>()
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">variant_data</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VariantData</span><span class="op">&gt;</span> {
+        <span class="ident">db</span>.<span class="ident">struct_data</span>(<span class="self">self</span>).<span class="ident">variant_data</span>.<span class="ident">clone</span>()
     }
 }
 
@@ -306,7 +306,7 @@
 
 <span class="kw">impl</span> <span class="ident">EnumVariant</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">source_impl</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="self">self</span>,
         <span class="ident">db</span>: <span class="kw-2">&amp;</span>(<span class="kw">impl</span> <span class="ident">DefDatabase</span> <span class="op">+</span> <span class="ident">AstDatabase</span>),
     ) <span class="op">-&gt;</span> <span class="ident">Source</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">EnumVariant</span><span class="op">&gt;&gt;</span> {
         <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">parent</span>.<span class="ident">source</span>(<span class="ident">db</span>);
@@ -318,7 +318,7 @@
             .<span class="ident">to_owned</span>();
         <span class="ident">Source</span> { <span class="ident">file_id</span>: <span class="ident">src</span>.<span class="ident">file_id</span>, <span class="ident">ast</span> }
     }
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">variant_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VariantData</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">variant_data</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">VariantData</span><span class="op">&gt;</span> {
         <span class="ident">db</span>.<span class="ident">enum_data</span>(<span class="self">self</span>.<span class="ident">parent</span>).<span class="ident">variants</span>[<span class="self">self</span>.<span class="ident">id</span>].<span class="ident">variant_data</span>.<span class="ident">clone</span>()
     }
 }

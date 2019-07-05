@@ -751,8 +751,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">MacroCallId</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>().<span class="ident">loc</span>(<span class="ident">db</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+        <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">loc</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">syntax_str</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">chunks</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>().<span class="ident">join</span>(<span class="string">&quot; &quot;</span>);
 
