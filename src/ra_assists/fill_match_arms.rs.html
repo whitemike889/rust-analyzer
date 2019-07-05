@@ -278,9 +278,6 @@
 <span id="278">278</span>
 <span id="279">279</span>
 <span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">itertools</span>::<span class="ident">Itertools</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Write</span>;
@@ -307,27 +304,24 @@
     <span class="comment">// We already have some match arms, so we don&#39;t provide any assists.</span>
     <span class="comment">// Unless if there is only one trivial match arm possibly created</span>
     <span class="comment">// by match postfix complete. Trivial match arm is the catch all arm.</span>
-    <span class="kw">match</span> <span class="ident">match_expr</span>.<span class="ident">match_arm_list</span>() {
-        <span class="prelude-val">Some</span>(<span class="ident">arm_list</span>) <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arm_iter</span> <span class="op">=</span> <span class="ident">arm_list</span>.<span class="ident">arms</span>();
-            <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">arm_iter</span>.<span class="ident">next</span>();
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">arm_list</span>) <span class="op">=</span> <span class="ident">match_expr</span>.<span class="ident">match_arm_list</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arm_iter</span> <span class="op">=</span> <span class="ident">arm_list</span>.<span class="ident">arms</span>();
+        <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">arm_iter</span>.<span class="ident">next</span>();
 
-            <span class="kw">match</span> <span class="ident">first</span> {
-                <span class="comment">// If there arm list is empty or there is only one trivial arm, then proceed.</span>
-                <span class="prelude-val">Some</span>(<span class="ident">arm</span>) <span class="kw">if</span> <span class="ident">is_trivial_arm</span>(<span class="ident">arm</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">arm_iter</span>.<span class="ident">next</span>() <span class="op">!=</span> <span class="prelude-val">None</span> {
-                        <span class="kw">return</span> <span class="prelude-val">None</span>;
-                    }
-                }
-                <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
-
-                <span class="kw">_</span> <span class="op">=&gt;</span> {
+        <span class="kw">match</span> <span class="ident">first</span> {
+            <span class="comment">// If there arm list is empty or there is only one trivial arm, then proceed.</span>
+            <span class="prelude-val">Some</span>(<span class="ident">arm</span>) <span class="kw">if</span> <span class="ident">is_trivial_arm</span>(<span class="ident">arm</span>) <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="ident">arm_iter</span>.<span class="ident">next</span>() <span class="op">!=</span> <span class="prelude-val">None</span> {
                     <span class="kw">return</span> <span class="prelude-val">None</span>;
                 }
             }
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
+
+            <span class="kw">_</span> <span class="op">=&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">None</span>;
+            }
         }
-        <span class="kw">_</span> <span class="op">=&gt;</span> {}
-    }
+    };
 
     <span class="kw">let</span> <span class="ident">expr</span> <span class="op">=</span> <span class="ident">match_expr</span>.<span class="ident">expr</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">analyzer</span> <span class="op">=</span> <span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>::<span class="ident">new</span>(<span class="ident">ctx</span>.<span class="ident">db</span>, <span class="ident">ctx</span>.<span class="ident">frange</span>.<span class="ident">file_id</span>, <span class="ident">expr</span>.<span class="ident">syntax</span>(), <span class="prelude-val">None</span>);

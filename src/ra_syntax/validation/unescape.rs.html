@@ -784,7 +784,7 @@
 
 <span class="kw">fn</span> <span class="ident">byte_from_char</span>(<span class="ident">c</span>: <span class="ident">char</span>) <span class="op">-&gt;</span> <span class="ident">u8</span> {
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">c</span> <span class="kw">as</span> <span class="ident">u32</span>;
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">res</span> <span class="op">&lt;=</span> <span class="ident">u8</span>::<span class="ident">max_value</span>() <span class="kw">as</span> <span class="ident">u32</span>, <span class="string">&quot;guaranteed because of Mode::Byte&quot;</span>);
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">res</span> <span class="op">&lt;=</span> <span class="ident">u32</span>::<span class="ident">from</span>(<span class="ident">u8</span>::<span class="ident">max_value</span>()), <span class="string">&quot;guaranteed because of Mode::Byte&quot;</span>);
     <span class="ident">res</span> <span class="kw">as</span> <span class="ident">u8</span>
 }
 
