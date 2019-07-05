@@ -792,7 +792,7 @@
 <span class="kw">fn</span> <span class="ident">hover_text</span>(<span class="ident">docs</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">desc</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
     <span class="kw">match</span> (<span class="ident">desc</span>, <span class="ident">docs</span>) {
         (<span class="prelude-val">Some</span>(<span class="ident">desc</span>), <span class="ident">docs</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">rust_code_markup_with_doc</span>(<span class="ident">desc</span>, <span class="ident">docs</span>)),
-        (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">docs</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">docs</span>.<span class="ident">to_string</span>()),
+        (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">docs</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">docs</span>),
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
     }
 }

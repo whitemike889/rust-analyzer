@@ -1072,7 +1072,7 @@
             (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">item_id</span>)) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">module</span> <span class="op">=</span> <span class="ident">item_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
                 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">module</span>.<span class="ident">item_list</span>().<span class="ident">is_some</span>(), <span class="string">&quot;expected inline module&quot;</span>);
-                <span class="ident">ModuleSource</span>::<span class="ident">Module</span>(<span class="ident">module</span>.<span class="ident">to_owned</span>())
+                <span class="ident">ModuleSource</span>::<span class="ident">Module</span>(<span class="ident">module</span>)
             }
             (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
         }
