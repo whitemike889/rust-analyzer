@@ -219,6 +219,12 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Many kinds of items or constructs can have generic parameters: functions,</span>
 <span class="doccomment">//! structs, impls, traits, etc. This module provides a common HIR for these</span>
@@ -233,8 +239,8 @@
     <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">HirDatabase</span>},
     <span class="ident">path</span>::<span class="ident">Path</span>,
     <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>,
-    <span class="ident">AdtDef</span>, <span class="ident">AsName</span>, <span class="ident">Container</span>, <span class="ident">Enum</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">ImplBlock</span>, <span class="ident">Name</span>, <span class="ident">Struct</span>, <span class="ident">Trait</span>,
-    <span class="ident">TypeAlias</span>, <span class="ident">Union</span>,
+    <span class="ident">AdtDef</span>, <span class="ident">AsName</span>, <span class="ident">Container</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">ImplBlock</span>, <span class="ident">Name</span>, <span class="ident">Struct</span>,
+    <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>, <span class="ident">Union</span>,
 };
 
 <span class="doccomment">/// Data about a generic parameter (to a function, struct, impl, ...).</span>
@@ -272,8 +278,11 @@
     <span class="ident">Trait</span>(<span class="ident">Trait</span>),
     <span class="ident">TypeAlias</span>(<span class="ident">TypeAlias</span>),
     <span class="ident">ImplBlock</span>(<span class="ident">ImplBlock</span>),
+    <span class="comment">// enum variants cannot have generics themselves, but their parent enums</span>
+    <span class="comment">// can, and this makes some code easier to write</span>
+    <span class="ident">EnumVariant</span>(<span class="ident">EnumVariant</span>),
 }
-<span class="macro">impl_froms</span><span class="macro">!</span>(<span class="ident">GenericDef</span>: <span class="ident">Function</span>, <span class="ident">Struct</span>, <span class="ident">Union</span>, <span class="ident">Enum</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>, <span class="ident">ImplBlock</span>);
+<span class="macro">impl_froms</span><span class="macro">!</span>(<span class="ident">GenericDef</span>: <span class="ident">Function</span>, <span class="ident">Struct</span>, <span class="ident">Union</span>, <span class="ident">Enum</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>, <span class="ident">ImplBlock</span>, <span class="ident">EnumVariant</span>);
 
 <span class="kw">impl</span> <span class="ident">GenericParams</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">generic_params_query</span>(
@@ -284,6 +293,7 @@
         <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">def</span> {
             <span class="ident">GenericDef</span>::<span class="ident">Function</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">container</span>(<span class="ident">db</span>).<span class="ident">map</span>(<span class="ident">GenericDef</span>::<span class="ident">from</span>),
             <span class="ident">GenericDef</span>::<span class="ident">TypeAlias</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">container</span>(<span class="ident">db</span>).<span class="ident">map</span>(<span class="ident">GenericDef</span>::<span class="ident">from</span>),
+            <span class="ident">GenericDef</span>::<span class="ident">EnumVariant</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">it</span>.<span class="ident">parent_enum</span>(<span class="ident">db</span>).<span class="ident">into</span>()),
             <span class="ident">GenericDef</span>::<span class="ident">Struct</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">GenericDef</span>::<span class="ident">Union</span>(<span class="kw">_</span>)
             <span class="op">|</span> <span class="ident">GenericDef</span>::<span class="ident">Enum</span>(<span class="kw">_</span>)
@@ -308,6 +318,7 @@
             }
             <span class="ident">GenericDef</span>::<span class="ident">TypeAlias</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">generics</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">it</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>, <span class="ident">start</span>),
             <span class="ident">GenericDef</span>::<span class="ident">ImplBlock</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">generics</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">it</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>, <span class="ident">start</span>),
+            <span class="ident">GenericDef</span>::<span class="ident">EnumVariant</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {}
         }
 
         <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">generics</span>)
@@ -406,6 +417,7 @@
             <span class="ident">GenericDef</span>::<span class="ident">Trait</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">inner</span>.<span class="ident">resolver</span>(<span class="ident">db</span>),
             <span class="ident">GenericDef</span>::<span class="ident">TypeAlias</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">inner</span>.<span class="ident">resolver</span>(<span class="ident">db</span>),
             <span class="ident">GenericDef</span>::<span class="ident">ImplBlock</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">inner</span>.<span class="ident">resolver</span>(<span class="ident">db</span>),
+            <span class="ident">GenericDef</span>::<span class="ident">EnumVariant</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">inner</span>.<span class="ident">parent_enum</span>(<span class="ident">db</span>).<span class="ident">resolver</span>(<span class="ident">db</span>),
         }
     }
 }
