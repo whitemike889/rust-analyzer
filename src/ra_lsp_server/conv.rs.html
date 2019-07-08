@@ -452,6 +452,52 @@
 <span id="452">452</span>
 <span id="453">453</span>
 <span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{
     <span class="self">self</span>, <span class="ident">CreateFile</span>, <span class="ident">DocumentChangeOperation</span>, <span class="ident">DocumentChanges</span>, <span class="ident">Documentation</span>, <span class="ident">Location</span>,
@@ -839,27 +885,53 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_location_link</span>(
-    <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;</span>,
-    <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>,
-    <span class="comment">// line index for original range file</span>
-    <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>,
-) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LocationLink</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">target_uri</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">file_id</span>().<span class="ident">try_conv_with</span>(<span class="ident">world</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">tgt_line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">file_id</span>());
+<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> (<span class="ident">FileId</span>, <span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;</span>) {
+    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">LocationLink</span>;
+    <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LocationLink</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> (<span class="ident">src_file_id</span>, <span class="ident">target</span>) <span class="op">=</span> <span class="self">self</span>;
 
-    <span class="kw">let</span> <span class="ident">target_range</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">full_range</span>().<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">tgt_line_index</span>);
+        <span class="kw">let</span> <span class="ident">target_uri</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">file_id</span>().<span class="ident">try_conv_with</span>(<span class="ident">world</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">src_line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">src_file_id</span>);
+        <span class="kw">let</span> <span class="ident">tgt_line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">file_id</span>());
 
-    <span class="kw">let</span> <span class="ident">target_selection_range</span> <span class="op">=</span>
-        <span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">focus_range</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">tgt_line_index</span>)).<span class="ident">unwrap_or</span>(<span class="ident">target_range</span>);
+        <span class="kw">let</span> <span class="ident">target_range</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">info</span>.<span class="ident">full_range</span>().<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">tgt_line_index</span>);
 
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">LocationLink</span> {
-        <span class="ident">origin_selection_range</span>: <span class="prelude-val">Some</span>(<span class="ident">target</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="ident">line_index</span>)),
-        <span class="ident">target_uri</span>,
-        <span class="ident">target_range</span>,
-        <span class="ident">target_selection_range</span>,
-    };
-    <span class="prelude-val">Ok</span>(<span class="ident">res</span>)
+        <span class="kw">let</span> <span class="ident">target_selection_range</span> <span class="op">=</span> <span class="ident">target</span>
+            .<span class="ident">info</span>
+            .<span class="ident">focus_range</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">tgt_line_index</span>))
+            .<span class="ident">unwrap_or</span>(<span class="ident">target_range</span>);
+
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">LocationLink</span> {
+            <span class="ident">origin_selection_range</span>: <span class="prelude-val">Some</span>(<span class="ident">target</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">src_line_index</span>)),
+            <span class="ident">target_uri</span>,
+            <span class="ident">target_range</span>,
+            <span class="ident">target_selection_range</span>,
+        };
+        <span class="prelude-val">Ok</span>(<span class="ident">res</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> (<span class="ident">FileId</span>, <span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;&gt;</span>) {
+    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">req</span>::<span class="ident">GotoDefinitionResponse</span>;
+    <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">GotoTypeDefinitionResponse</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">RangeInfo</span> { <span class="ident">range</span>, <span class="ident">info</span>: <span class="ident">navs</span> }) <span class="op">=</span> <span class="self">self</span>;
+        <span class="kw">let</span> <span class="ident">links</span> <span class="op">=</span> <span class="ident">navs</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> (<span class="ident">file_id</span>, <span class="ident">RangeInfo</span>::<span class="ident">new</span>(<span class="ident">range</span>, <span class="ident">nav</span>)))
+            .<span class="ident">try_conv_with_to_vec</span>(<span class="ident">world</span>)<span class="question-mark">?</span>;
+        <span class="kw">if</span> <span class="ident">world</span>.<span class="ident">options</span>.<span class="ident">supports_location_link</span> {
+            <span class="prelude-val">Ok</span>(<span class="ident">links</span>.<span class="ident">into</span>())
+        } <span class="kw">else</span> {
+            <span class="kw">let</span> <span class="ident">locations</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Location</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">links</span>
+                .<span class="ident">into_iter</span>()
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">link</span><span class="op">|</span> <span class="ident">Location</span> { <span class="ident">uri</span>: <span class="ident">link</span>.<span class="ident">target_uri</span>, <span class="ident">range</span>: <span class="ident">link</span>.<span class="ident">target_selection_range</span> })
+                .<span class="ident">collect</span>();
+            <span class="prelude-val">Ok</span>(<span class="ident">locations</span>.<span class="ident">into</span>())
+        }
+    }
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_location</span>(
@@ -905,6 +977,26 @@
 
     <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Item</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">iter</span>.<span class="ident">next</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">conv_with</span>(<span class="self">self</span>.<span class="ident">ctx</span>))
+    }
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryConvWithToVec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+    <span class="kw">type</span> <span class="ident">Ctx</span>;
+    <span class="kw">type</span> <span class="ident">Output</span>;
+
+    <span class="kw">fn</span> <span class="ident">try_conv_with_to_vec</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;&gt;</span>;
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="ident">TryConvWithToVec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">I</span>
+<span class="kw">where</span>
+    <span class="ident">I</span>: <span class="ident">Iterator</span> <span class="op">+</span> <span class="lifetime">&#39;a</span>,
+    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">TryConvWith</span>,
+{
+    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&gt;</span>::<span class="ident">Ctx</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&gt;</span>::<span class="ident">Output</span>;
+
+    <span class="kw">fn</span> <span class="ident">try_conv_with_to_vec</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">try_conv_with</span>(<span class="ident">ctx</span>)).<span class="ident">collect</span>()
     }
 }
 </pre></div>

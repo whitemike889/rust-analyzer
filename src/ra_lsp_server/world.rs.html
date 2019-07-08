@@ -212,6 +212,18 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -234,6 +246,13 @@
     <span class="ident">LspError</span>, <span class="prelude-ty">Result</span>,
 };
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Options</span> {
+    <span class="kw">pub</span> <span class="ident">publish_decorations</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">show_workspace_loaded</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">supports_location_link</span>: <span class="ident">bool</span>,
+}
+
 <span class="doccomment">/// `WorldState` is the primary mutable state of the language server</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// The most interesting components are `vfs`, which stores a consistent</span>
@@ -241,6 +260,7 @@
 <span class="doccomment">/// incremental salsa database.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WorldState</span> {
+    <span class="kw">pub</span> <span class="ident">options</span>: <span class="ident">Options</span>,
     <span class="kw">pub</span> <span class="ident">roots_to_scan</span>: <span class="ident">usize</span>,
     <span class="kw">pub</span> <span class="ident">roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">workspaces</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProjectWorkspace</span><span class="op">&gt;&gt;</span>,
@@ -251,6 +271,7 @@
 
 <span class="doccomment">/// An immutable snapshot of the world&#39;s state at a point in time.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WorldSnapshot</span> {
+    <span class="kw">pub</span> <span class="ident">options</span>: <span class="ident">Options</span>,
     <span class="kw">pub</span> <span class="ident">workspaces</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProjectWorkspace</span><span class="op">&gt;&gt;</span>,
     <span class="kw">pub</span> <span class="ident">analysis</span>: <span class="ident">Analysis</span>,
     <span class="kw">pub</span> <span class="ident">vfs</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Vfs</span><span class="op">&gt;&gt;</span>,
@@ -262,6 +283,7 @@
         <span class="ident">folder_roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
         <span class="ident">workspaces</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProjectWorkspace</span><span class="op">&gt;</span>,
         <span class="ident">lru_capacity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+        <span class="ident">options</span>: <span class="ident">Options</span>,
     ) <span class="op">-&gt;</span> <span class="ident">WorldState</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">change</span> <span class="op">=</span> <span class="ident">AnalysisChange</span>::<span class="ident">new</span>();
 
@@ -293,6 +315,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">analysis_host</span> <span class="op">=</span> <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="ident">lru_capacity</span>);
         <span class="ident">analysis_host</span>.<span class="ident">apply_change</span>(<span class="ident">change</span>);
         <span class="ident">WorldState</span> {
+            <span class="ident">options</span>,
             <span class="ident">roots_to_scan</span>,
             <span class="ident">roots</span>: <span class="ident">folder_roots</span>,
             <span class="ident">workspaces</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">workspaces</span>),
@@ -355,6 +378,7 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">snapshot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">WorldSnapshot</span> {
         <span class="ident">WorldSnapshot</span> {
+            <span class="ident">options</span>: <span class="self">self</span>.<span class="ident">options</span>.<span class="ident">clone</span>(),
             <span class="ident">workspaces</span>: <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">workspaces</span>),
             <span class="ident">analysis</span>: <span class="self">self</span>.<span class="ident">analysis_host</span>.<span class="ident">analysis</span>(),
             <span class="ident">vfs</span>: <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">vfs</span>),

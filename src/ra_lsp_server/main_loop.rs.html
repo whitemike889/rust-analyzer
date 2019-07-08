@@ -602,6 +602,18 @@
 <span id="602">602</span>
 <span id="603">603</span>
 <span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -613,7 +625,7 @@
 <span class="kw">use</span> <span class="ident">gen_lsp_server</span>::{
     <span class="ident">handle_shutdown</span>, <span class="ident">ErrorCode</span>, <span class="ident">RawMessage</span>, <span class="ident">RawNotification</span>, <span class="ident">RawRequest</span>, <span class="ident">RawResponse</span>,
 };
-<span class="kw">use</span> <span class="ident">lsp_types</span>::<span class="ident">NumberOrString</span>;
+<span class="kw">use</span> <span class="ident">lsp_types</span>::{<span class="ident">ClientCapabilities</span>, <span class="ident">NumberOrString</span>};
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">Canceled</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>};
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::<span class="ident">VfsTask</span>;
@@ -627,7 +639,7 @@
     },
     <span class="ident">project_model</span>::<span class="ident">workspace_loader</span>,
     <span class="ident">req</span>,
-    <span class="ident">world</span>::{<span class="ident">WorldSnapshot</span>, <span class="ident">WorldState</span>},
+    <span class="ident">world</span>::{<span class="ident">Options</span>, <span class="ident">WorldSnapshot</span>, <span class="ident">WorldState</span>},
     <span class="ident">InitializationOptions</span>, <span class="prelude-ty">Result</span>,
 };
 
@@ -656,6 +668,7 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">main_loop</span>(
     <span class="ident">ws_roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+    <span class="ident">client_caps</span>: <span class="ident">ClientCapabilities</span>,
     <span class="ident">options</span>: <span class="ident">InitializationOptions</span>,
     <span class="ident">msg_receiver</span>: <span class="kw-2">&amp;</span><span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
@@ -682,7 +695,20 @@
         <span class="ident">loaded_workspaces</span>
     };
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(<span class="ident">ws_roots</span>, <span class="ident">workspaces</span>, <span class="ident">options</span>.<span class="ident">lru_capacity</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(
+        <span class="ident">ws_roots</span>,
+        <span class="ident">workspaces</span>,
+        <span class="ident">options</span>.<span class="ident">lru_capacity</span>,
+        <span class="ident">Options</span> {
+            <span class="ident">publish_decorations</span>: <span class="ident">options</span>.<span class="ident">publish_decorations</span>,
+            <span class="ident">show_workspace_loaded</span>: <span class="ident">options</span>.<span class="ident">show_workspace_loaded</span>,
+            <span class="ident">supports_location_link</span>: <span class="ident">client_caps</span>
+                .<span class="ident">text_document</span>
+                .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">definition</span>)
+                .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">link_support</span>)
+                .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>),
+        },
+    );
 
     <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">THREADPOOL_SIZE</span>);
     <span class="kw">let</span> (<span class="ident">task_sender</span>, <span class="ident">task_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>::<span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>();
@@ -690,7 +716,6 @@
 
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;server initialized, serving requests&quot;</span>);
     <span class="kw">let</span> <span class="ident">main_res</span> <span class="op">=</span> <span class="ident">main_loop_inner</span>(
-        <span class="ident">options</span>,
         <span class="kw-2">&amp;</span><span class="ident">pool</span>,
         <span class="ident">msg_sender</span>,
         <span class="ident">msg_receiver</span>,
@@ -764,7 +789,6 @@
 }
 
 <span class="kw">fn</span> <span class="ident">main_loop_inner</span>(
-    <span class="ident">options</span>: <span class="ident">InitializationOptions</span>,
     <span class="ident">pool</span>: <span class="kw-2">&amp;</span><span class="ident">ThreadPool</span>,
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">msg_receiver</span>: <span class="kw-2">&amp;</span><span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
@@ -863,7 +887,7 @@
             <span class="op">&amp;&amp;</span> <span class="ident">in_flight_libraries</span> <span class="op">==</span> <span class="number">0</span>
         {
             <span class="kw">let</span> <span class="ident">n_packages</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">workspaces</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">count</span>()).<span class="ident">sum</span>();
-            <span class="kw">if</span> <span class="ident">options</span>.<span class="ident">show_workspace_loaded</span> {
+            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">options</span>.<span class="ident">show_workspace_loaded</span> {
                 <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;workspace loaded, {} rust packages&quot;</span>, <span class="ident">n_packages</span>);
                 <span class="ident">show_message</span>(<span class="ident">req</span>::<span class="ident">MessageType</span>::<span class="ident">Info</span>, <span class="ident">msg</span>, <span class="ident">msg_sender</span>);
             }
@@ -875,7 +899,7 @@
             <span class="ident">update_file_notifications_on_threadpool</span>(
                 <span class="ident">pool</span>,
                 <span class="ident">state</span>.<span class="ident">snapshot</span>(),
-                <span class="ident">options</span>.<span class="ident">publish_decorations</span>,
+                <span class="ident">state</span>.<span class="ident">options</span>.<span class="ident">publish_decorations</span>,
                 <span class="ident">task_sender</span>.<span class="ident">clone</span>(),
                 <span class="ident">subs</span>.<span class="ident">subscriptions</span>(),
             )
