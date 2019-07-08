@@ -901,26 +901,16 @@
 <span id="901">901</span>
 <span id="902">902</span>
 <span id="903">903</span>
-<span id="904">904</span>
-<span id="905">905</span>
-<span id="906">906</span>
-<span id="907">907</span>
-<span id="908">908</span>
-<span id="909">909</span>
-<span id="910">910</span>
-<span id="911">911</span>
-<span id="912">912</span>
-<span id="913">913</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
 <span class="kw">use</span> <span class="ident">gen_lsp_server</span>::<span class="ident">ErrorCode</span>;
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{
-    <span class="ident">CodeAction</span>, <span class="ident">CodeActionResponse</span>, <span class="ident">CodeLens</span>, <span class="ident">Command</span>, <span class="ident">Diagnostic</span>, <span class="ident">DiagnosticSeverity</span>,
-    <span class="ident">DocumentFormattingParams</span>, <span class="ident">DocumentHighlight</span>, <span class="ident">DocumentSymbol</span>, <span class="ident">FoldingRange</span>, <span class="ident">FoldingRangeKind</span>,
-    <span class="ident">FoldingRangeParams</span>, <span class="ident">Hover</span>, <span class="ident">HoverContents</span>, <span class="ident">Location</span>, <span class="ident">MarkupContent</span>, <span class="ident">MarkupKind</span>, <span class="ident">Position</span>,
-    <span class="ident">PrepareRenameResponse</span>, <span class="ident">Range</span>, <span class="ident">RenameParams</span>, <span class="ident">SymbolInformation</span>, <span class="ident">TextDocumentIdentifier</span>,
-    <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>,
+    <span class="ident">CodeAction</span>, <span class="ident">CodeActionResponse</span>, <span class="ident">CodeLens</span>, <span class="ident">Command</span>, <span class="ident">CompletionItem</span>, <span class="ident">Diagnostic</span>,
+    <span class="ident">DiagnosticSeverity</span>, <span class="ident">DocumentFormattingParams</span>, <span class="ident">DocumentHighlight</span>, <span class="ident">DocumentSymbol</span>, <span class="ident">FoldingRange</span>,
+    <span class="ident">FoldingRangeKind</span>, <span class="ident">FoldingRangeParams</span>, <span class="ident">Hover</span>, <span class="ident">HoverContents</span>, <span class="ident">Location</span>, <span class="ident">MarkupContent</span>,
+    <span class="ident">MarkupKind</span>, <span class="ident">Position</span>, <span class="ident">PrepareRenameResponse</span>, <span class="ident">Range</span>, <span class="ident">RenameParams</span>, <span class="ident">SymbolInformation</span>,
+    <span class="ident">TextDocumentIdentifier</span>, <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{
     <span class="ident">AssistId</span>, <span class="ident">Cancelable</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">FoldKind</span>, <span class="ident">Query</span>, <span class="ident">RangeInfo</span>,
@@ -1067,14 +1057,12 @@
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">DocumentOnTypeFormattingParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TextEdit</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_on_type_formatting&quot;</span>);
-    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
-    <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">FilePosition</span> {
-        <span class="ident">file_id</span>,
-        <span class="doccomment">/// in `ra_ide_api`, the `on_type` invariant is that</span>
-        <span class="doccomment">/// `text.char_at(position) == typed_char`.</span>
-        <span class="ident">offset</span>: <span class="ident">params</span>.<span class="ident">position</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>) <span class="op">-</span> <span class="ident">TextUnit</span>::<span class="ident">of_char</span>(<span class="string">&#39;.&#39;</span>),
-    };
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document_position</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
+
+    <span class="comment">// in `ra_ide_api`, the `on_type` invariant is that</span>
+    <span class="comment">// `text.char_at(position) == typed_char`.</span>
+    <span class="ident">position</span>.<span class="ident">offset</span> <span class="op">=</span> <span class="ident">position</span>.<span class="ident">offset</span> <span class="op">-</span> <span class="ident">TextUnit</span>::<span class="ident">of_char</span>(<span class="string">&#39;.&#39;</span>);
 
     <span class="kw">let</span> <span class="ident">edit</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">params</span>.<span class="ident">ch</span>.<span class="ident">as_str</span>() {
         <span class="string">&quot;=&quot;</span> <span class="op">=&gt;</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">on_eq_typed</span>(<span class="ident">position</span>),
@@ -1128,7 +1116,7 @@
         }
     }
 
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">req</span>::<span class="ident">DocumentSymbolResponse</span>::<span class="ident">Nested</span>(<span class="ident">res</span>)))
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">res</span>.<span class="ident">into</span>()))
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_workspace_symbol</span>(
@@ -1191,7 +1179,7 @@
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> <span class="ident">RangeInfo</span>::<span class="ident">new</span>(<span class="ident">nav_range</span>, <span class="ident">nav</span>))
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> <span class="ident">to_location_link</span>(<span class="kw-2">&amp;</span><span class="ident">nav</span>, <span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="kw-2">&amp;</span><span class="ident">line_index</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">req</span>::<span class="ident">GotoDefinitionResponse</span>::<span class="ident">Link</span>(<span class="ident">res</span>)))
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">res</span>.<span class="ident">into</span>()))
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_goto_implementation</span>(
@@ -1211,7 +1199,7 @@
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> <span class="ident">RangeInfo</span>::<span class="ident">new</span>(<span class="ident">nav_range</span>, <span class="ident">nav</span>))
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> <span class="ident">to_location_link</span>(<span class="kw-2">&amp;</span><span class="ident">nav</span>, <span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="kw-2">&amp;</span><span class="ident">line_index</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">req</span>::<span class="ident">GotoDefinitionResponse</span>::<span class="ident">Link</span>(<span class="ident">res</span>)))
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">res</span>.<span class="ident">into</span>()))
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_goto_type_definition</span>(
@@ -1231,7 +1219,7 @@
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> <span class="ident">RangeInfo</span>::<span class="ident">new</span>(<span class="ident">nav_range</span>, <span class="ident">nav</span>))
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">nav</span><span class="op">|</span> <span class="ident">to_location_link</span>(<span class="kw-2">&amp;</span><span class="ident">nav</span>, <span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="kw-2">&amp;</span><span class="ident">line_index</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">req</span>::<span class="ident">GotoDefinitionResponse</span>::<span class="ident">Link</span>(<span class="ident">res</span>)))
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">res</span>.<span class="ident">into</span>()))
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_parent_module</span>(
@@ -1321,12 +1309,7 @@
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">CompletionParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">CompletionResponse</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;handle_completion&quot;</span>);
-    <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> {
-        <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
-        <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">position</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>);
-        <span class="ident">FilePosition</span> { <span class="ident">file_id</span>, <span class="ident">offset</span> }
-    };
+    <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document_position</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">completion_triggered_after_single_colon</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ctx</span>) <span class="op">=</span> <span class="ident">params</span>.<span class="ident">context</span> {
@@ -1354,9 +1337,10 @@
         <span class="prelude-val">Some</span>(<span class="ident">items</span>) <span class="op">=&gt;</span> <span class="ident">items</span>,
     };
     <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
-    <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">items</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>)).<span class="ident">collect</span>();
+    <span class="kw">let</span> <span class="ident">items</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompletionItem</span><span class="op">&gt;</span> <span class="op">=</span>
+        <span class="ident">items</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>)).<span class="ident">collect</span>();
 
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">req</span>::<span class="ident">CompletionResponse</span>::<span class="ident">Array</span>(<span class="ident">items</span>)))
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">items</span>.<span class="ident">into</span>()))
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_folding_range</span>(
@@ -1457,9 +1441,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_rename</span>(<span class="ident">world</span>: <span class="ident">WorldSnapshot</span>, <span class="ident">params</span>: <span class="ident">RenameParams</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">WorkspaceEdit</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
-    <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">position</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>);
+    <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document_position</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
 
     <span class="kw">if</span> <span class="ident">params</span>.<span class="ident">new_name</span>.<span class="ident">is_empty</span>() {
         <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">LspError</span>::<span class="ident">new</span>(
@@ -1469,8 +1451,7 @@
         .<span class="ident">into</span>());
     }
 
-    <span class="kw">let</span> <span class="ident">optional_change</span> <span class="op">=</span>
-        <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">rename</span>(<span class="ident">FilePosition</span> { <span class="ident">file_id</span>, <span class="ident">offset</span> }, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">params</span>.<span class="ident">new_name</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">optional_change</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">rename</span>(<span class="ident">position</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">params</span>.<span class="ident">new_name</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">change</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">optional_change</span> {
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
         <span class="prelude-val">Some</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
@@ -1485,11 +1466,10 @@
     <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
     <span class="ident">params</span>: <span class="ident">req</span>::<span class="ident">ReferenceParams</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Location</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
-    <span class="kw">let</span> <span class="ident">offset</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">position</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>);
+    <span class="kw">let</span> <span class="ident">position</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document_position</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
 
-    <span class="kw">let</span> <span class="ident">refs</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">find_all_refs</span>(<span class="ident">FilePosition</span> { <span class="ident">file_id</span>, <span class="ident">offset</span> })<span class="question-mark">?</span> {
+    <span class="kw">let</span> <span class="ident">refs</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">find_all_refs</span>(<span class="ident">position</span>)<span class="question-mark">?</span> {
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
         <span class="prelude-val">Some</span>(<span class="ident">refs</span>) <span class="op">=&gt;</span> <span class="ident">refs</span>,
     };
