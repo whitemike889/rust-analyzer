@@ -1064,7 +1064,7 @@
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">name</span>::<span class="ident">AsName</span>,
+    <span class="ident">name</span>::{<span class="ident">AsName</span>, <span class="ident">SELF_PARAM</span>},
     <span class="ident">type_ref</span>::{<span class="ident">Mutability</span>, <span class="ident">TypeRef</span>},
     <span class="ident">DefWithBody</span>, <span class="ident">Either</span>, <span class="ident">HasSource</span>, <span class="ident">HirDatabase</span>, <span class="ident">HirFileId</span>, <span class="ident">MacroCallLoc</span>, <span class="ident">MacroFileKind</span>, <span class="ident">Name</span>,
     <span class="ident">Path</span>, <span class="ident">Resolver</span>,
@@ -2032,7 +2032,7 @@
                 <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="ident">self_param</span>);
                 <span class="kw">let</span> <span class="ident">param_pat</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">alloc_pat</span>(
                     <span class="ident">Pat</span>::<span class="ident">Bind</span> {
-                        <span class="ident">name</span>: <span class="ident">Name</span>::<span class="ident">self_param</span>(),
+                        <span class="ident">name</span>: <span class="ident">SELF_PARAM</span>,
                         <span class="ident">mode</span>: <span class="ident">BindingAnnotation</span>::<span class="ident">Unannotated</span>,
                         <span class="ident">subpat</span>: <span class="prelude-val">None</span>,
                     },

@@ -222,9 +222,6 @@
 <span id="222">222</span>
 <span id="223">223</span>
 <span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Many kinds of items or constructs can have generic parameters: functions,</span>
 <span class="doccomment">//! structs, impls, traits, etc. This module provides a common HIR for these</span>
@@ -237,6 +234,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">HirDatabase</span>},
+    <span class="ident">name</span>::<span class="ident">SELF_TYPE</span>,
     <span class="ident">path</span>::<span class="ident">Path</span>,
     <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>,
     <span class="ident">AdtDef</span>, <span class="ident">AsName</span>, <span class="ident">Container</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">ImplBlock</span>, <span class="ident">Name</span>, <span class="ident">Struct</span>,
@@ -309,11 +307,7 @@
             <span class="ident">GenericDef</span>::<span class="ident">Enum</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">generics</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">it</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>, <span class="ident">start</span>),
             <span class="ident">GenericDef</span>::<span class="ident">Trait</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// traits get the Self type as an implicit first type parameter</span>
-                <span class="ident">generics</span>.<span class="ident">params</span>.<span class="ident">push</span>(<span class="ident">GenericParam</span> {
-                    <span class="ident">idx</span>: <span class="ident">start</span>,
-                    <span class="ident">name</span>: <span class="ident">Name</span>::<span class="ident">self_type</span>(),
-                    <span class="ident">default</span>: <span class="prelude-val">None</span>,
-                });
+                <span class="ident">generics</span>.<span class="ident">params</span>.<span class="ident">push</span>(<span class="ident">GenericParam</span> { <span class="ident">idx</span>: <span class="ident">start</span>, <span class="ident">name</span>: <span class="ident">SELF_TYPE</span>, <span class="ident">default</span>: <span class="prelude-val">None</span> });
                 <span class="ident">generics</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">it</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>, <span class="ident">start</span> <span class="op">+</span> <span class="number">1</span>);
             }
             <span class="ident">GenericDef</span>::<span class="ident">TypeAlias</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">generics</span>.<span class="ident">fill</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">it</span>.<span class="ident">source</span>(<span class="ident">db</span>).<span class="ident">ast</span>, <span class="ident">start</span>),
