@@ -327,7 +327,7 @@
     <span class="ident">krate</span>: <span class="ident">Crate</span>,
     <span class="ident">trait_ref</span>: <span class="ident">Canonical</span><span class="op">&lt;</span><span class="ident">InEnvironment</span><span class="op">&lt;</span><span class="ident">Obligation</span><span class="op">&gt;&gt;</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Solution</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;implements_query&quot;</span>);
+    <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;solve_query&quot;</span>);
     <span class="kw">let</span> <span class="ident">canonical</span> <span class="op">=</span> <span class="ident">trait_ref</span>.<span class="ident">to_chalk</span>(<span class="ident">db</span>).<span class="ident">cast</span>();
     <span class="comment">// We currently don&#39;t deal with universes (I think / hope they&#39;re not yet</span>
     <span class="comment">// relevant for our use cases?)</span>
