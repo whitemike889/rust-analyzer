@@ -152,12 +152,22 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Unification and canonicalization logic.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">InferenceContext</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">InferenceContext</span>, <span class="ident">Obligation</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">db</span>::<span class="ident">HirDatabase</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ty</span>::{<span class="ident">Canonical</span>, <span class="ident">InferTy</span>, <span class="ident">ProjectionPredicate</span>, <span class="ident">ProjectionTy</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ty</span>::{
+    <span class="ident">Canonical</span>, <span class="ident">InEnvironment</span>, <span class="ident">InferTy</span>, <span class="ident">ProjectionPredicate</span>, <span class="ident">ProjectionTy</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>,
+};
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span>: <span class="ident">HirDatabase</span><span class="op">&gt;</span> <span class="ident">InferenceContext</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">D</span><span class="op">&gt;</span> {
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">canonicalizer</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Canonicalizer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">D</span><span class="op">&gt;</span>
@@ -260,22 +270,28 @@
         <span class="ident">ProjectionPredicate</span> { <span class="ident">ty</span>, <span class="ident">projection_ty</span> }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">canonicalize_ty</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">ty</span>: <span class="ident">Ty</span>) <span class="op">-&gt;</span> <span class="ident">Canonicalized</span><span class="op">&lt;</span><span class="ident">Ty</span><span class="op">&gt;</span> {
+    <span class="comment">// FIXME: add some point, we need to introduce a `Fold` trait that abstracts</span>
+    <span class="comment">// over all the things that can be canonicalized (like Chalk and rustc have)</span>
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">canonicalize_ty</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">ty</span>: <span class="ident">Ty</span>) <span class="op">-&gt;</span> <span class="ident">Canonicalized</span><span class="op">&lt;</span><span class="ident">Ty</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">do_canonicalize_ty</span>(<span class="ident">ty</span>);
         <span class="self">self</span>.<span class="ident">into_canonicalized</span>(<span class="ident">result</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">canonicalize_trait_ref</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">trait_ref</span>: <span class="ident">TraitRef</span>) <span class="op">-&gt;</span> <span class="ident">Canonicalized</span><span class="op">&lt;</span><span class="ident">TraitRef</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">do_canonicalize_trait_ref</span>(<span class="ident">trait_ref</span>);
-        <span class="self">self</span>.<span class="ident">into_canonicalized</span>(<span class="ident">result</span>)
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">canonicalize_projection</span>(
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">canonicalize_obligation</span>(
         <span class="kw-2">mut</span> <span class="self">self</span>,
-        <span class="ident">projection</span>: <span class="ident">ProjectionPredicate</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">Canonicalized</span><span class="op">&lt;</span><span class="ident">ProjectionPredicate</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">do_canonicalize_projection_predicate</span>(<span class="ident">projection</span>);
-        <span class="self">self</span>.<span class="ident">into_canonicalized</span>(<span class="ident">result</span>)
+        <span class="ident">obligation</span>: <span class="ident">InEnvironment</span><span class="op">&lt;</span><span class="ident">Obligation</span><span class="op">&gt;</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Canonicalized</span><span class="op">&lt;</span><span class="ident">InEnvironment</span><span class="op">&lt;</span><span class="ident">Obligation</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">obligation</span>.<span class="ident">value</span> {
+            <span class="ident">Obligation</span>::<span class="ident">Trait</span>(<span class="ident">tr</span>) <span class="op">=&gt;</span> <span class="ident">Obligation</span>::<span class="ident">Trait</span>(<span class="self">self</span>.<span class="ident">do_canonicalize_trait_ref</span>(<span class="ident">tr</span>)),
+            <span class="ident">Obligation</span>::<span class="ident">Projection</span>(<span class="ident">pr</span>) <span class="op">=&gt;</span> {
+                <span class="ident">Obligation</span>::<span class="ident">Projection</span>(<span class="self">self</span>.<span class="ident">do_canonicalize_projection_predicate</span>(<span class="ident">pr</span>))
+            }
+        };
+        <span class="self">self</span>.<span class="ident">into_canonicalized</span>(<span class="ident">InEnvironment</span> {
+            <span class="ident">value</span>: <span class="ident">result</span>,
+            <span class="ident">environment</span>: <span class="ident">obligation</span>.<span class="ident">environment</span>,
+        })
     }
 }
 

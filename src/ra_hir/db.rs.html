@@ -225,13 +225,6 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -448,18 +441,11 @@
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">chalk</span>::<span class="ident">impl_datum_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">impl_datum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">krate</span>: <span class="ident">Crate</span>, <span class="ident">impl_id</span>: <span class="ident">chalk_ir</span>::<span class="ident">ImplId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">chalk_rust_ir</span>::<span class="ident">ImplDatum</span><span class="op">&gt;</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">implements_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">implements</span>(
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">solve_query</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">solve</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">krate</span>: <span class="ident">Crate</span>,
-        <span class="ident">goal</span>: <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Canonical</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">TraitRef</span><span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">Solution</span><span class="op">&gt;</span>;
-
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">normalize_query</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">normalize</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">krate</span>: <span class="ident">Crate</span>,
-        <span class="ident">goal</span>: <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Canonical</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">ProjectionPredicate</span><span class="op">&gt;</span>,
+        <span class="ident">goal</span>: <span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Canonical</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">InEnvironment</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">Obligation</span><span class="op">&gt;&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">traits</span>::<span class="ident">Solution</span><span class="op">&gt;</span>;
 }
 

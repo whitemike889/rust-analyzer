@@ -301,7 +301,6 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
-<span id="304">304</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>};
 
@@ -600,8 +599,7 @@
             <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">TraitDatumQuery</span>
             <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">StructDatumQuery</span>
             <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ImplDatumQuery</span>
-            <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ImplementsQuery</span>
-            <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">NormalizeQuery</span>
+            <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">SolveQuery</span>
         ];
         <span class="ident">acc</span>.<span class="ident">sort_by_key</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Reverse</span>(<span class="ident">it</span>.<span class="number">1</span>));
         <span class="ident">acc</span>
