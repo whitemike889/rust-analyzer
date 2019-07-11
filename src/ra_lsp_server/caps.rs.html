@@ -48,14 +48,12 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
-<span id="51">51</span>
-<span id="52">52</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{
     <span class="ident">CodeActionProviderCapability</span>, <span class="ident">CodeLensOptions</span>, <span class="ident">CompletionOptions</span>,
-    <span class="ident">DocumentOnTypeFormattingOptions</span>, <span class="ident">ExecuteCommandOptions</span>, <span class="ident">FoldingRangeProviderCapability</span>,
-    <span class="ident">GenericCapability</span>, <span class="ident">ImplementationProviderCapability</span>, <span class="ident">RenameOptions</span>, <span class="ident">RenameProviderCapability</span>,
-    <span class="ident">ServerCapabilities</span>, <span class="ident">SignatureHelpOptions</span>, <span class="ident">TextDocumentSyncCapability</span>, <span class="ident">TextDocumentSyncKind</span>,
+    <span class="ident">DocumentOnTypeFormattingOptions</span>, <span class="ident">FoldingRangeProviderCapability</span>, <span class="ident">GenericCapability</span>,
+    <span class="ident">ImplementationProviderCapability</span>, <span class="ident">RenameOptions</span>, <span class="ident">RenameProviderCapability</span>, <span class="ident">ServerCapabilities</span>,
+    <span class="ident">SignatureHelpOptions</span>, <span class="ident">TextDocumentSyncCapability</span>, <span class="ident">TextDocumentSyncKind</span>,
     <span class="ident">TextDocumentSyncOptions</span>, <span class="ident">TypeDefinitionProviderCapability</span>,
 };
 
@@ -97,9 +95,7 @@
             <span class="ident">prepare_provider</span>: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
         })),
         <span class="ident">color_provider</span>: <span class="prelude-val">None</span>,
-        <span class="ident">execute_command_provider</span>: <span class="prelude-val">Some</span>(<span class="ident">ExecuteCommandOptions</span> {
-            <span class="ident">commands</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;apply_code_action&quot;</span>.<span class="ident">to_string</span>()],
-        }),
+        <span class="ident">execute_command_provider</span>: <span class="prelude-val">None</span>,
         <span class="ident">workspace</span>: <span class="prelude-val">None</span>,
     }
 }

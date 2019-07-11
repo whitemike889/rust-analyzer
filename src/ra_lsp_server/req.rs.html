@@ -195,6 +195,7 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
+<span id="198">198</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{<span class="ident">Location</span>, <span class="ident">Position</span>, <span class="ident">Range</span>, <span class="ident">TextDocumentIdentifier</span>, <span class="ident">Url</span>};
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
@@ -203,10 +204,11 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">lsp_types</span>::{
     <span class="ident">notification</span>::<span class="kw-2">*</span>, <span class="ident">request</span>::<span class="kw-2">*</span>, <span class="ident">ApplyWorkspaceEditParams</span>, <span class="ident">CodeActionParams</span>, <span class="ident">CodeLens</span>,
-    <span class="ident">CodeLensParams</span>, <span class="ident">CompletionParams</span>, <span class="ident">CompletionResponse</span>, <span class="ident">DocumentOnTypeFormattingParams</span>,
-    <span class="ident">DocumentSymbolParams</span>, <span class="ident">DocumentSymbolResponse</span>, <span class="ident">ExecuteCommandParams</span>, <span class="ident">Hover</span>, <span class="ident">InitializeResult</span>,
-    <span class="ident">MessageType</span>, <span class="ident">PublishDiagnosticsParams</span>, <span class="ident">ReferenceParams</span>, <span class="ident">ShowMessageParams</span>, <span class="ident">SignatureHelp</span>,
-    <span class="ident">TextDocumentEdit</span>, <span class="ident">TextDocumentPositionParams</span>, <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>, <span class="ident">WorkspaceSymbolParams</span>,
+    <span class="ident">CodeLensParams</span>, <span class="ident">CompletionParams</span>, <span class="ident">CompletionResponse</span>, <span class="ident">DidChangeConfigurationParams</span>,
+    <span class="ident">DocumentOnTypeFormattingParams</span>, <span class="ident">DocumentSymbolParams</span>, <span class="ident">DocumentSymbolResponse</span>, <span class="ident">Hover</span>,
+    <span class="ident">InitializeResult</span>, <span class="ident">MessageType</span>, <span class="ident">PublishDiagnosticsParams</span>, <span class="ident">ReferenceParams</span>, <span class="ident">ShowMessageParams</span>,
+    <span class="ident">SignatureHelp</span>, <span class="ident">TextDocumentEdit</span>, <span class="ident">TextDocumentPositionParams</span>, <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>,
+    <span class="ident">WorkspaceSymbolParams</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">AnalyzerStatus</span> {}
