@@ -301,6 +301,13 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>};
 
@@ -555,6 +562,13 @@
                 <span class="kw">let</span> <span class="ident">after</span> <span class="op">=</span> <span class="ident">memory_usage</span>().<span class="ident">allocated</span>;
                 <span class="kw">let</span> <span class="ident">q</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">q</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
                 <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">q</span>);
+                <span class="ident">acc</span>.<span class="ident">push</span>((<span class="ident">name</span>, <span class="ident">before</span> <span class="op">-</span> <span class="ident">after</span>));
+
+                <span class="kw">let</span> <span class="ident">before</span> <span class="op">=</span> <span class="ident">memory_usage</span>().<span class="ident">allocated</span>;
+                <span class="self">self</span>.<span class="ident">query</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">q</span>).<span class="ident">sweep</span>(<span class="ident">sweep</span>.<span class="ident">discard_everything</span>());
+                <span class="kw">let</span> <span class="ident">after</span> <span class="op">=</span> <span class="ident">memory_usage</span>().<span class="ident">allocated</span>;
+                <span class="kw">let</span> <span class="ident">q</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">q</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
+                <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?} (deps)&quot;</span>, <span class="ident">q</span>);
                 <span class="ident">acc</span>.<span class="ident">push</span>((<span class="ident">name</span>, <span class="ident">before</span> <span class="op">-</span> <span class="ident">after</span>));
             )<span class="kw-2">*</span>}
         }

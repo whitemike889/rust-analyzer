@@ -122,6 +122,10 @@
 <span id="122">122</span>
 <span id="123">123</span>
 <span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections</span>::<span class="ident">HashSet</span>, <span class="ident">fmt</span>::<span class="ident">Write</span>, <span class="ident">path</span>::<span class="ident">Path</span>, <span class="ident">time</span>::<span class="ident">Instant</span>};
 
@@ -240,9 +244,13 @@
     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Analysis: {:?}, {}&quot;</span>, <span class="ident">analysis_time</span>.<span class="ident">elapsed</span>(), <span class="ident">ra_prof</span>::<span class="ident">memory_usage</span>());
 
     <span class="kw">if</span> <span class="ident">memory_usage</span> {
+        <span class="ident">drop</span>(<span class="ident">db</span>);
         <span class="kw">for</span> (<span class="ident">name</span>, <span class="ident">bytes</span>) <span class="kw">in</span> <span class="ident">host</span>.<span class="ident">per_query_memory_usage</span>() {
             <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{:&gt;8} {}&quot;</span>, <span class="ident">bytes</span>, <span class="ident">name</span>)
         }
+        <span class="kw">let</span> <span class="ident">before</span> <span class="op">=</span> <span class="ident">ra_prof</span>::<span class="ident">memory_usage</span>();
+        <span class="ident">drop</span>(<span class="ident">host</span>);
+        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;leftover: {}&quot;</span>, <span class="ident">before</span>.<span class="ident">allocated</span> <span class="op">-</span> <span class="ident">ra_prof</span>::<span class="ident">memory_usage</span>().<span class="ident">allocated</span>)
     }
 
     <span class="prelude-val">Ok</span>(())
