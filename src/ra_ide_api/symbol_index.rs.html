@@ -370,8 +370,6 @@
 <span id="370">370</span>
 <span id="371">371</span>
 <span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module handles fuzzy-searching of functions, structs and other symbols</span>
 <span class="doccomment">//! by name across the whole workspace and dependencies.</span>
@@ -409,9 +407,9 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
     <span class="ident">algo</span>::<span class="ident">visit</span>::{<span class="ident">visitor</span>, <span class="ident">Visitor</span>},
     <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>},
-    <span class="ident">AstNode</span>, <span class="ident">SmolStr</span>, <span class="ident">SourceFile</span>,
+    <span class="ident">AstNode</span>, <span class="ident">Parse</span>, <span class="ident">SmolStr</span>, <span class="ident">SourceFile</span>,
     <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="kw-2">*</span>},
-    <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">TextRange</span>, <span class="ident">TreeArc</span>, <span class="ident">WalkEvent</span>,
+    <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">TextRange</span>, <span class="ident">WalkEvent</span>,
 };
 <span class="kw">use</span> <span class="ident">rayon</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 
@@ -434,9 +432,9 @@
 
 <span class="kw">fn</span> <span class="ident">file_symbols</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">SymbolsDatabase</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SymbolIndex</span><span class="op">&gt;</span> {
     <span class="ident">db</span>.<span class="ident">check_canceled</span>();
-    <span class="kw">let</span> <span class="ident">source_file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>).<span class="ident">tree</span>;
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>);
 
-    <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">source_file_to_file_symbols</span>(<span class="kw-2">&amp;</span><span class="ident">source_file</span>, <span class="ident">file_id</span>);
+    <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">source_file_to_file_symbols</span>(<span class="ident">parse</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>);
 
     <span class="comment">// FIXME: add macros here</span>
 
@@ -544,11 +542,9 @@
         <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">as_fst</span>().<span class="ident">size</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">symbols</span>.<span class="ident">len</span>() <span class="op">*</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">FileSymbol</span><span class="op">&gt;</span>()
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">for_files</span>(
-        <span class="ident">files</span>: <span class="kw">impl</span> <span class="ident">ParallelIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">FileId</span>, <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">SymbolIndex</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">for_files</span>(<span class="ident">files</span>: <span class="kw">impl</span> <span class="ident">ParallelIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">FileId</span>, <span class="ident">Parse</span>)<span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">SymbolIndex</span> {
         <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">files</span>
-            .<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="ident">file_id</span>, <span class="ident">file</span>)<span class="op">|</span> <span class="ident">source_file_to_file_symbols</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>, <span class="ident">file_id</span>))
+            .<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="ident">file_id</span>, <span class="ident">file</span>)<span class="op">|</span> <span class="ident">source_file_to_file_symbols</span>(<span class="ident">file</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
         <span class="ident">SymbolIndex</span>::<span class="ident">new</span>(<span class="ident">symbols</span>)
     }

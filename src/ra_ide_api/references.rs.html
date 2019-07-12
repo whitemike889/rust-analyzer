@@ -431,8 +431,8 @@
     <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>,
     <span class="ident">position</span>: <span class="ident">FilePosition</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ReferenceSearchResult</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
-    <span class="kw">let</span> (<span class="ident">binding</span>, <span class="ident">analyzer</span>) <span class="op">=</span> <span class="ident">find_binding</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">file</span>, <span class="ident">position</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
+    <span class="kw">let</span> (<span class="ident">binding</span>, <span class="ident">analyzer</span>) <span class="op">=</span> <span class="ident">find_binding</span>(<span class="ident">db</span>, <span class="ident">parse</span>.<span class="ident">tree</span>(), <span class="ident">position</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">declaration</span> <span class="op">=</span> <span class="ident">NavigationTarget</span>::<span class="ident">from_bind_pat</span>(<span class="ident">position</span>.<span class="ident">file_id</span>, <span class="ident">binding</span>);
 
     <span class="kw">let</span> <span class="ident">references</span> <span class="op">=</span> <span class="ident">analyzer</span>
@@ -470,8 +470,8 @@
     <span class="ident">position</span>: <span class="ident">FilePosition</span>,
     <span class="ident">new_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">source_file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
-    <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="ident">source_file</span>.<span class="ident">syntax</span>();
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
+    <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>();
 
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">ast_name</span>, <span class="ident">ast_module</span>)) <span class="op">=</span> <span class="ident">find_name_and_module_at_offset</span>(<span class="ident">syntax</span>, <span class="ident">position</span>) {
         <span class="ident">rename_mod</span>(<span class="ident">db</span>, <span class="ident">ast_name</span>, <span class="ident">ast_module</span>, <span class="ident">position</span>, <span class="ident">new_name</span>)

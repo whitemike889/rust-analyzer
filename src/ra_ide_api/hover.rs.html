@@ -701,6 +701,7 @@
 <span id="701">701</span>
 <span id="702">702</span>
 <span id="703">703</span>
+<span id="704">704</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::{<span class="ident">HasSource</span>, <span class="ident">HirDisplay</span>};
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">SourceDatabase</span>;
@@ -798,7 +799,8 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">hover</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">HoverResult</span><span class="op">&gt;&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
+    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">HoverResult</span>::<span class="ident">new</span>();
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">range</span> <span class="op">=</span> <span class="prelude-val">None</span>;
@@ -945,8 +947,8 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">type_of</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">frange</span>: <span class="ident">FileRange</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">frange</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
-    <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="ident">file</span>.<span class="ident">syntax</span>();
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">frange</span>.<span class="ident">file_id</span>);
+    <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>();
     <span class="kw">let</span> <span class="ident">leaf_node</span> <span class="op">=</span> <span class="ident">find_covering_element</span>(<span class="ident">syntax</span>, <span class="ident">frange</span>.<span class="ident">range</span>);
     <span class="comment">// if we picked identifier, expand to pattern/expression</span>
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">leaf_node</span>

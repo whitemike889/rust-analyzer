@@ -220,7 +220,7 @@
 
 <span class="kw">fn</span> <span class="ident">file</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">read_stdin</span>()<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="ident">SourceFile</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>).<span class="ident">tree</span>)
+    <span class="prelude-val">Ok</span>(<span class="ident">SourceFile</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>).<span class="ident">tree</span>().<span class="ident">to_owned</span>())
 }
 
 <span class="kw">fn</span> <span class="ident">read_stdin</span>() <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {

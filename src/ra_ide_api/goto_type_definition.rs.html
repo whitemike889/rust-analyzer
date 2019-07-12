@@ -86,9 +86,9 @@
     <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>,
     <span class="ident">position</span>: <span class="ident">FilePosition</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>).<span class="ident">tree</span>;
+    <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
 
-    <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">find_token_at_offset</span>(<span class="ident">file</span>.<span class="ident">syntax</span>(), <span class="ident">position</span>.<span class="ident">offset</span>).<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">token</span><span class="op">|</span> {
+    <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">find_token_at_offset</span>(<span class="ident">parse</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>(), <span class="ident">position</span>.<span class="ident">offset</span>).<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">token</span><span class="op">|</span> {
         <span class="ident">token</span>
             .<span class="ident">parent</span>()
             .<span class="ident">ancestors</span>()

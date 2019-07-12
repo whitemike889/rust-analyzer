@@ -293,6 +293,14 @@
 <span id="293">293</span>
 <span id="294">294</span>
 <span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Syntax Tree library used throughout the rust analyzer.</span>
 <span class="doccomment">//!</span>
@@ -355,11 +363,19 @@
 <span class="doccomment">/// files.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Parse</span> {
-    <span class="kw">pub</span> <span class="ident">tree</span>: <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">errors</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">tree</span>: <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span>,
+    <span class="ident">errors</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SourceFile</span> {
+        <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">tree</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">errors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">SyntaxError</span>] {
+        <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">errors</span>
+    }
+
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ok</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">is_empty</span>() {
             <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">tree</span>)
