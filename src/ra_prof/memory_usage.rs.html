@@ -70,10 +70,10 @@
 <span class="kw">impl</span> <span class="ident">MemoryUsage</span> {
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;jemalloc&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current</span>() <span class="op">-&gt;</span> <span class="ident">MemoryUsage</span> {
-        <span class="ident">jemalloc_ctl</span>::<span class="ident">epoch</span>().<span class="ident">unwrap</span>();
+        <span class="ident">jemalloc_ctl</span>::<span class="ident">epoch</span>::<span class="ident">advance</span>().<span class="ident">unwrap</span>();
         <span class="ident">MemoryUsage</span> {
-            <span class="ident">allocated</span>: <span class="ident">Bytes</span>(<span class="ident">jemalloc_ctl</span>::<span class="ident">stats</span>::<span class="ident">allocated</span>().<span class="ident">unwrap</span>()),
-            <span class="ident">resident</span>: <span class="ident">Bytes</span>(<span class="ident">jemalloc_ctl</span>::<span class="ident">stats</span>::<span class="ident">resident</span>().<span class="ident">unwrap</span>()),
+            <span class="ident">allocated</span>: <span class="ident">Bytes</span>(<span class="ident">jemalloc_ctl</span>::<span class="ident">stats</span>::<span class="ident">allocated</span>::<span class="ident">read</span>().<span class="ident">unwrap</span>()),
+            <span class="ident">resident</span>: <span class="ident">Bytes</span>(<span class="ident">jemalloc_ctl</span>::<span class="ident">stats</span>::<span class="ident">resident</span>::<span class="ident">read</span>().<span class="ident">unwrap</span>()),
         }
     }
 
