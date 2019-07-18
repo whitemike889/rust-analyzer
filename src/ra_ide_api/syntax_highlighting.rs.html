@@ -323,13 +323,55 @@
 <span id="323">323</span>
 <span id="324">324</span>
 <span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::{<span class="ident">FxHashMap</span>, <span class="ident">FxHashSet</span>};
 
+<span class="kw">use</span> <span class="ident">hir</span>::{<span class="ident">Mutability</span>, <span class="ident">Ty</span>};
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">SourceDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
-    <span class="ident">ast</span>, <span class="ident">AstNode</span>, <span class="ident">Direction</span>, <span class="ident">SmolStr</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>::<span class="kw-2">*</span>, <span class="ident">TextRange</span>, <span class="ident">T</span>,
+    <span class="ident">ast</span>, <span class="ident">AstNode</span>, <span class="ident">Direction</span>, <span class="ident">Pat</span>, <span class="ident">PatKind</span>, <span class="ident">SmolStr</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>::<span class="kw-2">*</span>,
+    <span class="ident">TextRange</span>, <span class="ident">T</span>,
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>::<span class="ident">RootDatabase</span>, <span class="ident">FileId</span>};
@@ -354,6 +396,27 @@
         <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">return</span>] <span class="op">=&gt;</span> <span class="bool-val">true</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
     }
+}
+
+<span class="kw">fn</span> <span class="ident">is_variable_mutable</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">analyzer</span>: <span class="kw-2">&amp;</span><span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>, <span class="ident">pat</span>: <span class="kw-2">&amp;</span><span class="ident">Pat</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">analyzer</span>.<span class="ident">type_of_pat</span>(<span class="ident">db</span>, <span class="ident">pat</span>).<span class="ident">unwrap_or</span>(<span class="ident">Ty</span>::<span class="ident">Unknown</span>);
+    <span class="kw">let</span> <span class="ident">is_ty_mut</span> <span class="op">=</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">mutability</span>)) <span class="op">=</span> <span class="ident">ty</span>.<span class="ident">as_reference</span>() {
+            <span class="kw">match</span> <span class="ident">mutability</span> {
+                <span class="ident">Mutability</span>::<span class="ident">Shared</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+                <span class="ident">Mutability</span>::<span class="ident">Mut</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            }
+        } <span class="kw">else</span> {
+            <span class="bool-val">false</span>
+        }
+    };
+
+    <span class="kw">let</span> <span class="ident">is_pat_mut</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">pat</span>.<span class="ident">kind</span>() {
+        <span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">bind_pat</span>) <span class="op">=&gt;</span> <span class="ident">bind_pat</span>.<span class="ident">is_mutable</span>(),
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+    };
+
+    <span class="ident">is_ty_mut</span> <span class="op">||</span> <span class="ident">is_pat_mut</span>
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">highlight</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HighlightedRange</span><span class="op">&gt;</span> {
@@ -423,7 +486,11 @@
                                 <span class="ident">calc_binding_hash</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">text</span>, <span class="kw-2">*</span><span class="ident">shadow_count</span>)
                             });
 
-                            <span class="string">&quot;variable&quot;</span>
+                            <span class="kw">if</span> <span class="ident">is_variable_mutable</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">analyzer</span>, <span class="ident">ptr</span>.<span class="ident">to_node</span>(<span class="ident">root</span>)) {
+                                <span class="string">&quot;variable.mut&quot;</span>
+                            } <span class="kw">else</span> {
+                                <span class="string">&quot;variable&quot;</span>
+                            }
                         }
                         <span class="prelude-val">Some</span>(<span class="ident">SelfParam</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> <span class="string">&quot;type&quot;</span>,
                         <span class="prelude-val">Some</span>(<span class="ident">GenericParam</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> <span class="string">&quot;type&quot;</span>,
@@ -435,7 +502,8 @@
             }
             <span class="ident">NAME</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="ident">node</span>.<span class="ident">as_node</span>().<span class="ident">and_then</span>(<span class="ident">ast</span>::<span class="ident">Name</span>::<span class="ident">cast</span>) {
-                    <span class="kw">if</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">ancestors</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">ast</span>::<span class="ident">BindPat</span>::<span class="ident">cast</span>(<span class="ident">x</span>).<span class="ident">is_some</span>()) {
+                    <span class="kw">let</span> <span class="ident">analyzer</span> <span class="op">=</span> <span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">file_id</span>, <span class="ident">name</span>.<span class="ident">syntax</span>(), <span class="prelude-val">None</span>);
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pat</span>) <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">ancestors</span>().<span class="ident">find_map</span>(<span class="ident">Pat</span>::<span class="ident">cast</span>) {
                         <span class="ident">binding_hash</span> <span class="op">=</span> <span class="prelude-val">Some</span>({
                             <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">to_smol_string</span>();
                             <span class="kw">let</span> <span class="ident">shadow_count</span> <span class="op">=</span>
@@ -443,7 +511,12 @@
                             <span class="kw-2">*</span><span class="ident">shadow_count</span> <span class="op">+=</span> <span class="number">1</span>;
                             <span class="ident">calc_binding_hash</span>(<span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">text</span>, <span class="kw-2">*</span><span class="ident">shadow_count</span>)
                         });
-                        <span class="string">&quot;variable&quot;</span>
+
+                        <span class="kw">if</span> <span class="ident">is_variable_mutable</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">analyzer</span>, <span class="ident">pat</span>) {
+                            <span class="string">&quot;variable.mut&quot;</span>
+                        } <span class="kw">else</span> {
+                            <span class="string">&quot;variable&quot;</span>
+                        }
                     } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">name</span>
                         .<span class="ident">syntax</span>()
                         .<span class="ident">parent</span>()
@@ -567,22 +640,23 @@
 
 <span class="kw">const</span> <span class="ident">STYLE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;
 &lt;style&gt;
-body       { margin: 0; }
-pre        { color: #DCDCCC; background: #3F3F3F; font-size: 22px; padding: 0.4em; }
+body                { margin: 0; }
+pre                 { color: #DCDCCC; background: #3F3F3F; font-size: 22px; padding: 0.4em; }
 
-.comment   { color: #7F9F7F; }
-.string    { color: #CC9393; }
-.function  { color: #93E0E3; }
-.parameter { color: #94BFF3; }
-.builtin   { color: #DD6718; }
-.text      { color: #DCDCCC; }
-.attribute { color: #BFEBBF; }
-.literal   { color: #DFAF8F; }
-.macro     { color: #DFAF8F; }
+.comment            { color: #7F9F7F; }
+.string             { color: #CC9393; }
+.function           { color: #93E0E3; }
+.parameter          { color: #94BFF3; }
+.builtin            { color: #DD6718; }
+.text               { color: #DCDCCC; }
+.attribute          { color: #BFEBBF; }
+.literal            { color: #DFAF8F; }
+.macro              { color: #DFAF8F; }
+.variable\\.mut     { color: #DFAF8F; }
 
-.keyword           { color: #F0DFAF; }
-.keyword\\.unsafe  { color: #F0DFAF; font-weight: bold; }
-.keyword\\.control { color: #DC8CC3; }
+.keyword            { color: #F0DFAF; }
+.keyword\\.unsafe   { color: #F0DFAF; font-weight: bold; }
+.keyword\\.control  { color: #DC8CC3; }
 &lt;/style&gt;
 &quot;</span>;
 
@@ -615,12 +689,18 @@ fn main() {
         vec.push(Foo { x: 0, y: 1 });
     }
     unsafe { vec.set_len(0); }
+
+    let mut x = 42;
+    let y = &amp;mut x;
+    let z = &amp;y;
+
+    y;
 }
 &quot;#</span>
             .<span class="ident">trim</span>(),
         );
         <span class="kw">let</span> <span class="ident">dst_file</span> <span class="op">=</span> <span class="ident">project_dir</span>().<span class="ident">join</span>(<span class="string">&quot;crates/ra_ide_api/src/snapshots/highlighting.html&quot;</span>);
-        <span class="kw">let</span> <span class="ident">actual_html</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">analysis</span>.<span class="ident">highlight_as_html</span>(<span class="ident">file_id</span>, <span class="bool-val">true</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">actual_html</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">analysis</span>.<span class="ident">highlight_as_html</span>(<span class="ident">file_id</span>, <span class="bool-val">false</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">expected_html</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">read_text</span>(<span class="kw-2">&amp;</span><span class="ident">dst_file</span>);
         <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">write</span>(<span class="ident">dst_file</span>, <span class="kw-2">&amp;</span><span class="ident">actual_html</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(<span class="ident">expected_html</span>, <span class="ident">actual_html</span>);

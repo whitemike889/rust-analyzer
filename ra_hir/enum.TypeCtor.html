@@ -7,8 +7,8 @@
     Str,
     Slice,
     Array,
-    RawPtr(Mutability),
-    Ref(Mutability),
+    RawPtr(<a class="enum" href="../ra_hir/enum.Mutability.html" title="enum ra_hir::Mutability">Mutability</a>),
+    Ref(<a class="enum" href="../ra_hir/enum.Mutability.html" title="enum ra_hir::Mutability">Mutability</a>),
     FnDef(<a class="enum" href="../ra_hir/enum.CallableDef.html" title="enum ra_hir::CallableDef">CallableDef</a>),
     FnPtr {
         num_args: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>,
@@ -31,8 +31,8 @@ tuples.</p>
 </div><span id="variant.Str" class="variant small-section-header"><a href="#variant.Str" class="anchor field"></a><code id='Str.v'>Str</code></span><div class='docblock'><p>The pointee of a string slice. Written as <code>str</code>.</p>
 </div><span id="variant.Slice" class="variant small-section-header"><a href="#variant.Slice" class="anchor field"></a><code id='Slice.v'>Slice</code></span><div class='docblock'><p>The pointee of an array slice.  Written as <code>[T]</code>.</p>
 </div><span id="variant.Array" class="variant small-section-header"><a href="#variant.Array" class="anchor field"></a><code id='Array.v'>Array</code></span><div class='docblock'><p>An array with the given length. Written as <code>[T; n]</code>.</p>
-</div><span id="variant.RawPtr" class="variant small-section-header"><a href="#variant.RawPtr" class="anchor field"></a><code id='RawPtr.v'>RawPtr(Mutability)</code></span><div class='docblock'><p>A raw pointer. Written as <code>*mut T</code> or <code>*const T</code></p>
-</div><span id="variant.Ref" class="variant small-section-header"><a href="#variant.Ref" class="anchor field"></a><code id='Ref.v'>Ref(Mutability)</code></span><div class='docblock'><p>A reference; a pointer with an associated lifetime. Written as
+</div><span id="variant.RawPtr" class="variant small-section-header"><a href="#variant.RawPtr" class="anchor field"></a><code id='RawPtr.v'>RawPtr(<a class="enum" href="../ra_hir/enum.Mutability.html" title="enum ra_hir::Mutability">Mutability</a>)</code></span><div class='docblock'><p>A raw pointer. Written as <code>*mut T</code> or <code>*const T</code></p>
+</div><span id="variant.Ref" class="variant small-section-header"><a href="#variant.Ref" class="anchor field"></a><code id='Ref.v'>Ref(<a class="enum" href="../ra_hir/enum.Mutability.html" title="enum ra_hir::Mutability">Mutability</a>)</code></span><div class='docblock'><p>A reference; a pointer with an associated lifetime. Written as
 <code>&amp;'a mut T</code> or <code>&amp;'a T</code>.</p>
 </div><span id="variant.FnDef" class="variant small-section-header"><a href="#variant.FnDef" class="anchor field"></a><code id='FnDef.v'>FnDef(<a class="enum" href="../ra_hir/enum.CallableDef.html" title="enum ra_hir::CallableDef">CallableDef</a>)</code></span><div class='docblock'><p>The anonymous type of a function declaration/definition. Each
 function has a unique type, which is output (for a function

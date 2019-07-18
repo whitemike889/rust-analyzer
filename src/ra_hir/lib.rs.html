@@ -77,6 +77,7 @@
 <span id="77">77</span>
 <span id="78">78</span>
 <span id="79">79</span>
+<span id="80">80</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! HIR (previously known as descriptors) provides a high-level object oriented</span>
 <span class="doccomment">//! access to Rust code.</span>
@@ -148,6 +149,7 @@
     <span class="ident">source_binder</span>::{<span class="ident">PathResolution</span>, <span class="ident">ScopeEntryWithSyntax</span>, <span class="ident">SourceAnalyzer</span>},
     <span class="ident">source_id</span>::{<span class="ident">AstIdMap</span>, <span class="ident">ErasedFileAstId</span>},
     <span class="ident">ty</span>::{<span class="ident">display</span>::<span class="ident">HirDisplay</span>, <span class="ident">ApplicationTy</span>, <span class="ident">CallableDef</span>, <span class="ident">Substs</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>},
+    <span class="ident">type_ref</span>::<span class="ident">Mutability</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">code_model</span>::{
