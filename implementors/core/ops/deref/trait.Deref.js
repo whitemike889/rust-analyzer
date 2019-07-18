@@ -1,6 +1,6 @@
 (function() {var implementors = {};
 implementors["ra_hir"] = [{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"ra_hir/struct.Substs.html\" title=\"struct ra_hir::Substs\">Substs</a>",synthetic:false,types:["ra_hir::ty::Substs"]},];
-implementors["ra_syntax"] = [{text:"impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"ra_syntax/struct.TreeArc.html\" title=\"struct ra_syntax::TreeArc\">TreeArc</a>&lt;T&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: SyntaxNodeWrapper,&nbsp;</span>",synthetic:false,types:["ra_syntax::syntax_node::TreeArc"]},];
+implementors["ra_syntax"] = [{text:"impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"ra_syntax/struct.TreeArc.html\" title=\"struct ra_syntax::TreeArc\">TreeArc</a>&lt;T&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class=\"trait\" href=\"ra_syntax/trait.SyntaxNodeWrapper.html\" title=\"trait ra_syntax::SyntaxNodeWrapper\">SyntaxNodeWrapper</a>,&nbsp;</span>",synthetic:false,types:["ra_syntax::syntax_node::TreeArc"]},];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -370,6 +370,8 @@
 <span id="370">370</span>
 <span id="371">371</span>
 <span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module handles fuzzy-searching of functions, structs and other symbols</span>
 <span class="doccomment">//! by name across the whole workspace and dependencies.</span>
@@ -542,7 +544,9 @@
         <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">as_fst</span>().<span class="ident">size</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">symbols</span>.<span class="ident">len</span>() <span class="op">*</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">FileSymbol</span><span class="op">&gt;</span>()
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">for_files</span>(<span class="ident">files</span>: <span class="kw">impl</span> <span class="ident">ParallelIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">FileId</span>, <span class="ident">Parse</span>)<span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">SymbolIndex</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">for_files</span>(
+        <span class="ident">files</span>: <span class="kw">impl</span> <span class="ident">ParallelIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">FileId</span>, <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">SourceFile</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">SymbolIndex</span> {
         <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">files</span>
             .<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="ident">file_id</span>, <span class="ident">file</span>)<span class="op">|</span> <span class="ident">source_file_to_file_symbols</span>(<span class="ident">file</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
