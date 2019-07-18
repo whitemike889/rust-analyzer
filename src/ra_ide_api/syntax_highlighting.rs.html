@@ -363,7 +363,6 @@
 <span id="363">363</span>
 <span id="364">364</span>
 <span id="365">365</span>
-<span id="366">366</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::{<span class="ident">FxHashMap</span>, <span class="ident">FxHashSet</span>};
 
@@ -371,8 +370,7 @@
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">SourceDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
-    <span class="ident">ast</span>, <span class="ident">AstNode</span>, <span class="ident">Direction</span>, <span class="ident">Pat</span>, <span class="ident">PatKind</span>, <span class="ident">SmolStr</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>::<span class="kw-2">*</span>,
-    <span class="ident">TextRange</span>, <span class="ident">T</span>,
+    <span class="ident">ast</span>, <span class="ident">AstNode</span>, <span class="ident">Direction</span>, <span class="ident">SmolStr</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>::<span class="kw-2">*</span>, <span class="ident">TextRange</span>, <span class="ident">T</span>,
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>::<span class="ident">RootDatabase</span>, <span class="ident">FileId</span>};
@@ -399,7 +397,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">is_variable_mutable</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">analyzer</span>: <span class="kw-2">&amp;</span><span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>, <span class="ident">pat</span>: <span class="kw-2">&amp;</span><span class="ident">Pat</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+<span class="kw">fn</span> <span class="ident">is_variable_mutable</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">RootDatabase</span>, <span class="ident">analyzer</span>: <span class="kw-2">&amp;</span><span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>, <span class="ident">pat</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Pat</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">analyzer</span>.<span class="ident">type_of_pat</span>(<span class="ident">db</span>, <span class="ident">pat</span>).<span class="ident">unwrap_or</span>(<span class="ident">Ty</span>::<span class="ident">Unknown</span>);
     <span class="kw">let</span> <span class="ident">is_ty_mut</span> <span class="op">=</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">mutability</span>)) <span class="op">=</span> <span class="ident">ty</span>.<span class="ident">as_reference</span>() {
@@ -413,7 +411,7 @@
     };
 
     <span class="kw">let</span> <span class="ident">is_pat_mut</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">pat</span>.<span class="ident">kind</span>() {
-        <span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">bind_pat</span>) <span class="op">=&gt;</span> <span class="ident">bind_pat</span>.<span class="ident">is_mutable</span>(),
+        <span class="ident">ast</span>::<span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">bind_pat</span>) <span class="op">=&gt;</span> <span class="ident">bind_pat</span>.<span class="ident">is_mutable</span>(),
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
     };
 
@@ -504,7 +502,7 @@
             <span class="ident">NAME</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="ident">node</span>.<span class="ident">as_node</span>().<span class="ident">and_then</span>(<span class="ident">ast</span>::<span class="ident">Name</span>::<span class="ident">cast</span>) {
                     <span class="kw">let</span> <span class="ident">analyzer</span> <span class="op">=</span> <span class="ident">hir</span>::<span class="ident">SourceAnalyzer</span>::<span class="ident">new</span>(<span class="ident">db</span>, <span class="ident">file_id</span>, <span class="ident">name</span>.<span class="ident">syntax</span>(), <span class="prelude-val">None</span>);
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pat</span>) <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">ancestors</span>().<span class="ident">find_map</span>(<span class="ident">Pat</span>::<span class="ident">cast</span>) {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pat</span>) <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">ancestors</span>().<span class="ident">find_map</span>(<span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">cast</span>) {
                         <span class="ident">binding_hash</span> <span class="op">=</span> <span class="prelude-val">Some</span>({
                             <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">to_smol_string</span>();
                             <span class="kw">let</span> <span class="ident">shadow_count</span> <span class="op">=</span>
