@@ -389,6 +389,15 @@
 <span id="389">389</span>
 <span id="390">390</span>
 <span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
@@ -754,7 +763,16 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">AstDatabase</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">loc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">loc</span>(<span class="ident">db</span>);
         <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">loc</span>.<span class="ident">ast_id</span>.<span class="ident">to_node</span>(<span class="ident">db</span>);
-        <span class="kw">let</span> <span class="ident">syntax_str</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">chunks</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>().<span class="ident">join</span>(<span class="string">&quot; &quot;</span>);
+        <span class="kw">let</span> <span class="ident">syntax_str</span> <span class="op">=</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
+            <span class="ident">node</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">for_each_chunk</span>(<span class="op">|</span><span class="ident">chunk</span><span class="op">|</span> {
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">res</span>.<span class="ident">is_empty</span>() {
+                    <span class="ident">res</span>.<span class="ident">push</span>(<span class="string">&#39; &#39;</span>)
+                }
+                <span class="ident">res</span>.<span class="ident">push_str</span>(<span class="ident">chunk</span>)
+            });
+            <span class="ident">res</span>
+        };
 
         <span class="comment">// dump the file name</span>
         <span class="kw">let</span> <span class="ident">file_id</span>: <span class="ident">HirFileId</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">loc</span>(<span class="ident">db</span>).<span class="ident">ast_id</span>.<span class="ident">file_id</span>();
