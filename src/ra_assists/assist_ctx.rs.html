@@ -229,7 +229,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">AssistCtx</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">DB</span><span class="op">&gt;</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">DB</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">frange</span>: <span class="ident">FileRange</span>,
-    <span class="ident">source_file</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">SourceFile</span>,
+    <span class="ident">source_file</span>: <span class="ident">SourceFile</span>,
     <span class="ident">should_compute_edit</span>: <span class="ident">bool</span>,
     <span class="ident">assist</span>: <span class="ident">Assist</span>,
 }
@@ -239,7 +239,7 @@
         <span class="ident">AssistCtx</span> {
             <span class="ident">db</span>: <span class="self">self</span>.<span class="ident">db</span>,
             <span class="ident">frange</span>: <span class="self">self</span>.<span class="ident">frange</span>,
-            <span class="ident">source_file</span>: <span class="self">self</span>.<span class="ident">source_file</span>,
+            <span class="ident">source_file</span>: <span class="self">self</span>.<span class="ident">source_file</span>.<span class="ident">clone</span>(),
             <span class="ident">should_compute_edit</span>: <span class="self">self</span>.<span class="ident">should_compute_edit</span>,
             <span class="ident">assist</span>: <span class="self">self</span>.<span class="ident">assist</span>.<span class="ident">clone</span>(),
         }
@@ -284,18 +284,18 @@
         <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">assist</span>)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">token_at_offset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TokenAtOffset</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">token_at_offset</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TokenAtOffset</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
         <span class="ident">find_token_at_offset</span>(<span class="self">self</span>.<span class="ident">source_file</span>.<span class="ident">syntax</span>(), <span class="self">self</span>.<span class="ident">frange</span>.<span class="ident">range</span>.<span class="ident">start</span>())
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">node_at_offset</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">AstNode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">N</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">node_at_offset</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">AstNode</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> {
         <span class="ident">find_node_at_offset</span>(<span class="self">self</span>.<span class="ident">source_file</span>.<span class="ident">syntax</span>(), <span class="self">self</span>.<span class="ident">frange</span>.<span class="ident">range</span>.<span class="ident">start</span>())
     }
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">covering_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxElement</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">covering_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxElement</span> {
         <span class="ident">find_covering_element</span>(<span class="self">self</span>.<span class="ident">source_file</span>.<span class="ident">syntax</span>(), <span class="self">self</span>.<span class="ident">frange</span>.<span class="ident">range</span>)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">covering_node_for_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">TextRange</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxElement</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">covering_node_for_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">TextRange</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxElement</span> {
         <span class="ident">find_covering_element</span>(<span class="self">self</span>.<span class="ident">source_file</span>.<span class="ident">syntax</span>(), <span class="ident">range</span>)
     }
 }
@@ -319,7 +319,7 @@
     ) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">replace_with</span> <span class="op">=</span> <span class="ident">replace_with</span>.<span class="ident">into</span>();
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">indent</span>) <span class="op">=</span> <span class="ident">leading_indent</span>(<span class="ident">node</span>) {
-            <span class="ident">replace_with</span> <span class="op">=</span> <span class="ident">reindent</span>(<span class="kw-2">&amp;</span><span class="ident">replace_with</span>, <span class="ident">indent</span>)
+            <span class="ident">replace_with</span> <span class="op">=</span> <span class="ident">reindent</span>(<span class="kw-2">&amp;</span><span class="ident">replace_with</span>, <span class="kw-2">&amp;</span><span class="ident">indent</span>)
         }
         <span class="self">self</span>.<span class="ident">replace</span>(<span class="ident">node</span>.<span class="ident">range</span>(), <span class="ident">replace_with</span>)
     }

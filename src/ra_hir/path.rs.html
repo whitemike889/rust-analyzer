@@ -289,9 +289,9 @@
 
 <span class="kw">impl</span> <span class="ident">Path</span> {
     <span class="doccomment">/// Calls `cb` with all paths, represented by this use item.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">expand_use_item</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
-        <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast</span>::<span class="ident">UseItem</span>,
-        <span class="kw-2">mut</span> <span class="ident">cb</span>: <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">Path</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast</span>::<span class="ident">UseTree</span>, <span class="ident">bool</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Name</span><span class="op">&gt;</span>),
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">expand_use_item</span>(
+        <span class="ident">item</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">UseItem</span>,
+        <span class="kw-2">mut</span> <span class="ident">cb</span>: <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">Path</span>, <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">UseTree</span>, <span class="ident">bool</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Name</span><span class="op">&gt;</span>),
     ) {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tree</span>) <span class="op">=</span> <span class="ident">item</span>.<span class="ident">use_tree</span>() {
             <span class="ident">expand_use_tree</span>(<span class="prelude-val">None</span>, <span class="ident">tree</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">cb</span>);
@@ -299,7 +299,7 @@
     }
 
     <span class="doccomment">/// Converts an `ast::Path` to `Path`. Works with use trees.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="kw-2">mut</span> <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="kw-2">mut</span> <span class="ident">path</span>: <span class="ident">ast</span>::<span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kind</span> <span class="op">=</span> <span class="ident">PathKind</span>::<span class="ident">Plain</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">segments</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">loop</span> {
@@ -329,7 +329,7 @@
                     <span class="kw">break</span>;
                 }
             }
-            <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">qualifier</span>(<span class="ident">path</span>) {
+            <span class="ident">path</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">qualifier</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>) {
                 <span class="prelude-val">Some</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
                 <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">break</span>,
             };
@@ -337,7 +337,7 @@
         <span class="ident">segments</span>.<span class="ident">reverse</span>();
         <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">Path</span> { <span class="ident">kind</span>, <span class="ident">segments</span> });
 
-        <span class="kw">fn</span> <span class="ident">qualifier</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Path</span><span class="op">&gt;</span> {
+        <span class="kw">fn</span> <span class="ident">qualifier</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Path</span><span class="op">&gt;</span> {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">q</span>) <span class="op">=</span> <span class="ident">path</span>.<span class="ident">qualifier</span>() {
                 <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">q</span>);
             }
@@ -378,7 +378,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">GenericArgs</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">TypeArgList</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GenericArgs</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">TypeArgList</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GenericArgs</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="ident">type_arg</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">type_args</span>() {
             <span class="kw">let</span> <span class="ident">type_ref</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">type_arg</span>.<span class="ident">type_ref</span>());
@@ -402,10 +402,10 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">expand_use_tree</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+<span class="kw">fn</span> <span class="ident">expand_use_tree</span>(
     <span class="ident">prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>,
-    <span class="ident">tree</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast</span>::<span class="ident">UseTree</span>,
-    <span class="ident">cb</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">Path</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">ast</span>::<span class="ident">UseTree</span>, <span class="ident">bool</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Name</span><span class="op">&gt;</span>),
+    <span class="ident">tree</span>: <span class="ident">ast</span>::<span class="ident">UseTree</span>,
+    <span class="ident">cb</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">Path</span>, <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">UseTree</span>, <span class="ident">bool</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Name</span><span class="op">&gt;</span>),
 ) {
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">use_tree_list</span>) <span class="op">=</span> <span class="ident">tree</span>.<span class="ident">use_tree_list</span>() {
         <span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">tree</span>.<span class="ident">path</span>() {
@@ -430,7 +430,7 @@
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">segment</span>) <span class="op">=</span> <span class="ident">ast_path</span>.<span class="ident">segment</span>() {
                     <span class="kw">if</span> <span class="ident">segment</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">SelfKw</span>) {
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">prefix</span>) <span class="op">=</span> <span class="ident">prefix</span> {
-                            <span class="ident">cb</span>(<span class="ident">prefix</span>, <span class="ident">tree</span>, <span class="bool-val">false</span>, <span class="ident">alias</span>);
+                            <span class="ident">cb</span>(<span class="ident">prefix</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="bool-val">false</span>, <span class="ident">alias</span>);
                             <span class="kw">return</span>;
                         }
                     }
@@ -438,7 +438,7 @@
             }
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">convert_path</span>(<span class="ident">prefix</span>, <span class="ident">ast_path</span>) {
                 <span class="kw">let</span> <span class="ident">is_glob</span> <span class="op">=</span> <span class="ident">tree</span>.<span class="ident">has_star</span>();
-                <span class="ident">cb</span>(<span class="ident">path</span>, <span class="ident">tree</span>, <span class="ident">is_glob</span>, <span class="ident">alias</span>)
+                <span class="ident">cb</span>(<span class="ident">path</span>, <span class="kw-2">&amp;</span><span class="ident">tree</span>, <span class="ident">is_glob</span>, <span class="ident">alias</span>)
             }
             <span class="comment">// FIXME: report errors somewhere</span>
             <span class="comment">// We get here if we do</span>
@@ -446,7 +446,7 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">convert_path</span>(<span class="ident">prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">convert_path</span>(<span class="ident">prefix</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span>, <span class="ident">path</span>: <span class="ident">ast</span>::<span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span>
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">qual</span>) <span class="op">=</span> <span class="ident">path</span>.<span class="ident">qualifier</span>() { <span class="prelude-val">Some</span>(<span class="ident">convert_path</span>(<span class="ident">prefix</span>, <span class="ident">qual</span>)<span class="question-mark">?</span>) } <span class="kw">else</span> { <span class="ident">prefix</span> };
     <span class="kw">let</span> <span class="ident">segment</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">segment</span>()<span class="question-mark">?</span>;

@@ -170,7 +170,7 @@
             .<span class="ident">and_then</span>(<span class="ident">StructLit</span>::<span class="ident">cast</span>)
             .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">lit</span><span class="op">|</span> <span class="ident">lit</span>.<span class="ident">named_field_list</span>())
         {
-            <span class="kw">let</span> <span class="ident">field_list_ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="ident">field_list_node</span>);
+            <span class="kw">let</span> <span class="ident">field_list_ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">field_list_node</span>);
             <span class="self">self</span>.<span class="ident">sink</span>.<span class="ident">push</span>(<span class="ident">MissingFields</span> {
                 <span class="ident">file</span>: <span class="ident">file_id</span>,
                 <span class="ident">field_list</span>: <span class="ident">field_list_ptr</span>,

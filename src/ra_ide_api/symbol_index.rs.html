@@ -436,7 +436,7 @@
     <span class="ident">db</span>.<span class="ident">check_canceled</span>();
     <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>);
 
-    <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">source_file_to_file_symbols</span>(<span class="ident">parse</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>);
+    <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">source_file_to_file_symbols</span>(<span class="kw-2">&amp;</span><span class="ident">parse</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>);
 
     <span class="comment">// FIXME: add macros here</span>
 
@@ -548,7 +548,7 @@
         <span class="ident">files</span>: <span class="kw">impl</span> <span class="ident">ParallelIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">FileId</span>, <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">SourceFile</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="ident">SymbolIndex</span> {
         <span class="kw">let</span> <span class="ident">symbols</span> <span class="op">=</span> <span class="ident">files</span>
-            .<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="ident">file_id</span>, <span class="ident">file</span>)<span class="op">|</span> <span class="ident">source_file_to_file_symbols</span>(<span class="ident">file</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>))
+            .<span class="ident">flat_map</span>(<span class="op">|</span>(<span class="ident">file_id</span>, <span class="ident">file</span>)<span class="op">|</span> <span class="ident">source_file_to_file_symbols</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>.<span class="ident">tree</span>(), <span class="ident">file_id</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
         <span class="ident">SymbolIndex</span>::<span class="ident">new</span>(<span class="ident">symbols</span>)
     }
@@ -624,7 +624,7 @@
     <span class="kw">for</span> <span class="ident">event</span> <span class="kw">in</span> <span class="ident">source_file</span>.<span class="ident">syntax</span>().<span class="ident">preorder</span>() {
         <span class="kw">match</span> <span class="ident">event</span> {
             <span class="ident">WalkEvent</span>::<span class="ident">Enter</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">symbol</span>) <span class="op">=</span> <span class="ident">to_file_symbol</span>(<span class="ident">node</span>, <span class="ident">file_id</span>) {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">symbol</span>) <span class="op">=</span> <span class="ident">to_file_symbol</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="ident">file_id</span>) {
                     <span class="ident">symbol</span>.<span class="ident">container_name</span> <span class="op">=</span> <span class="ident">stack</span>.<span class="ident">last</span>().<span class="ident">cloned</span>();
 
                     <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">symbol</span>.<span class="ident">name</span>.<span class="ident">clone</span>());
@@ -633,7 +633,7 @@
             }
 
             <span class="ident">WalkEvent</span>::<span class="ident">Leave</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="ident">to_symbol</span>(<span class="ident">node</span>).<span class="ident">is_some</span>() {
+                <span class="kw">if</span> <span class="ident">to_symbol</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>).<span class="ident">is_some</span>() {
                     <span class="ident">stack</span>.<span class="ident">pop</span>();
                 }
             }
@@ -644,7 +644,7 @@
 }
 
 <span class="kw">fn</span> <span class="ident">to_symbol</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SmolStr</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">TextRange</span>)<span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">decl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SmolStr</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">TextRange</span>)<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">decl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="ident">N</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SmolStr</span>, <span class="ident">SyntaxNodePtr</span>, <span class="ident">TextRange</span>)<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">name</span>()<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">name_range</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">range</span>();
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">text</span>().<span class="ident">clone</span>();

@@ -201,6 +201,12 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">TextRange</span>;
 
@@ -228,14 +234,14 @@
     <span class="kw">for</span> <span class="ident">event</span> <span class="kw">in</span> <span class="ident">file</span>.<span class="ident">syntax</span>().<span class="ident">preorder</span>() {
         <span class="kw">match</span> <span class="ident">event</span> {
             <span class="ident">WalkEvent</span>::<span class="ident">Enter</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">symbol</span>) <span class="op">=</span> <span class="ident">structure_node</span>(<span class="ident">node</span>) {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">symbol</span>) <span class="op">=</span> <span class="ident">structure_node</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>) {
                     <span class="ident">symbol</span>.<span class="ident">parent</span> <span class="op">=</span> <span class="ident">stack</span>.<span class="ident">last</span>().<span class="ident">copied</span>();
                     <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">res</span>.<span class="ident">len</span>());
                     <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">symbol</span>);
                 }
             }
             <span class="ident">WalkEvent</span>::<span class="ident">Leave</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="ident">structure_node</span>(<span class="ident">node</span>).<span class="ident">is_some</span>() {
+                <span class="kw">if</span> <span class="ident">structure_node</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>).<span class="ident">is_some</span>() {
                     <span class="ident">stack</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
                 }
             }
@@ -245,19 +251,20 @@
 }
 
 <span class="kw">fn</span> <span class="ident">structure_node</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">decl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">AttrsOwner</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">decl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">AttrsOwner</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="ident">N</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
         <span class="ident">decl_with_detail</span>(<span class="ident">node</span>, <span class="prelude-val">None</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">decl_with_ascription</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">AttrsOwner</span> <span class="op">+</span> <span class="ident">TypeAscriptionOwner</span><span class="op">&gt;</span>(
-        <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>,
+        <span class="ident">node</span>: <span class="ident">N</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
-        <span class="ident">decl_with_type_ref</span>(<span class="ident">node</span>, <span class="ident">node</span>.<span class="ident">ascribed_type</span>())
+        <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">ascribed_type</span>();
+        <span class="ident">decl_with_type_ref</span>(<span class="ident">node</span>, <span class="ident">ty</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">decl_with_type_ref</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">AttrsOwner</span><span class="op">&gt;</span>(
-        <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>,
-        <span class="ident">type_ref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">TypeRef</span><span class="op">&gt;</span>,
+        <span class="ident">node</span>: <span class="ident">N</span>,
+        <span class="ident">type_ref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">TypeRef</span><span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">detail</span> <span class="op">=</span> <span class="ident">type_ref</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">type_ref</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">detail</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
@@ -268,7 +275,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">decl_with_detail</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">NameOwner</span> <span class="op">+</span> <span class="ident">AttrsOwner</span><span class="op">&gt;</span>(
-        <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>,
+        <span class="ident">node</span>: <span class="ident">N</span>,
         <span class="ident">detail</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">name</span>()<span class="question-mark">?</span>;
@@ -286,22 +293,24 @@
 
     <span class="kw">fn</span> <span class="ident">collapse_ws</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span>, <span class="ident">output</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">String</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">can_insert_ws</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        <span class="kw">for</span> <span class="ident">line</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">text</span>().<span class="ident">chunks</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">chunk</span><span class="op">|</span> <span class="ident">chunk</span>.<span class="ident">lines</span>()) {
-            <span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="ident">line</span>.<span class="ident">trim</span>();
-            <span class="kw">if</span> <span class="ident">line</span>.<span class="ident">is_empty</span>() {
-                <span class="kw">if</span> <span class="ident">can_insert_ws</span> {
-                    <span class="ident">output</span>.<span class="ident">push_str</span>(<span class="string">&quot; &quot;</span>);
-                    <span class="ident">can_insert_ws</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">for</span> <span class="ident">chunk</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">text</span>().<span class="ident">chunks</span>() {
+            <span class="kw">for</span> <span class="ident">line</span> <span class="kw">in</span> <span class="ident">chunk</span>.<span class="ident">lines</span>() {
+                <span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="ident">line</span>.<span class="ident">trim</span>();
+                <span class="kw">if</span> <span class="ident">line</span>.<span class="ident">is_empty</span>() {
+                    <span class="kw">if</span> <span class="ident">can_insert_ws</span> {
+                        <span class="ident">output</span>.<span class="ident">push_str</span>(<span class="string">&quot; &quot;</span>);
+                        <span class="ident">can_insert_ws</span> <span class="op">=</span> <span class="bool-val">false</span>;
+                    }
+                } <span class="kw">else</span> {
+                    <span class="ident">output</span>.<span class="ident">push_str</span>(<span class="ident">line</span>);
+                    <span class="ident">can_insert_ws</span> <span class="op">=</span> <span class="bool-val">true</span>;
                 }
-            } <span class="kw">else</span> {
-                <span class="ident">output</span>.<span class="ident">push_str</span>(<span class="ident">line</span>);
-                <span class="ident">can_insert_ws</span> <span class="op">=</span> <span class="bool-val">true</span>;
             }
         }
     }
 
     <span class="ident">visitor</span>()
-        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">fn_def</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">FnDef</span><span class="op">|</span> {
+        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">fn_def</span>: <span class="ident">ast</span>::<span class="ident">FnDef</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">detail</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;fn&quot;</span>);
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">type_param_list</span>) <span class="op">=</span> <span class="ident">fn_def</span>.<span class="ident">type_param_list</span>() {
                 <span class="ident">collapse_ws</span>(<span class="ident">type_param_list</span>.<span class="ident">syntax</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">detail</span>);
@@ -321,11 +330,14 @@
         .<span class="ident">visit</span>(<span class="ident">decl</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">EnumVariant</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="ident">decl</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">TraitDef</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="ident">decl</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Module</span><span class="op">&gt;</span>)
-        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">td</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">TypeAliasDef</span><span class="op">|</span> <span class="ident">decl_with_type_ref</span>(<span class="ident">td</span>, <span class="ident">td</span>.<span class="ident">type_ref</span>()))
+        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">td</span>: <span class="ident">ast</span>::<span class="ident">TypeAliasDef</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">td</span>.<span class="ident">type_ref</span>();
+            <span class="ident">decl_with_type_ref</span>(<span class="ident">td</span>, <span class="ident">ty</span>)
+        })
         .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">NamedFieldDef</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">ConstDef</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">StaticDef</span><span class="op">&gt;</span>)
-        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">im</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">ImplBlock</span><span class="op">|</span> {
+        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">im</span>: <span class="ident">ast</span>::<span class="ident">ImplBlock</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">target_type</span> <span class="op">=</span> <span class="ident">im</span>.<span class="ident">target_type</span>()<span class="question-mark">?</span>;
             <span class="kw">let</span> <span class="ident">target_trait</span> <span class="op">=</span> <span class="ident">im</span>.<span class="ident">target_trait</span>();
             <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">target_trait</span> {
@@ -346,14 +358,14 @@
             };
             <span class="prelude-val">Some</span>(<span class="ident">node</span>)
         })
-        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">mc</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">MacroCall</span><span class="op">|</span> {
+        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">mc</span>: <span class="ident">ast</span>::<span class="ident">MacroCall</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">first_token</span> <span class="op">=</span> <span class="ident">mc</span>.<span class="ident">syntax</span>().<span class="ident">first_token</span>().<span class="ident">unwrap</span>();
             <span class="kw">if</span> <span class="ident">first_token</span>.<span class="ident">text</span>().<span class="ident">as_str</span>() <span class="op">!=</span> <span class="string">&quot;macro_rules&quot;</span> {
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
             <span class="ident">decl</span>(<span class="ident">mc</span>)
         })
-        .<span class="ident">accept</span>(<span class="ident">node</span>)<span class="question-mark">?</span>
+        .<span class="ident">accept</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>)<span class="question-mark">?</span>
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

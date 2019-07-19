@@ -320,12 +320,6 @@
 <span id="320">320</span>
 <span id="321">321</span>
 <span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Syntax Tree library used throughout the rust analyzer.</span>
 <span class="doccomment">//!</span>
@@ -360,7 +354,7 @@
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">fuzz</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span>, <span class="ident">marker</span>::<span class="ident">PhantomData</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>};
 
 <span class="kw">use</span> <span class="ident">ra_text_edit</span>::<span class="ident">AtomTextEdit</span>;
 
@@ -372,8 +366,8 @@
     <span class="ident">ptr</span>::{<span class="ident">AstPtr</span>, <span class="ident">SyntaxNodePtr</span>},
     <span class="ident">syntax_error</span>::{<span class="ident">Location</span>, <span class="ident">SyntaxError</span>, <span class="ident">SyntaxErrorKind</span>},
     <span class="ident">syntax_node</span>::{
-        <span class="ident">Direction</span>, <span class="ident">InsertPosition</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxNodeWrapper</span>, <span class="ident">SyntaxToken</span>,
-        <span class="ident">SyntaxTreeBuilder</span>, <span class="ident">TreeArc</span>, <span class="ident">WalkEvent</span>,
+        <span class="ident">Direction</span>, <span class="ident">InsertPosition</span>, <span class="ident">SyntaxElement</span>, <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxToken</span>, <span class="ident">SyntaxTreeBuilder</span>,
+        <span class="ident">WalkEvent</span>,
     },
     <span class="ident">syntax_text</span>::<span class="ident">SyntaxText</span>,
 };
@@ -387,48 +381,63 @@
 <span class="doccomment">/// Note that we always produce a syntax tree, even for completely invalid</span>
 <span class="doccomment">/// files.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">SyntaxNodeWrapper</span><span class="op">&gt;</span> {
-    <span class="ident">tree</span>: <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">green</span>: <span class="ident">GreenNode</span>,
     <span class="ident">errors</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">_ty</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">SyntaxNodeWrapper</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">Parse</span> { <span class="ident">tree</span>: <span class="self">self</span>.<span class="ident">tree</span>.<span class="ident">clone</span>(), <span class="ident">errors</span>: <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">clone</span>() }
+        <span class="ident">Parse</span> { <span class="ident">green</span>: <span class="self">self</span>.<span class="ident">green</span>.<span class="ident">clone</span>(), <span class="ident">errors</span>: <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">clone</span>(), <span class="ident">_ty</span>: <span class="ident">PhantomData</span> }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">SyntaxNodeWrapper</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">tree</span>: <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">errors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">Parse</span> { <span class="ident">tree</span>, <span class="ident">errors</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">errors</span>) }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">green</span>: <span class="ident">GreenNode</span>, <span class="ident">errors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Parse</span> { <span class="ident">green</span>, <span class="ident">errors</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">errors</span>), <span class="ident">_ty</span>: <span class="ident">PhantomData</span> }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
-        <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">tree</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">syntax_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxNode</span> {
+        <span class="ident">SyntaxNode</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">green</span>.<span class="ident">clone</span>())
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">AstNode</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_syntax</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span> {
+        <span class="ident">Parse</span> { <span class="ident">green</span>: <span class="self">self</span>.<span class="ident">green</span>, <span class="ident">errors</span>: <span class="self">self</span>.<span class="ident">errors</span>, <span class="ident">_ty</span>: <span class="ident">PhantomData</span> }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+        <span class="ident">T</span>::<span class="ident">cast</span>(<span class="self">self</span>.<span class="ident">syntax_node</span>()).<span class="ident">unwrap</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">errors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">SyntaxError</span>] {
         <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">errors</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ok</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ok</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SyntaxError</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">is_empty</span>() {
-            <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">tree</span>)
+            <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">tree</span>())
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">errors</span>)
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">AstNode</span><span class="op">&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_syntax</span>(<span class="ident">this</span>: <span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span> {
-        <span class="ident">Parse</span> { <span class="ident">tree</span>: <span class="ident">this</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>().<span class="ident">to_owned</span>(), <span class="ident">errors</span>: <span class="ident">this</span>.<span class="ident">errors</span> }
+<span class="kw">impl</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cast</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">AstNode</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">if</span> <span class="ident">N</span>::<span class="ident">cast</span>(<span class="self">self</span>.<span class="ident">syntax_node</span>()).<span class="ident">is_some</span>() {
+            <span class="prelude-val">Some</span>(<span class="ident">Parse</span> { <span class="ident">green</span>: <span class="self">self</span>.<span class="ident">green</span>, <span class="ident">errors</span>: <span class="self">self</span>.<span class="ident">errors</span>, <span class="ident">_ty</span>: <span class="ident">PhantomData</span> })
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tree</span>.<span class="ident">syntax</span>().<span class="ident">debug_dump</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>().<span class="ident">debug_dump</span>();
         <span class="kw">for</span> <span class="ident">err</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">iter</span>() {
             <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">buf</span>, <span class="string">&quot;error {:?}: {}&quot;</span>, <span class="ident">err</span>.<span class="ident">location</span>(), <span class="ident">err</span>.<span class="ident">kind</span>()).<span class="ident">unwrap</span>();
         }
@@ -441,24 +450,18 @@
 
     <span class="kw">fn</span> <span class="ident">incremental_reparse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">edit</span>: <span class="kw-2">&amp;</span><span class="ident">AtomTextEdit</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;&gt;</span> {
         <span class="comment">// FIXME: validation errors are not handled here</span>
-        <span class="ident">parsing</span>::<span class="ident">incremental_reparse</span>(<span class="self">self</span>.<span class="ident">tree</span>.<span class="ident">syntax</span>(), <span class="ident">edit</span>, <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">to_vec</span>()).<span class="ident">map</span>(
+        <span class="ident">parsing</span>::<span class="ident">incremental_reparse</span>(<span class="self">self</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>(), <span class="ident">edit</span>, <span class="self">self</span>.<span class="ident">errors</span>.<span class="ident">to_vec</span>()).<span class="ident">map</span>(
             <span class="op">|</span>(<span class="ident">green_node</span>, <span class="ident">errors</span>, <span class="ident">_reparsed_range</span>)<span class="op">|</span> <span class="ident">Parse</span> {
-                <span class="ident">tree</span>: <span class="ident">SourceFile</span>::<span class="ident">new</span>(<span class="ident">green_node</span>),
+                <span class="ident">green</span>: <span class="ident">green_node</span>,
                 <span class="ident">errors</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">errors</span>),
+                <span class="ident">_ty</span>: <span class="ident">PhantomData</span>,
             },
         )
     }
 
     <span class="kw">fn</span> <span class="ident">full_reparse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">edit</span>: <span class="kw-2">&amp;</span><span class="ident">AtomTextEdit</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">edit</span>.<span class="ident">apply</span>(<span class="self">self</span>.<span class="ident">tree</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">to_string</span>());
+        <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">edit</span>.<span class="ident">apply</span>(<span class="self">self</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">to_string</span>());
         <span class="ident">SourceFile</span>::<span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">text</span>)
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SyntaxNode</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cast</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">AstNode</span><span class="op">&gt;</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
-        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">cast</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">tree</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Some</span>(<span class="ident">Parse</span> { <span class="ident">tree</span>: <span class="ident">node</span>.<span class="ident">to_owned</span>(), <span class="ident">errors</span>: <span class="self">self</span>.<span class="ident">errors</span> })
     }
 }
 
@@ -466,20 +469,19 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ast</span>::<span class="ident">SourceFile</span>;
 
 <span class="kw">impl</span> <span class="ident">SourceFile</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">green</span>: <span class="ident">GreenNode</span>) <span class="op">-&gt;</span> <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">green</span>: <span class="ident">GreenNode</span>) <span class="op">-&gt;</span> <span class="ident">SourceFile</span> {
         <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">SyntaxNode</span>::<span class="ident">new</span>(<span class="ident">green</span>);
         <span class="kw">if</span> <span class="macro">cfg</span><span class="macro">!</span>(<span class="ident">debug_assertions</span>) {
             <span class="ident">validation</span>::<span class="ident">validate_block_structure</span>(<span class="kw-2">&amp;</span><span class="ident">root</span>);
         }
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">root</span>.<span class="ident">kind</span>(), <span class="ident">SyntaxKind</span>::<span class="ident">SOURCE_FILE</span>);
-        <span class="ident">TreeArc</span>::<span class="ident">cast</span>(<span class="ident">root</span>)
+        <span class="ident">SourceFile</span>::<span class="ident">cast</span>(<span class="ident">root</span>).<span class="ident">unwrap</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">Parse</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">green</span>, <span class="kw-2">mut</span> <span class="ident">errors</span>) <span class="op">=</span> <span class="ident">parsing</span>::<span class="ident">parse_text</span>(<span class="ident">text</span>);
-        <span class="kw">let</span> <span class="ident">tree</span> <span class="op">=</span> <span class="ident">SourceFile</span>::<span class="ident">new</span>(<span class="ident">green</span>);
-        <span class="ident">errors</span>.<span class="ident">extend</span>(<span class="ident">validation</span>::<span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="ident">tree</span>));
-        <span class="ident">Parse</span> { <span class="ident">tree</span>, <span class="ident">errors</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">errors</span>) }
+        <span class="ident">errors</span>.<span class="ident">extend</span>(<span class="ident">validation</span>::<span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="ident">SourceFile</span>::<span class="ident">new</span>(<span class="ident">green</span>.<span class="ident">clone</span>())));
+        <span class="ident">Parse</span> { <span class="ident">green</span>, <span class="ident">errors</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">errors</span>), <span class="ident">_ty</span>: <span class="ident">PhantomData</span> }
     }
 }
 
@@ -499,14 +501,14 @@
     <span class="comment">// The `parse` method returns a `Parse` -- a pair of syntax tree and a list</span>
     <span class="comment">// of errors. That is, syntax tree is constructed even in presence of errors.</span>
     <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">SourceFile</span>::<span class="ident">parse</span>(<span class="ident">source_code</span>);
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">parse</span>.<span class="ident">errors</span>.<span class="ident">is_empty</span>());
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">parse</span>.<span class="ident">errors</span>().<span class="ident">is_empty</span>());
 
-    <span class="comment">// Due to the way ownership is set up, owned syntax Nodes always live behind</span>
-    <span class="comment">// a `TreeArc` smart pointer. `TreeArc` is roughly an `std::sync::Arc` which</span>
-    <span class="comment">// points to the whole file instead of an individual node.</span>
-    <span class="kw">let</span> <span class="ident">file</span>: <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>;
+    <span class="comment">// The `tree` method returns an owned syntax node of type `SourceFile`.</span>
+    <span class="comment">// Owned nodes are cheap: inside, they are `Rc` handles to the underling data.</span>
+    <span class="kw">let</span> <span class="ident">file</span>: <span class="ident">SourceFile</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
 
-    <span class="comment">// `SourceFile` is the root of the syntax tree. We can iterate file&#39;s items:</span>
+    <span class="comment">// `SourceFile` is the root of the syntax tree. We can iterate file&#39;s items.</span>
+    <span class="comment">// Let&#39;s fetch the `foo` function.</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">func</span> <span class="op">=</span> <span class="prelude-val">None</span>;
     <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">file</span>.<span class="ident">items</span>() {
         <span class="kw">match</span> <span class="ident">item</span>.<span class="ident">kind</span>() {
@@ -514,31 +516,26 @@
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
         }
     }
-    <span class="comment">// The returned items are always references.</span>
-    <span class="kw">let</span> <span class="ident">func</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">FnDef</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">unwrap</span>();
-
-    <span class="comment">// All nodes implement `ToOwned` trait, with `Owned = TreeArc&lt;Self&gt;`.</span>
-    <span class="comment">// `to_owned` is a cheap operation: atomic increment.</span>
-    <span class="kw">let</span> <span class="ident">_owned_func</span>: <span class="ident">TreeArc</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">FnDef</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">to_owned</span>();
+    <span class="kw">let</span> <span class="ident">func</span>: <span class="ident">ast</span>::<span class="ident">FnDef</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">unwrap</span>();
 
     <span class="comment">// Each AST node has a bunch of getters for children. All getters return</span>
     <span class="comment">// `Option`s though, to account for incomplete code. Some getters are common</span>
     <span class="comment">// for several kinds of node. In this case, a trait like `ast::NameOwner`</span>
     <span class="comment">// usually exists. By convention, all ast types should be used with `ast::`</span>
     <span class="comment">// qualifier.</span>
-    <span class="kw">let</span> <span class="ident">name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Name</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">name</span>();
+    <span class="kw">let</span> <span class="ident">name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Name</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">name</span>();
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">unwrap</span>();
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">name</span>.<span class="ident">text</span>(), <span class="string">&quot;foo&quot;</span>);
 
     <span class="comment">// Let&#39;s get the `1 + 1` expression!</span>
-    <span class="kw">let</span> <span class="ident">block</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Block</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">body</span>().<span class="ident">unwrap</span>();
-    <span class="kw">let</span> <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="ident">block</span>.<span class="ident">expr</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">block</span>: <span class="ident">ast</span>::<span class="ident">Block</span> <span class="op">=</span> <span class="ident">func</span>.<span class="ident">body</span>().<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">expr</span>: <span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="ident">block</span>.<span class="ident">expr</span>().<span class="ident">unwrap</span>();
 
     <span class="comment">// &quot;Enum&quot;-like nodes are represented using the &quot;kind&quot; pattern. It allows us</span>
     <span class="comment">// to match exhaustively against all flavors of nodes, while maintaining</span>
     <span class="comment">// internal representation flexibility. The drawback is that one can&#39;t write</span>
     <span class="comment">// nested matches as one pattern.</span>
-    <span class="kw">let</span> <span class="ident">bin_expr</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">BinExpr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">expr</span>.<span class="ident">kind</span>() {
+    <span class="kw">let</span> <span class="ident">bin_expr</span>: <span class="ident">ast</span>::<span class="ident">BinExpr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">expr</span>.<span class="ident">kind</span>() {
         <span class="ident">ast</span>::<span class="ident">ExprKind</span>::<span class="ident">BinExpr</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="ident">e</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
     };
@@ -548,22 +545,13 @@
     <span class="kw">let</span> <span class="ident">expr_syntax</span>: <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> <span class="op">=</span> <span class="ident">expr</span>.<span class="ident">syntax</span>();
 
     <span class="comment">// Note how `expr` and `bin_expr` are in fact the same node underneath:</span>
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">std</span>::<span class="ident">ptr</span>::<span class="ident">eq</span>(<span class="ident">expr_syntax</span>, <span class="ident">bin_expr</span>.<span class="ident">syntax</span>()));
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">expr_syntax</span> <span class="op">==</span> <span class="ident">bin_expr</span>.<span class="ident">syntax</span>());
 
     <span class="comment">// To go from CST to AST, `AstNode::cast` function is used:</span>
-    <span class="kw">let</span> <span class="ident">expr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">expr_syntax</span>) {
+    <span class="kw">let</span> <span class="ident">_expr</span>: <span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">expr_syntax</span>.<span class="ident">clone</span>()) {
         <span class="prelude-val">Some</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> <span class="ident">e</span>,
         <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
     };
-
-    <span class="comment">// Note how expr is also a reference!</span>
-    <span class="kw">let</span> <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="ident">expr</span>;
-
-    <span class="comment">// This is possible because the underlying representation is the same:</span>
-    <span class="macro">assert_eq</span><span class="macro">!</span>(
-        <span class="ident">expr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ast</span>::<span class="ident">Expr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u8</span>,
-        <span class="ident">expr_syntax</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">SyntaxNode</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">u8</span>
-    );
 
     <span class="comment">// The two properties each syntax node has is a `SyntaxKind`:</span>
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expr_syntax</span>.<span class="ident">kind</span>(), <span class="ident">SyntaxKind</span>::<span class="ident">BIN_EXPR</span>);
@@ -577,7 +565,7 @@
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">text</span>.<span class="ident">to_string</span>(), <span class="string">&quot;1 + 1&quot;</span>);
 
     <span class="comment">// There&#39;s a bunch of traversal methods on `SyntaxNode`:</span>
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expr_syntax</span>.<span class="ident">parent</span>(), <span class="prelude-val">Some</span>(<span class="ident">block</span>.<span class="ident">syntax</span>()));
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">expr_syntax</span>.<span class="ident">parent</span>().<span class="ident">as_ref</span>(), <span class="prelude-val">Some</span>(<span class="ident">block</span>.<span class="ident">syntax</span>()));
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">block</span>.<span class="ident">syntax</span>().<span class="ident">first_child_or_token</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>()), <span class="prelude-val">Some</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]));
     <span class="macro">assert_eq</span><span class="macro">!</span>(
         <span class="ident">expr_syntax</span>.<span class="ident">next_sibling_or_token</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>()),
@@ -586,7 +574,7 @@
 
     <span class="comment">// As well as some iterator helpers:</span>
     <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">expr_syntax</span>.<span class="ident">ancestors</span>().<span class="ident">find_map</span>(<span class="ident">ast</span>::<span class="ident">FnDef</span>::<span class="ident">cast</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">func</span>));
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="prelude-val">Some</span>(<span class="ident">func</span>));
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">expr_syntax</span>.<span class="ident">siblings_with_tokens</span>(<span class="ident">Direction</span>::<span class="ident">Next</span>).<span class="ident">any</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]));
     <span class="macro">assert_eq</span><span class="macro">!</span>(
         <span class="ident">expr_syntax</span>.<span class="ident">descendants_with_tokens</span>().<span class="ident">count</span>(),
@@ -601,7 +589,7 @@
     <span class="kw">for</span> <span class="ident">event</span> <span class="kw">in</span> <span class="ident">expr_syntax</span>.<span class="ident">preorder_with_tokens</span>() {
         <span class="kw">match</span> <span class="ident">event</span> {
             <span class="ident">WalkEvent</span>::<span class="ident">Enter</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">node</span> {
+                <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">node</span> {
                     <span class="ident">SyntaxElement</span>::<span class="ident">Node</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">text</span>().<span class="ident">to_string</span>(),
                     <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">text</span>().<span class="ident">to_string</span>(),
                 };
@@ -648,7 +636,7 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">exprs_visit</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
     <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">file</span>.<span class="ident">syntax</span>().<span class="ident">descendants</span>() {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">result</span>) <span class="op">=</span>
-            <span class="ident">visitor</span>().<span class="ident">visit</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expr</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">expr</span><span class="op">|</span> <span class="ident">expr</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">to_string</span>()).<span class="ident">accept</span>(<span class="ident">node</span>)
+            <span class="ident">visitor</span>().<span class="ident">visit</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expr</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">expr</span><span class="op">|</span> <span class="ident">expr</span>.<span class="ident">syntax</span>().<span class="ident">text</span>().<span class="ident">to_string</span>()).<span class="ident">accept</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>)
         {
             <span class="ident">exprs_visit</span>.<span class="ident">push</span>(<span class="ident">result</span>);
         }

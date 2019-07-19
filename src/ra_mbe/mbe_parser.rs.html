@@ -184,6 +184,7 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
+<span id="187">187</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tt_cursor</span>::<span class="ident">TtCursor</span>;
 <span class="doccomment">/// This module parses a raw `tt::TokenStream` into macro-by-example token</span>
@@ -366,7 +367,8 @@
         <span class="kw">let</span> <span class="ident">macro_definition</span> <span class="op">=</span>
             <span class="ident">source_file</span>.<span class="ident">syntax</span>().<span class="ident">descendants</span>().<span class="ident">find_map</span>(<span class="ident">ast</span>::<span class="ident">MacroCall</span>::<span class="ident">cast</span>).<span class="ident">unwrap</span>();
 
-        <span class="kw">let</span> (<span class="ident">definition_tt</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">ast_to_token_tree</span>(<span class="ident">macro_definition</span>.<span class="ident">token_tree</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> (<span class="ident">definition_tt</span>, <span class="kw">_</span>) <span class="op">=</span>
+            <span class="ident">ast_to_token_tree</span>(<span class="kw-2">&amp;</span><span class="ident">macro_definition</span>.<span class="ident">token_tree</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
         <span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="ident">definition_tt</span>)
     }
 

@@ -1048,6 +1048,8 @@
 <span id="1048">1048</span>
 <span id="1049">1049</span>
 <span id="1050">1050</span>
+<span id="1051">1051</span>
+<span id="1052">1052</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -1601,7 +1603,7 @@
         <span class="self">self</span>.<span class="ident">exprs</span>.<span class="ident">alloc</span>(<span class="ident">block</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_expr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expr</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
+    <span class="kw">fn</span> <span class="ident">collect_expr</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expr</span>: <span class="ident">ast</span>::<span class="ident">Expr</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
         <span class="kw">let</span> <span class="ident">syntax_ptr</span> <span class="op">=</span> <span class="ident">SyntaxNodePtr</span>::<span class="ident">new</span>(<span class="ident">expr</span>.<span class="ident">syntax</span>());
         <span class="kw">match</span> <span class="ident">expr</span>.<span class="ident">kind</span>() {
             <span class="ident">ast</span>::<span class="ident">ExprKind</span>::<span class="ident">IfExpr</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
@@ -1616,7 +1618,8 @@
                         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">b</span> {
                             <span class="ident">ast</span>::<span class="ident">ElseBranch</span>::<span class="ident">Block</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_block</span>(<span class="ident">it</span>),
                             <span class="ident">ast</span>::<span class="ident">ElseBranch</span>::<span class="ident">IfExpr</span>(<span class="ident">elif</span>) <span class="op">=&gt;</span> {
-                                <span class="kw">let</span> <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">elif</span>.<span class="ident">syntax</span>()).<span class="ident">unwrap</span>();
+                                <span class="kw">let</span> <span class="ident">expr</span>: <span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span>
+                                    <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">elif</span>.<span class="ident">syntax</span>().<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
                                 <span class="self">self</span>.<span class="ident">collect_expr</span>(<span class="ident">expr</span>)
                             }
                         })
@@ -1633,7 +1636,7 @@
                     <span class="kw">let</span> <span class="ident">else_branch</span> <span class="op">=</span> <span class="ident">e</span>.<span class="ident">else_branch</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">b</span> {
                         <span class="ident">ast</span>::<span class="ident">ElseBranch</span>::<span class="ident">Block</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_block</span>(<span class="ident">it</span>),
                         <span class="ident">ast</span>::<span class="ident">ElseBranch</span>::<span class="ident">IfExpr</span>(<span class="ident">elif</span>) <span class="op">=&gt;</span> {
-                            <span class="kw">let</span> <span class="ident">expr</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">elif</span>.<span class="ident">syntax</span>()).<span class="ident">unwrap</span>();
+                            <span class="kw">let</span> <span class="ident">expr</span>: <span class="ident">ast</span>::<span class="ident">Expr</span> <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">elif</span>.<span class="ident">syntax</span>().<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
                             <span class="self">self</span>.<span class="ident">collect_expr</span>(<span class="ident">expr</span>)
                         }
                     });
@@ -1740,7 +1743,7 @@
                 <span class="kw">let</span> <span class="ident">struct_lit</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nfl</span>) <span class="op">=</span> <span class="ident">e</span>.<span class="ident">named_field_list</span>() {
                     <span class="kw">let</span> <span class="ident">fields</span> <span class="op">=</span> <span class="ident">nfl</span>
                         .<span class="ident">fields</span>()
-                        .<span class="ident">inspect</span>(<span class="op">|</span><span class="ident">field</span><span class="op">|</span> <span class="ident">field_ptrs</span>.<span class="ident">push</span>(<span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="kw-2">*</span><span class="ident">field</span>)))
+                        .<span class="ident">inspect</span>(<span class="op">|</span><span class="ident">field</span><span class="op">|</span> <span class="ident">field_ptrs</span>.<span class="ident">push</span>(<span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="ident">field</span>)))
                         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">field</span><span class="op">|</span> <span class="ident">StructLitField</span> {
                             <span class="ident">name</span>: <span class="ident">field</span>
                                 .<span class="ident">name_ref</span>()
@@ -1750,7 +1753,7 @@
                                 <span class="self">self</span>.<span class="ident">collect_expr</span>(<span class="ident">e</span>)
                             } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nr</span>) <span class="op">=</span> <span class="ident">field</span>.<span class="ident">name_ref</span>() {
                                 <span class="comment">// field shorthand</span>
-                                <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">exprs</span>.<span class="ident">alloc</span>(<span class="ident">Expr</span>::<span class="ident">Path</span>(<span class="ident">Path</span>::<span class="ident">from_name_ref</span>(<span class="ident">nr</span>)));
+                                <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">exprs</span>.<span class="ident">alloc</span>(<span class="ident">Expr</span>::<span class="ident">Path</span>(<span class="ident">Path</span>::<span class="ident">from_name_ref</span>(<span class="kw-2">&amp;</span><span class="ident">nr</span>)));
                                 <span class="self">self</span>.<span class="ident">source_map</span>
                                     .<span class="ident">expr_map</span>
                                     .<span class="ident">insert</span>(<span class="ident">SyntaxNodePtr</span>::<span class="ident">new</span>(<span class="ident">nr</span>.<span class="ident">syntax</span>()), <span class="ident">id</span>);
@@ -1888,7 +1891,7 @@
                 <span class="kw">let</span> <span class="ident">ast_id</span> <span class="op">=</span> <span class="self">self</span>
                     .<span class="ident">db</span>
                     .<span class="ident">ast_id_map</span>(<span class="self">self</span>.<span class="ident">current_file_id</span>)
-                    .<span class="ident">ast_id</span>(<span class="ident">e</span>)
+                    .<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>)
                     .<span class="ident">with_file_id</span>(<span class="self">self</span>.<span class="ident">current_file_id</span>);
 
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>) <span class="op">=</span> <span class="ident">e</span>.<span class="ident">path</span>().<span class="ident">and_then</span>(<span class="ident">Path</span>::<span class="ident">from_ast</span>) {
@@ -1896,11 +1899,11 @@
                         <span class="kw">let</span> <span class="ident">call_id</span> <span class="op">=</span> <span class="ident">MacroCallLoc</span> { <span class="ident">def</span>: <span class="ident">def</span>.<span class="ident">id</span>, <span class="ident">ast_id</span> }.<span class="ident">id</span>(<span class="self">self</span>.<span class="ident">db</span>);
                         <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">call_id</span>.<span class="ident">as_file</span>(<span class="ident">MacroFileKind</span>::<span class="ident">Expr</span>);
                         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">node</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse_or_expand</span>(<span class="ident">file_id</span>) {
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expr</span>) <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">node</span>) {
+                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expr</span>) <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">cast</span>(<span class="ident">node</span>) {
                                 <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;macro expansion {}&quot;</span>, <span class="ident">expr</span>.<span class="ident">syntax</span>().<span class="ident">debug_dump</span>());
                                 <span class="kw">let</span> <span class="ident">old_file_id</span> <span class="op">=</span>
                                     <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">current_file_id</span>, <span class="ident">file_id</span>);
-                                <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">collect_expr</span>(<span class="kw-2">&amp;</span><span class="ident">expr</span>);
+                                <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">collect_expr</span>(<span class="ident">expr</span>);
                                 <span class="self">self</span>.<span class="ident">current_file_id</span> <span class="op">=</span> <span class="ident">old_file_id</span>;
                                 <span class="kw">return</span> <span class="ident">id</span>;
                             }
@@ -1914,7 +1917,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_expr_opt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Expr</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
+    <span class="kw">fn</span> <span class="ident">collect_expr_opt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expr</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">expr</span>) <span class="op">=</span> <span class="ident">expr</span> {
             <span class="self">self</span>.<span class="ident">collect_expr</span>(<span class="ident">expr</span>)
         } <span class="kw">else</span> {
@@ -1922,7 +1925,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Block</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
+    <span class="kw">fn</span> <span class="ident">collect_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="ident">ast</span>::<span class="ident">Block</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
         <span class="kw">let</span> <span class="ident">statements</span> <span class="op">=</span> <span class="ident">block</span>
             .<span class="ident">statements</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">kind</span>() {
@@ -1941,7 +1944,7 @@
         <span class="self">self</span>.<span class="ident">alloc_expr</span>(<span class="ident">Expr</span>::<span class="ident">Block</span> { <span class="ident">statements</span>, <span class="ident">tail</span> }, <span class="ident">SyntaxNodePtr</span>::<span class="ident">new</span>(<span class="ident">block</span>.<span class="ident">syntax</span>()))
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_block_opt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Block</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
+    <span class="kw">fn</span> <span class="ident">collect_block_opt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">block</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Block</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ExprId</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">block</span>) <span class="op">=</span> <span class="ident">block</span> {
             <span class="self">self</span>.<span class="ident">collect_block</span>(<span class="ident">block</span>)
         } <span class="kw">else</span> {
@@ -1949,7 +1952,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_pat</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">pat</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Pat</span>) <span class="op">-&gt;</span> <span class="ident">PatId</span> {
+    <span class="kw">fn</span> <span class="ident">collect_pat</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">pat</span>: <span class="ident">ast</span>::<span class="ident">Pat</span>) <span class="op">-&gt;</span> <span class="ident">PatId</span> {
         <span class="kw">let</span> <span class="ident">pattern</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">pat</span>.<span class="ident">kind</span>() {
             <span class="ident">ast</span>::<span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">bp</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">bp</span>.<span class="ident">name</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">nr</span><span class="op">|</span> <span class="ident">nr</span>.<span class="ident">as_name</span>()).<span class="ident">unwrap_or_else</span>(<span class="ident">Name</span>::<span class="ident">missing</span>);
@@ -1983,7 +1986,8 @@
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fields</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">field_pat_list</span>
                     .<span class="ident">bind_pats</span>()
                     .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">bind_pat</span><span class="op">|</span> {
-                        <span class="kw">let</span> <span class="ident">ast_pat</span> <span class="op">=</span> <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">cast</span>(<span class="ident">bind_pat</span>.<span class="ident">syntax</span>()).<span class="ident">expect</span>(<span class="string">&quot;bind pat is a pat&quot;</span>);
+                        <span class="kw">let</span> <span class="ident">ast_pat</span> <span class="op">=</span>
+                            <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">cast</span>(<span class="ident">bind_pat</span>.<span class="ident">syntax</span>().<span class="ident">clone</span>()).<span class="ident">expect</span>(<span class="string">&quot;bind pat is a pat&quot;</span>);
                         <span class="kw">let</span> <span class="ident">pat</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">collect_pat</span>(<span class="ident">ast_pat</span>);
                         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">bind_pat</span>.<span class="ident">name</span>()<span class="question-mark">?</span>.<span class="ident">as_name</span>();
                         <span class="prelude-val">Some</span>(<span class="ident">FieldPat</span> { <span class="ident">name</span>, <span class="ident">pat</span> })
@@ -2004,11 +2008,11 @@
             <span class="ident">ast</span>::<span class="ident">PatKind</span>::<span class="ident">LiteralPat</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">Missing</span>,
             <span class="ident">ast</span>::<span class="ident">PatKind</span>::<span class="ident">SlicePat</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">PatKind</span>::<span class="ident">RangePat</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">Missing</span>,
         };
-        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="ident">pat</span>);
+        <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">pat</span>);
         <span class="self">self</span>.<span class="ident">alloc_pat</span>(<span class="ident">pattern</span>, <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">ptr</span>))
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_pat_opt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">pat</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">Pat</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PatId</span> {
+    <span class="kw">fn</span> <span class="ident">collect_pat_opt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">pat</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Pat</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PatId</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pat</span>) <span class="op">=</span> <span class="ident">pat</span> {
             <span class="self">self</span>.<span class="ident">collect_pat</span>(<span class="ident">pat</span>)
         } <span class="kw">else</span> {
@@ -2016,20 +2020,20 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_const_body</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">ConstDef</span>) {
+    <span class="kw">fn</span> <span class="ident">collect_const_body</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">ConstDef</span>) {
         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">collect_expr_opt</span>(<span class="ident">node</span>.<span class="ident">body</span>());
         <span class="self">self</span>.<span class="ident">body_expr</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">body</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_static_body</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">StaticDef</span>) {
+    <span class="kw">fn</span> <span class="ident">collect_static_body</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">StaticDef</span>) {
         <span class="kw">let</span> <span class="ident">body</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">collect_expr_opt</span>(<span class="ident">node</span>.<span class="ident">body</span>());
         <span class="self">self</span>.<span class="ident">body_expr</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">body</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">collect_fn_body</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">ast</span>::<span class="ident">FnDef</span>) {
+    <span class="kw">fn</span> <span class="ident">collect_fn_body</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">FnDef</span>) {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">param_list</span>) <span class="op">=</span> <span class="ident">node</span>.<span class="ident">param_list</span>() {
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">self_param</span>) <span class="op">=</span> <span class="ident">param_list</span>.<span class="ident">self_param</span>() {
-                <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="ident">self_param</span>);
+                <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">AstPtr</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">self_param</span>);
                 <span class="kw">let</span> <span class="ident">param_pat</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">alloc_pat</span>(
                     <span class="ident">Pat</span>::<span class="ident">Bind</span> {
                         <span class="ident">name</span>: <span class="ident">SELF_PARAM</span>,
@@ -2078,17 +2082,17 @@
         <span class="ident">DefWithBody</span>::<span class="ident">Const</span>(<span class="kw-2">ref</span> <span class="ident">c</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">c</span>.<span class="ident">source</span>(<span class="ident">db</span>);
             <span class="ident">collector</span> <span class="op">=</span> <span class="ident">ExprCollector</span>::<span class="ident">new</span>(<span class="ident">def</span>, <span class="ident">src</span>.<span class="ident">file_id</span>, <span class="ident">def</span>.<span class="ident">resolver</span>(<span class="ident">db</span>), <span class="ident">db</span>);
-            <span class="ident">collector</span>.<span class="ident">collect_const_body</span>(<span class="kw-2">&amp;</span><span class="ident">src</span>.<span class="ident">ast</span>)
+            <span class="ident">collector</span>.<span class="ident">collect_const_body</span>(<span class="ident">src</span>.<span class="ident">ast</span>)
         }
         <span class="ident">DefWithBody</span>::<span class="ident">Function</span>(<span class="kw-2">ref</span> <span class="ident">f</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">source</span>(<span class="ident">db</span>);
             <span class="ident">collector</span> <span class="op">=</span> <span class="ident">ExprCollector</span>::<span class="ident">new</span>(<span class="ident">def</span>, <span class="ident">src</span>.<span class="ident">file_id</span>, <span class="ident">def</span>.<span class="ident">resolver</span>(<span class="ident">db</span>), <span class="ident">db</span>);
-            <span class="ident">collector</span>.<span class="ident">collect_fn_body</span>(<span class="kw-2">&amp;</span><span class="ident">src</span>.<span class="ident">ast</span>)
+            <span class="ident">collector</span>.<span class="ident">collect_fn_body</span>(<span class="ident">src</span>.<span class="ident">ast</span>)
         }
         <span class="ident">DefWithBody</span>::<span class="ident">Static</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">src</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">source</span>(<span class="ident">db</span>);
             <span class="ident">collector</span> <span class="op">=</span> <span class="ident">ExprCollector</span>::<span class="ident">new</span>(<span class="ident">def</span>, <span class="ident">src</span>.<span class="ident">file_id</span>, <span class="ident">def</span>.<span class="ident">resolver</span>(<span class="ident">db</span>), <span class="ident">db</span>);
-            <span class="ident">collector</span>.<span class="ident">collect_static_body</span>(<span class="kw-2">&amp;</span><span class="ident">src</span>.<span class="ident">ast</span>)
+            <span class="ident">collector</span>.<span class="ident">collect_static_body</span>(<span class="ident">src</span>.<span class="ident">ast</span>)
         }
     }
 
