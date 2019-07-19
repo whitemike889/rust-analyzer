@@ -622,7 +622,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">semicolon_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">syntax</span>()
             .<span class="ident">last_child_or_token</span>()
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">as_token</span>().<span class="ident">cloned</span>())
+            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
             .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[;])
     }
 }
@@ -715,7 +715,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">self_kw_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxToken</span> {
         <span class="self">self</span>.<span class="ident">syntax</span>()
             .<span class="ident">children_with_tokens</span>()
-            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">as_token</span>().<span class="ident">cloned</span>())
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
             .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="self">self</span>])
             .<span class="ident">expect</span>(<span class="string">&quot;invalid tree: self param must have self&quot;</span>)
     }
@@ -744,7 +744,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lifetime_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">syntax</span>()
             .<span class="ident">children_with_tokens</span>()
-            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">as_token</span>().<span class="ident">cloned</span>())
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
             .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">LIFETIME</span>)
     }
 }
@@ -753,7 +753,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lifetime_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">syntax</span>()
             .<span class="ident">children_with_tokens</span>()
-            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">as_token</span>().<span class="ident">cloned</span>())
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
             .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">LIFETIME</span>)
     }
 }
