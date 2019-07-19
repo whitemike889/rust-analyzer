@@ -132,13 +132,6 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
-<span id="135">135</span>
-<span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">iter</span>::<span class="ident">FromIterator</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>};
 
@@ -151,7 +144,7 @@
     <span class="ident">FileTextQuery</span>, <span class="ident">SourceRootId</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_prof</span>::{<span class="ident">memory_usage</span>, <span class="ident">Bytes</span>};
-<span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">ast</span>, <span class="ident">AstNode</span>, <span class="ident">Parse</span>, <span class="ident">SyntaxNode</span>};
+<span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">ast</span>, <span class="ident">Parse</span>, <span class="ident">SyntaxNode</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">db</span>::<span class="ident">RootDatabase</span>,
@@ -212,12 +205,11 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">SyntaxTreeStats</span> {
     <span class="ident">total</span>: <span class="ident">usize</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">retained</span>: <span class="ident">usize</span>,
-    <span class="ident">retained_size</span>: <span class="ident">Bytes</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Display</span> <span class="kw">for</span> <span class="ident">SyntaxTreeStats</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">fmt</span>, <span class="string">&quot;{} trees, {} ({}) retained&quot;</span>, <span class="self">self</span>.<span class="ident">total</span>, <span class="self">self</span>.<span class="ident">retained</span>, <span class="self">self</span>.<span class="ident">retained_size</span>,)
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">fmt</span>, <span class="string">&quot;{} trees, {} retained&quot;</span>, <span class="self">self</span>.<span class="ident">total</span>, <span class="self">self</span>.<span class="ident">retained</span>)
     }
 }
 
@@ -229,10 +221,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">SyntaxTreeStats</span>::<span class="ident">default</span>();
         <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">iter</span> {
             <span class="ident">res</span>.<span class="ident">total</span> <span class="op">+=</span> <span class="number">1</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tree</span>) <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">value</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">tree</span>()) {
-                <span class="ident">res</span>.<span class="ident">retained</span> <span class="op">+=</span> <span class="number">1</span>;
-                <span class="ident">res</span>.<span class="ident">retained_size</span> <span class="op">+=</span> <span class="ident">tree</span>.<span class="ident">syntax</span>().<span class="ident">memory_size_of_subtree</span>();
-            }
+            <span class="ident">res</span>.<span class="ident">retained</span> <span class="op">+=</span> <span class="ident">entry</span>.<span class="ident">value</span>.<span class="ident">is_some</span>() <span class="kw">as</span> <span class="ident">usize</span>;
         }
         <span class="ident">res</span>
     }
@@ -246,10 +235,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">SyntaxTreeStats</span>::<span class="ident">default</span>();
         <span class="kw">for</span> <span class="ident">entry</span> <span class="kw">in</span> <span class="ident">iter</span> {
             <span class="ident">res</span>.<span class="ident">total</span> <span class="op">+=</span> <span class="number">1</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">tree</span>) <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">value</span>.<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">syntax_node</span>()) {
-                <span class="ident">res</span>.<span class="ident">retained</span> <span class="op">+=</span> <span class="number">1</span>;
-                <span class="ident">res</span>.<span class="ident">retained_size</span> <span class="op">+=</span> <span class="ident">tree</span>.<span class="ident">memory_size_of_subtree</span>();
-            }
+            <span class="ident">res</span>.<span class="ident">retained</span> <span class="op">+=</span> <span class="ident">entry</span>.<span class="ident">value</span>.<span class="ident">is_some</span>() <span class="kw">as</span> <span class="ident">usize</span>;
         }
         <span class="ident">res</span>
     }
