@@ -467,10 +467,6 @@
 <span id="467">467</span>
 <span id="468">468</span>
 <span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Lookup hir elements using positions in the source code. This is a lossy</span>
 <span class="doccomment">/// transformation: in general, a single source might correspond to several</span>
@@ -783,15 +779,11 @@
             <span class="kw">crate</span>::<span class="ident">Resolution</span>::<span class="ident">LocalBinding</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// We get a `PatId` from resolver, but it actually can only</span>
                 <span class="comment">// point at `BindPat`, and not at the arbitrary pattern.</span>
-                <span class="kw">let</span> <span class="ident">pat_ptr</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">body_source_map</span>.<span class="ident">as_ref</span>()<span class="question-mark">?</span>.<span class="ident">pat_syntax</span>(<span class="ident">it</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">pat_ptr</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">pat_ptr</span> {
-                    <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">pat</span>) <span class="op">=&gt;</span> {
-                        <span class="kw">let</span> <span class="ident">pat</span>: <span class="ident">AstPtr</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">BindPat</span><span class="op">&gt;</span> <span class="op">=</span>
-                            <span class="ident">pat</span>.<span class="ident">cast_checking_kind</span>(<span class="op">|</span><span class="ident">kind</span><span class="op">|</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">BIND_PAT</span>).<span class="ident">unwrap</span>();
-                        <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">pat</span>)
-                    }
-                    <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">self_param</span>) <span class="op">=&gt;</span> <span class="ident">Either</span>::<span class="ident">B</span>(<span class="ident">self_param</span>),
-                };
+                <span class="kw">let</span> <span class="ident">pat_ptr</span> <span class="op">=</span> <span class="self">self</span>
+                    .<span class="ident">body_source_map</span>
+                    .<span class="ident">as_ref</span>()<span class="question-mark">?</span>
+                    .<span class="ident">pat_syntax</span>(<span class="ident">it</span>)<span class="question-mark">?</span>
+                    .<span class="ident">map_a</span>(<span class="op">|</span><span class="ident">ptr</span><span class="op">|</span> <span class="ident">ptr</span>.<span class="ident">cast</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">BindPat</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>());
                 <span class="ident">PathResolution</span>::<span class="ident">LocalBinding</span>(<span class="ident">pat_ptr</span>)
             }
             <span class="kw">crate</span>::<span class="ident">Resolution</span>::<span class="ident">GenericParam</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">PathResolution</span>::<span class="ident">GenericParam</span>(<span class="ident">it</span>),

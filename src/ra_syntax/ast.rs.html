@@ -187,6 +187,8 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Abstract Syntax Tree, layered on top of untyped `SyntaxNode`s</span>
 
@@ -200,7 +202,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">syntax_node</span>::{<span class="ident">SyntaxNode</span>, <span class="ident">SyntaxNodeChildren</span>, <span class="ident">SyntaxToken</span>},
-    <span class="ident">SmolStr</span>,
+    <span class="ident">SmolStr</span>, <span class="ident">SyntaxKind</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
@@ -216,6 +218,8 @@
 <span class="doccomment">/// the same representation: a pointer to the tree root and a pointer to the</span>
 <span class="doccomment">/// node itself.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AstNode</span>: <span class="ident">Clone</span> {
+    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+
     <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="self">Self</span>: <span class="ident">Sized</span>;
