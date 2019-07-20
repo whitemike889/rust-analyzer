@@ -103,10 +103,10 @@
         <span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">bind_pat</span>) <span class="op">=&gt;</span> <span class="ident">bind_pat</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
     };
-    <span class="kw">let</span> <span class="ident">pat_range</span> <span class="op">=</span> <span class="ident">pat</span>.<span class="ident">syntax</span>().<span class="ident">range</span>();
+    <span class="kw">let</span> <span class="ident">pat_range</span> <span class="op">=</span> <span class="ident">pat</span>.<span class="ident">syntax</span>().<span class="ident">text_range</span>();
     <span class="comment">// The binding must have a name</span>
     <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">pat</span>.<span class="ident">name</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">name_range</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">range</span>();
+    <span class="kw">let</span> <span class="ident">name_range</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">syntax</span>().<span class="ident">text_range</span>();
     <span class="comment">// Assist not applicable if the type has already been specified</span>
     <span class="kw">if</span> <span class="ident">stmt</span>.<span class="ident">syntax</span>().<span class="ident">children_with_tokens</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">child</span><span class="op">|</span> <span class="ident">child</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:]) {
         <span class="kw">return</span> <span class="prelude-val">None</span>;

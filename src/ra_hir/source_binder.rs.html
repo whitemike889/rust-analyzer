@@ -831,7 +831,7 @@
             })
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name_ref</span><span class="op">|</span> <span class="ident">ReferenceDescriptor</span> {
                 <span class="ident">name</span>: <span class="ident">name_ref</span>.<span class="ident">text</span>().<span class="ident">to_string</span>(),
-                <span class="ident">range</span>: <span class="ident">name_ref</span>.<span class="ident">syntax</span>().<span class="ident">range</span>(),
+                <span class="ident">range</span>: <span class="ident">name_ref</span>.<span class="ident">syntax</span>().<span class="ident">text_range</span>(),
             })
             .<span class="ident">collect</span>()
     }

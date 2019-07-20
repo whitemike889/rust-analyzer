@@ -47,9 +47,9 @@
     <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">non_trivia_sibling</span>(<span class="ident">comma</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">Direction</span>::<span class="ident">Prev</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">next</span> <span class="op">=</span> <span class="ident">non_trivia_sibling</span>(<span class="ident">comma</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">Direction</span>::<span class="ident">Next</span>)<span class="question-mark">?</span>;
     <span class="ident">ctx</span>.<span class="ident">add_action</span>(<span class="ident">AssistId</span>(<span class="string">&quot;flip_comma&quot;</span>), <span class="string">&quot;flip comma&quot;</span>, <span class="op">|</span><span class="ident">edit</span><span class="op">|</span> {
-        <span class="ident">edit</span>.<span class="ident">target</span>(<span class="ident">comma</span>.<span class="ident">range</span>());
-        <span class="ident">edit</span>.<span class="ident">replace</span>(<span class="ident">prev</span>.<span class="ident">range</span>(), <span class="ident">next</span>.<span class="ident">to_string</span>());
-        <span class="ident">edit</span>.<span class="ident">replace</span>(<span class="ident">next</span>.<span class="ident">range</span>(), <span class="ident">prev</span>.<span class="ident">to_string</span>());
+        <span class="ident">edit</span>.<span class="ident">target</span>(<span class="ident">comma</span>.<span class="ident">text_range</span>());
+        <span class="ident">edit</span>.<span class="ident">replace</span>(<span class="ident">prev</span>.<span class="ident">text_range</span>(), <span class="ident">next</span>.<span class="ident">to_string</span>());
+        <span class="ident">edit</span>.<span class="ident">replace</span>(<span class="ident">next</span>.<span class="ident">text_range</span>(), <span class="ident">prev</span>.<span class="ident">to_string</span>());
     });
 
     <span class="ident">ctx</span>.<span class="ident">build</span>()

@@ -531,14 +531,6 @@
 <span id="531">531</span>
 <span id="532">532</span>
 <span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
-<span id="538">538</span>
-<span id="539">539</span>
-<span id="540">540</span>
-<span id="541">541</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module defines Concrete Syntax Tree (CST), used by rust-analyzer.</span>
 <span class="doccomment">//!</span>
@@ -548,11 +540,7 @@
 <span class="doccomment">//! The *real* implementation is in the (language-agnostic) `rowan` crate, this</span>
 <span class="doccomment">//! modules just wraps its API.</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Write</span>},
-    <span class="ident">iter</span>::<span class="ident">successors</span>,
-    <span class="ident">ops</span>::<span class="ident">RangeInclusive</span>,
-};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">iter</span>::<span class="ident">successors</span>, <span class="ident">ops</span>::<span class="ident">RangeInclusive</span>};
 
 <span class="kw">use</span> <span class="ident">ra_parser</span>::<span class="ident">ParseError</span>;
 <span class="kw">use</span> <span class="ident">rowan</span>::<span class="ident">GreenNodeBuilder</span>;
@@ -578,8 +566,29 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SyntaxNode</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">rowan</span>::<span class="ident">cursor</span>::<span class="ident">SyntaxNode</span>);
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">SyntaxNode</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">fmt</span>, <span class="string">&quot;{:?}@{:?}&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>(), <span class="self">self</span>.<span class="ident">range</span>())
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="kw">if</span> <span class="ident">f</span>.<span class="ident">alternate</span>() {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">level</span> <span class="op">=</span> <span class="number">0</span>;
+            <span class="kw">for</span> <span class="ident">event</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">preorder_with_tokens</span>() {
+                <span class="kw">match</span> <span class="ident">event</span> {
+                    <span class="ident">WalkEvent</span>::<span class="ident">Enter</span>(<span class="ident">element</span>) <span class="op">=&gt;</span> {
+                        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">level</span> {
+                            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;  &quot;</span>)<span class="question-mark">?</span>;
+                        }
+                        <span class="kw">match</span> <span class="ident">element</span> {
+                            <span class="ident">SyntaxElement</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">node</span>)<span class="question-mark">?</span>,
+                            <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">token</span>) <span class="op">=&gt;</span> <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">token</span>)<span class="question-mark">?</span>,
+                        }
+                        <span class="ident">level</span> <span class="op">+=</span> <span class="number">1</span>;
+                    }
+                    <span class="ident">WalkEvent</span>::<span class="ident">Leave</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">level</span> <span class="op">-=</span> <span class="number">1</span>,
+                }
+            }
+            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">level</span>, <span class="number">0</span>);
+            <span class="prelude-val">Ok</span>(())
+        } <span class="kw">else</span> {
+            <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;{:?}@{:?}&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>(), <span class="self">self</span>.<span class="ident">text_range</span>())
+        }
     }
 }
 
@@ -605,7 +614,7 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">kind</span>().<span class="number">0</span>.<span class="ident">into</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">text_range</span>()
     }
 
@@ -715,31 +724,6 @@
         })
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">debug_dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">level</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
-
-        <span class="kw">for</span> <span class="ident">event</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">preorder_with_tokens</span>() {
-            <span class="kw">match</span> <span class="ident">event</span> {
-                <span class="ident">WalkEvent</span>::<span class="ident">Enter</span>(<span class="ident">element</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">level</span> {
-                        <span class="ident">buf</span>.<span class="ident">push_str</span>(<span class="string">&quot;  &quot;</span>);
-                    }
-                    <span class="kw">match</span> <span class="ident">element</span> {
-                        <span class="ident">SyntaxElement</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">buf</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">node</span>).<span class="ident">unwrap</span>(),
-                        <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">token</span>) <span class="op">=&gt;</span> <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">buf</span>, <span class="string">&quot;{:?}&quot;</span>, <span class="ident">token</span>).<span class="ident">unwrap</span>(),
-                    }
-                    <span class="ident">level</span> <span class="op">+=</span> <span class="number">1</span>;
-                }
-                <span class="ident">WalkEvent</span>::<span class="ident">Leave</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">level</span> <span class="op">-=</span> <span class="number">1</span>,
-            }
-        }
-
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">level</span>, <span class="number">0</span>);
-
-        <span class="ident">buf</span>
-    }
-
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">replace_with</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">replacement</span>: <span class="ident">GreenNode</span>) <span class="op">-&gt;</span> <span class="ident">GreenNode</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">replace_with</span>(<span class="ident">replacement</span>)
     }
@@ -841,7 +825,7 @@
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">SyntaxToken</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">fmt</span>, <span class="string">&quot;{:?}@{:?}&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>(), <span class="self">self</span>.<span class="ident">range</span>())<span class="question-mark">?</span>;
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">fmt</span>, <span class="string">&quot;{:?}@{:?}&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>(), <span class="self">self</span>.<span class="ident">text_range</span>())<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">text</span>().<span class="ident">len</span>() <span class="op">&lt;</span> <span class="number">25</span> {
             <span class="kw">return</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">fmt</span>, <span class="string">&quot; {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">text</span>());
         }
@@ -871,7 +855,7 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">text</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">text_range</span>()
     }
 
@@ -1003,10 +987,10 @@
         .<span class="ident">ancestors</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">text_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SyntaxElement</span>::<span class="ident">Node</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">range</span>(),
-            <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">range</span>(),
+            <span class="ident">SyntaxElement</span>::<span class="ident">Node</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">text_range</span>(),
+            <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">text_range</span>(),
         }
     }
 

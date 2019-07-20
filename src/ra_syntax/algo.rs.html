@@ -89,7 +89,7 @@
 ) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">SyntaxNode</span><span class="op">&gt;</span> {
     <span class="ident">find_token_at_offset</span>(<span class="ident">node</span>, <span class="ident">offset</span>)
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">token</span><span class="op">|</span> <span class="ident">token</span>.<span class="ident">parent</span>().<span class="ident">ancestors</span>())
-        .<span class="ident">kmerge_by</span>(<span class="op">|</span><span class="ident">node1</span>, <span class="ident">node2</span><span class="op">|</span> <span class="ident">node1</span>.<span class="ident">range</span>().<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">node2</span>.<span class="ident">range</span>().<span class="ident">len</span>())
+        .<span class="ident">kmerge_by</span>(<span class="op">|</span><span class="ident">node1</span>, <span class="ident">node2</span><span class="op">|</span> <span class="ident">node1</span>.<span class="ident">text_range</span>().<span class="ident">len</span>() <span class="op">&lt;</span> <span class="ident">node2</span>.<span class="ident">text_range</span>().<span class="ident">len</span>())
 }
 
 <span class="doccomment">/// Finds a node of specific Ast type at offset. Note that this is slightly</span>

@@ -114,9 +114,9 @@
 
     <span class="ident">ctx</span>.<span class="ident">add_action</span>(<span class="ident">AssistId</span>(<span class="string">&quot;replace_if_let_with_match&quot;</span>), <span class="string">&quot;replace with match&quot;</span>, <span class="op">|</span><span class="ident">edit</span><span class="op">|</span> {
         <span class="kw">let</span> <span class="ident">match_expr</span> <span class="op">=</span> <span class="ident">build_match_expr</span>(<span class="ident">expr</span>, <span class="ident">pat</span>, <span class="ident">then_block</span>, <span class="ident">else_block</span>);
-        <span class="ident">edit</span>.<span class="ident">target</span>(<span class="ident">if_expr</span>.<span class="ident">syntax</span>().<span class="ident">range</span>());
+        <span class="ident">edit</span>.<span class="ident">target</span>(<span class="ident">if_expr</span>.<span class="ident">syntax</span>().<span class="ident">text_range</span>());
         <span class="ident">edit</span>.<span class="ident">replace_node_and_indent</span>(<span class="ident">if_expr</span>.<span class="ident">syntax</span>(), <span class="ident">match_expr</span>);
-        <span class="ident">edit</span>.<span class="ident">set_cursor</span>(<span class="ident">if_expr</span>.<span class="ident">syntax</span>().<span class="ident">range</span>().<span class="ident">start</span>())
+        <span class="ident">edit</span>.<span class="ident">set_cursor</span>(<span class="ident">if_expr</span>.<span class="ident">syntax</span>().<span class="ident">text_range</span>().<span class="ident">start</span>())
     });
 
     <span class="ident">ctx</span>.<span class="ident">build</span>()

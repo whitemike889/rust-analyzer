@@ -52,7 +52,7 @@
     <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">brace_node</span>.<span class="ident">parent</span>();
     <span class="kw">let</span> <span class="ident">matching_kind</span> <span class="op">=</span> <span class="ident">BRACES</span>[<span class="ident">brace_idx</span> <span class="op">^</span> <span class="number">1</span>];
     <span class="kw">let</span> <span class="ident">matching_node</span> <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">children_with_tokens</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">node</span><span class="op">|</span> <span class="ident">node</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">matching_kind</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Some</span>(<span class="ident">matching_node</span>.<span class="ident">range</span>().<span class="ident">start</span>())
+    <span class="prelude-val">Some</span>(<span class="ident">matching_node</span>.<span class="ident">text_range</span>().<span class="ident">start</span>())
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

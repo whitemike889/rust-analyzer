@@ -652,7 +652,7 @@
         <span class="kw">let</span> <span class="ident">local_name_entry</span> <span class="op">=</span> <span class="ident">analyzer</span>.<span class="ident">resolve_local_name</span>(<span class="kw-2">&amp;</span><span class="ident">name_ref</span>).<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">local_name</span> <span class="op">=</span>
             <span class="ident">local_name_entry</span>.<span class="ident">ptr</span>().<span class="ident">either</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">syntax_node_ptr</span>(), <span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">syntax_node_ptr</span>());
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">local_name</span>.<span class="ident">range</span>(), <span class="ident">expected_name</span>.<span class="ident">syntax</span>().<span class="ident">range</span>());
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">local_name</span>.<span class="ident">range</span>(), <span class="ident">expected_name</span>.<span class="ident">syntax</span>().<span class="ident">text_range</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
