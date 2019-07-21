@@ -585,7 +585,7 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
     <span class="ident">algo</span>::{<span class="ident">find_covering_element</span>, <span class="ident">non_trivia_sibling</span>},
     <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">AstNode</span>, <span class="ident">AstToken</span>},
-    <span class="ident">Direction</span>, <span class="ident">SourceFile</span>, <span class="ident">SyntaxElement</span>,
+    <span class="ident">Direction</span>, <span class="ident">NodeOrToken</span>, <span class="ident">SourceFile</span>,
     <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="ident">WHITESPACE</span>},
     <span class="ident">SyntaxNode</span>, <span class="ident">SyntaxToken</span>, <span class="ident">TextRange</span>, <span class="ident">TextUnit</span>, <span class="ident">T</span>,
 };
@@ -605,8 +605,8 @@
     };
 
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">find_covering_element</span>(<span class="ident">file</span>.<span class="ident">syntax</span>(), <span class="ident">range</span>) {
-        <span class="ident">SyntaxElement</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> <span class="ident">node</span>,
-        <span class="ident">SyntaxElement</span>::<span class="ident">Token</span>(<span class="ident">token</span>) <span class="op">=&gt;</span> <span class="ident">token</span>.<span class="ident">parent</span>(),
+        <span class="ident">NodeOrToken</span>::<span class="ident">Node</span>(<span class="ident">node</span>) <span class="op">=&gt;</span> <span class="ident">node</span>,
+        <span class="ident">NodeOrToken</span>::<span class="ident">Token</span>(<span class="ident">token</span>) <span class="op">=&gt;</span> <span class="ident">token</span>.<span class="ident">parent</span>(),
     };
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">edit</span> <span class="op">=</span> <span class="ident">TextEditBuilder</span>::<span class="ident">default</span>();
     <span class="kw">for</span> <span class="ident">token</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">descendants_with_tokens</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>()) {
