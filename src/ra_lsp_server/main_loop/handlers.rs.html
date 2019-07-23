@@ -874,6 +874,27 @@
 <span id="874">874</span>
 <span id="875">875</span>
 <span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
@@ -898,7 +919,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">cargo_target_spec</span>::{<span class="ident">runnable_args</span>, <span class="ident">CargoTargetSpec</span>},
     <span class="ident">conv</span>::{<span class="ident">to_location</span>, <span class="ident">Conv</span>, <span class="ident">ConvWith</span>, <span class="ident">MapConvWith</span>, <span class="ident">TryConvWith</span>, <span class="ident">TryConvWithToVec</span>},
-    <span class="ident">req</span>::{<span class="self">self</span>, <span class="ident">Decoration</span>},
+    <span class="ident">req</span>::{<span class="self">self</span>, <span class="ident">Decoration</span>, <span class="ident">InlayHint</span>, <span class="ident">InlayHintsParams</span>, <span class="ident">InlayKind</span>},
     <span class="ident">world</span>::<span class="ident">WorldSnapshot</span>,
     <span class="ident">LspError</span>, <span class="prelude-ty">Result</span>,
 };
@@ -1750,6 +1771,27 @@
         <span class="ident">Error</span> <span class="op">=&gt;</span> <span class="ident">DiagnosticSeverity</span>::<span class="ident">Error</span>,
         <span class="ident">WeakWarning</span> <span class="op">=&gt;</span> <span class="ident">DiagnosticSeverity</span>::<span class="ident">Hint</span>,
     }
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_inlay_hints</span>(
+    <span class="ident">world</span>: <span class="ident">WorldSnapshot</span>,
+    <span class="ident">params</span>: <span class="ident">InlayHintsParams</span>,
+) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">InlayHint</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">analysis</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>();
+    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">file_line_index</span>(<span class="ident">file_id</span>);
+    <span class="prelude-val">Ok</span>(<span class="ident">analysis</span>
+        .<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span>
+        .<span class="ident">into_iter</span>()
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">api_type</span><span class="op">|</span> <span class="ident">InlayHint</span> {
+            <span class="ident">label</span>: <span class="ident">api_type</span>.<span class="ident">label</span>.<span class="ident">to_string</span>(),
+            <span class="ident">range</span>: <span class="ident">api_type</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>),
+            <span class="ident">kind</span>: <span class="kw">match</span> <span class="ident">api_type</span>.<span class="ident">kind</span> {
+                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">LetBindingType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">LetBindingType</span>,
+                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">ClosureParameterType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">ClosureParameterType</span>,
+            },
+        })
+        .<span class="ident">collect</span>())
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "ra_lsp_server";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

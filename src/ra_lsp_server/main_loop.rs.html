@@ -620,6 +620,7 @@
 <span id="620">620</span>
 <span id="621">621</span>
 <span id="622">622</span>
+<span id="623">623</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -985,6 +986,7 @@
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">References</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_references</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">Formatting</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_formatting</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">DocumentHighlightRequest</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_document_highlight</span>)<span class="question-mark">?</span>
+        .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">InlayHints</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_inlay_hints</span>)<span class="question-mark">?</span>
         .<span class="ident">finish</span>();
     <span class="prelude-val">Ok</span>(())
 }
