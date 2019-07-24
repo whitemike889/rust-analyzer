@@ -539,6 +539,9 @@
 <span id="539">539</span>
 <span id="540">540</span>
 <span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -585,6 +588,7 @@
         <span class="ident">L_BRACK</span>,
         <span class="ident">PIPE</span>,
         <span class="ident">MOVE_KW</span>,
+        <span class="ident">BOX_KW</span>,
         <span class="ident">IF_KW</span>,
         <span class="ident">WHILE_KW</span>,
         <span class="ident">MATCH_KW</span>,
@@ -1071,6 +1075,8 @@
 <span class="comment">// test box_expr</span>
 <span class="comment">// fn foo() {</span>
 <span class="comment">//     let x = box 1i32;</span>
+<span class="comment">//     let y = (box 1i32, box 2i32);</span>
+<span class="comment">//     let z = Foo(box 1i32, box 2i32);</span>
 <span class="comment">// }</span>
 <span class="kw">fn</span> <span class="ident">box_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Marker</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>]));
