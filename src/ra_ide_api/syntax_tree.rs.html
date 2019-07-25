@@ -452,7 +452,7 @@
     <span class="kw">fn</span> <span class="ident">test_syntax_tree_without_range</span>() {
         <span class="comment">// Basic syntax</span>
         <span class="kw">let</span> (<span class="ident">analysis</span>, <span class="ident">file_id</span>) <span class="op">=</span> <span class="ident">single_file</span>(<span class="string">r#&quot;fn foo() {}&quot;#</span>);
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">file_id</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">file_id</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
@@ -484,7 +484,7 @@ fn test() {
 }&quot;#</span>
             .<span class="ident">trim</span>(),
         );
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">file_id</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">file_id</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
@@ -527,7 +527,7 @@ SOURCE_FILE@[0; 60)
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_syntax_tree_with_range</span>() {
         <span class="kw">let</span> (<span class="ident">analysis</span>, <span class="ident">range</span>) <span class="op">=</span> <span class="ident">single_file_with_range</span>(<span class="string">r#&quot;&lt;|&gt;fn foo() {}&lt;|&gt;&quot;#</span>.<span class="ident">trim</span>());
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>));
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>)).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
@@ -557,7 +557,7 @@ FN_DEF@[0; 11)
 }&quot;#</span>
             .<span class="ident">trim</span>(),
         );
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>));
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>)).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
@@ -595,7 +595,7 @@ fn bar() {
 }&quot;#</span>
             .<span class="ident">trim</span>(),
         );
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>));
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>)).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
             <span class="string">r#&quot;
@@ -629,7 +629,7 @@ fn bar() {
 }&quot;###</span>
                 .<span class="ident">trim</span>(),
         );
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>));
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>)).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
             <span class="string">r#&quot;
@@ -662,7 +662,7 @@ fn bar() {
 }&quot;###</span>
                 .<span class="ident">trim</span>(),
         );
-        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>));
+        <span class="kw">let</span> <span class="ident">syn</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">syntax_tree</span>(<span class="ident">range</span>.<span class="ident">file_id</span>, <span class="prelude-val">Some</span>(<span class="ident">range</span>.<span class="ident">range</span>)).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq_text</span><span class="macro">!</span>(
             <span class="ident">syn</span>.<span class="ident">trim</span>(),
             <span class="string">r#&quot;

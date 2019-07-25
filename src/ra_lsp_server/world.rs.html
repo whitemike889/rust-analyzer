@@ -224,6 +224,11 @@
 <span id="224">224</span>
 <span id="225">225</span>
 <span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -442,7 +447,12 @@
             }
         }
         <span class="ident">res</span>.<span class="ident">push_str</span>(<span class="string">&quot;\nanalysis:\n&quot;</span>);
-        <span class="ident">res</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">analysis</span>.<span class="ident">status</span>());
+        <span class="ident">res</span>.<span class="ident">push_str</span>(
+            <span class="kw-2">&amp;</span><span class="self">self</span>
+                .<span class="ident">analysis</span>
+                .<span class="ident">status</span>()
+                .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="string">&quot;Analysis retrieval was cancelled&quot;</span>.<span class="ident">to_owned</span>()),
+        );
         <span class="ident">res</span>
     }
 

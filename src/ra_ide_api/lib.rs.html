@@ -532,6 +532,14 @@
 <span id="532">532</span>
 <span id="533">533</span>
 <span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! ra_ide_api crate provides &quot;ide-centric&quot; APIs for the rust-analyzer. That is,</span>
 <span class="doccomment">//! it generally operates with files and text ranges, and returns results as</span>
@@ -852,24 +860,24 @@
     }
 
     <span class="doccomment">/// Debug info about the current state of the analysis</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="ident">status</span>::<span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">db</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">status</span>::<span class="ident">status</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">db</span>))
     }
 
     <span class="doccomment">/// Gets the text of the source file.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">file_text</span>(<span class="ident">file_id</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_text</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">db</span>.<span class="ident">file_text</span>(<span class="ident">file_id</span>))
     }
 
     <span class="doccomment">/// Gets the syntax tree of the file.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">SourceFile</span> {
-        <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>).<span class="ident">tree</span>()
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">SourceFile</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>).<span class="ident">tree</span>())
     }
 
     <span class="doccomment">/// Gets the file&#39;s `LineIndex`: data structure to convert between absolute</span>
     <span class="doccomment">/// offsets and line/column representation.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_line_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">LineIndex</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">line_index</span>(<span class="ident">file_id</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_line_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">LineIndex</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">db</span>.<span class="ident">line_index</span>(<span class="ident">file_id</span>))
     }
 
     <span class="doccomment">/// Selects the next syntactic nodes encompassing the range.</span>
@@ -879,58 +887,67 @@
 
     <span class="doccomment">/// Returns position of the matching brace (all types of braces are</span>
     <span class="doccomment">/// supported).</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">matching_brace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextUnit</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
-        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
-        <span class="ident">matching_brace</span>::<span class="ident">matching_brace</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>, <span class="ident">position</span>.<span class="ident">offset</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">matching_brace</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextUnit</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
+            <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
+            <span class="ident">matching_brace</span>::<span class="ident">matching_brace</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>, <span class="ident">position</span>.<span class="ident">offset</span>)
+        })
     }
 
     <span class="doccomment">/// Returns a syntax tree represented as `String`, for debug purposes.</span>
     <span class="comment">// FIXME: use a better name here.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">syntax_tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>, <span class="ident">text_range</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextRange</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
-        <span class="ident">syntax_tree</span>::<span class="ident">syntax_tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">db</span>, <span class="ident">file_id</span>, <span class="ident">text_range</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">syntax_tree</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">file_id</span>: <span class="ident">FileId</span>,
+        <span class="ident">text_range</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextRange</span><span class="op">&gt;</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">syntax_tree</span>::<span class="ident">syntax_tree</span>(<span class="kw-2">&amp;</span><span class="ident">db</span>, <span class="ident">file_id</span>, <span class="ident">text_range</span>))
     }
 
     <span class="doccomment">/// Returns an edit to remove all newlines in the range, cleaning up minor</span>
     <span class="doccomment">/// stuff like trailing commas.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join_lines</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">frange</span>: <span class="ident">FileRange</span>) <span class="op">-&gt;</span> <span class="ident">SourceChange</span> {
-        <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">frange</span>.<span class="ident">file_id</span>);
-        <span class="kw">let</span> <span class="ident">file_edit</span> <span class="op">=</span> <span class="ident">SourceFileEdit</span> {
-            <span class="ident">file_id</span>: <span class="ident">frange</span>.<span class="ident">file_id</span>,
-            <span class="ident">edit</span>: <span class="ident">join_lines</span>::<span class="ident">join_lines</span>(<span class="kw-2">&amp;</span><span class="ident">parse</span>.<span class="ident">tree</span>(), <span class="ident">frange</span>.<span class="ident">range</span>),
-        };
-        <span class="ident">SourceChange</span>::<span class="ident">source_file_edit</span>(<span class="string">&quot;join lines&quot;</span>, <span class="ident">file_edit</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join_lines</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">frange</span>: <span class="ident">FileRange</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">frange</span>.<span class="ident">file_id</span>);
+            <span class="kw">let</span> <span class="ident">file_edit</span> <span class="op">=</span> <span class="ident">SourceFileEdit</span> {
+                <span class="ident">file_id</span>: <span class="ident">frange</span>.<span class="ident">file_id</span>,
+                <span class="ident">edit</span>: <span class="ident">join_lines</span>::<span class="ident">join_lines</span>(<span class="kw-2">&amp;</span><span class="ident">parse</span>.<span class="ident">tree</span>(), <span class="ident">frange</span>.<span class="ident">range</span>),
+            };
+            <span class="ident">SourceChange</span>::<span class="ident">source_file_edit</span>(<span class="string">&quot;join lines&quot;</span>, <span class="ident">file_edit</span>)
+        })
     }
 
     <span class="doccomment">/// Returns an edit which should be applied when opening a new line, fixing</span>
     <span class="doccomment">/// up minor stuff like continuing the comment.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_enter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;</span> {
-        <span class="ident">typing</span>::<span class="ident">on_enter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">db</span>, <span class="ident">position</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_enter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">typing</span>::<span class="ident">on_enter</span>(<span class="kw-2">&amp;</span><span class="ident">db</span>, <span class="ident">position</span>))
     }
 
     <span class="doccomment">/// Returns an edit which should be applied after `=` was typed. Primarily,</span>
     <span class="doccomment">/// this works when adding `let =`.</span>
     <span class="comment">// FIXME: use a snippet completion instead of this hack here.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_eq_typed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
-        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
-        <span class="kw">let</span> <span class="ident">edit</span> <span class="op">=</span> <span class="ident">typing</span>::<span class="ident">on_eq_typed</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>, <span class="ident">position</span>.<span class="ident">offset</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Some</span>(<span class="ident">SourceChange</span>::<span class="ident">source_file_edit</span>(
-            <span class="string">&quot;add semicolon&quot;</span>,
-            <span class="ident">SourceFileEdit</span> { <span class="ident">edit</span>, <span class="ident">file_id</span>: <span class="ident">position</span>.<span class="ident">file_id</span> },
-        ))
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_eq_typed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">position</span>.<span class="ident">file_id</span>);
+            <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>();
+            <span class="kw">let</span> <span class="ident">edit</span> <span class="op">=</span> <span class="ident">typing</span>::<span class="ident">on_eq_typed</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>, <span class="ident">position</span>.<span class="ident">offset</span>)<span class="question-mark">?</span>;
+            <span class="prelude-val">Some</span>(<span class="ident">SourceChange</span>::<span class="ident">source_file_edit</span>(
+                <span class="string">&quot;add semicolon&quot;</span>,
+                <span class="ident">SourceFileEdit</span> { <span class="ident">edit</span>, <span class="ident">file_id</span>: <span class="ident">position</span>.<span class="ident">file_id</span> },
+            ))
+        })
     }
 
     <span class="doccomment">/// Returns an edit which should be applied when a dot (&#39;.&#39;) is typed on a blank line, indenting the line appropriately.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_dot_typed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;</span> {
-        <span class="ident">typing</span>::<span class="ident">on_dot_typed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">db</span>, <span class="ident">position</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_dot_typed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">FilePosition</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SourceChange</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">typing</span>::<span class="ident">on_dot_typed</span>(<span class="kw-2">&amp;</span><span class="ident">db</span>, <span class="ident">position</span>))
     }
 
     <span class="doccomment">/// Returns a tree representation of symbols in the file. Useful to draw a</span>
     <span class="doccomment">/// file outline.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_structure</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>);
-        <span class="ident">file_structure</span>(<span class="kw-2">&amp;</span><span class="ident">parse</span>.<span class="ident">tree</span>())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_structure</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">StructureNode</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">file_structure</span>(<span class="kw-2">&amp;</span><span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>).<span class="ident">tree</span>()))
     }
 
     <span class="doccomment">/// Returns a list of the places in the file where type hints can be displayed.</span>
@@ -939,9 +956,8 @@
     }
 
     <span class="doccomment">/// Returns the set of folding ranges.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">folding_ranges</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Fold</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>);
-        <span class="ident">folding_ranges</span>::<span class="ident">folding_ranges</span>(<span class="kw-2">&amp;</span><span class="ident">parse</span>.<span class="ident">tree</span>())
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">folding_ranges</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">Cancelable</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Fold</span><span class="op">&gt;&gt;</span> {
+        <span class="self">self</span>.<span class="ident">with_db</span>(<span class="op">|</span><span class="ident">db</span><span class="op">|</span> <span class="ident">folding_ranges</span>::<span class="ident">folding_ranges</span>(<span class="kw-2">&amp;</span><span class="ident">db</span>.<span class="ident">parse</span>(<span class="ident">file_id</span>).<span class="ident">tree</span>()))
     }
 
     <span class="doccomment">/// Fuzzy searches for a symbol.</span>
