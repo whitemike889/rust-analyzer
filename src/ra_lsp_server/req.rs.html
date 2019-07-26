@@ -223,6 +223,7 @@
 <span id="223">223</span>
 <span id="224">224</span>
 <span id="225">225</span>
+<span id="226">226</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{<span class="ident">Location</span>, <span class="ident">Position</span>, <span class="ident">Range</span>, <span class="ident">TextDocumentIdentifier</span>, <span class="ident">Url</span>};
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
@@ -441,6 +442,7 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">InlayKind</span> {
     <span class="ident">LetBindingType</span>,
     <span class="ident">ClosureParameterType</span>,
+    <span class="ident">ForExpressionBindingType</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
