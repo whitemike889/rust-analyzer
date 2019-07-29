@@ -259,6 +259,95 @@
 <span id="259">259</span>
 <span id="260">260</span>
 <span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This modules takes care of rendering various defenitions as completion items.</span>
 <span class="kw">use</span> <span class="ident">hir</span>::{<span class="ident">Docs</span>, <span class="ident">HasSource</span>, <span class="ident">HirDisplay</span>, <span class="ident">PerNs</span>, <span class="ident">Resolution</span>, <span class="ident">Ty</span>};
@@ -444,82 +533,171 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">do_completion</span>, <span class="ident">CompletionItem</span>, <span class="ident">CompletionKind</span>};
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
     <span class="kw">use</span> <span class="ident">test_utils</span>::<span class="ident">covers</span>;
 
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">check_completion</span>, <span class="ident">CompletionKind</span>};
-
-    <span class="kw">fn</span> <span class="ident">check_reference_completion</span>(<span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">expected_completions</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
-        <span class="ident">check_completion</span>(<span class="ident">code</span>, <span class="ident">expected_completions</span>, <span class="ident">CompletionKind</span>::<span class="ident">Reference</span>);
+    <span class="kw">fn</span> <span class="ident">do_reference_completion</span>(<span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompletionItem</span><span class="op">&gt;</span> {
+        <span class="ident">do_completion</span>(<span class="ident">code</span>, <span class="ident">CompletionKind</span>::<span class="ident">Reference</span>)
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">inserts_parens_for_function_calls</span>() {
         <span class="macro">covers</span><span class="macro">!</span>(<span class="ident">inserts_parens_for_function_calls</span>);
-        <span class="ident">check_reference_completion</span>(
-            <span class="string">&quot;inserts_parens_for_function_calls1&quot;</span>,
-            <span class="string">r&quot;
-            fn no_args() {}
-            fn main() { no_&lt;|&gt; }
-            &quot;</span>,
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">r&quot;
+                fn no_args() {}
+                fn main() { no_&lt;|&gt; }
+                &quot;</span>
+            ),
+            @<span class="string">r###&quot;[
+    CompletionItem {
+        label: &quot;main&quot;,
+        source_range: [61; 64),
+        delete: [61; 64),
+        insert: &quot;main()$0&quot;,
+        kind: Function,
+        detail: &quot;fn main()&quot;,
+    },
+    CompletionItem {
+        label: &quot;no_args&quot;,
+        source_range: [61; 64),
+        delete: [61; 64),
+        insert: &quot;no_args()$0&quot;,
+        kind: Function,
+        detail: &quot;fn no_args()&quot;,
+    },
+]&quot;###</span>
         );
-        <span class="ident">check_reference_completion</span>(
-            <span class="string">&quot;inserts_parens_for_function_calls2&quot;</span>,
-            <span class="string">r&quot;
-            fn with_args(x: i32, y: String) {}
-            fn main() { with_&lt;|&gt; }
-            &quot;</span>,
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">r&quot;
+                fn with_args(x: i32, y: String) {}
+                fn main() { with_&lt;|&gt; }
+                &quot;</span>
+            ),
+            @<span class="string">r###&quot;[
+    CompletionItem {
+        label: &quot;main&quot;,
+        source_range: [80; 85),
+        delete: [80; 85),
+        insert: &quot;main()$0&quot;,
+        kind: Function,
+        detail: &quot;fn main()&quot;,
+    },
+    CompletionItem {
+        label: &quot;with_args&quot;,
+        source_range: [80; 85),
+        delete: [80; 85),
+        insert: &quot;with_args($0)&quot;,
+        kind: Function,
+        detail: &quot;fn with_args(x: i32, y: String)&quot;,
+    },
+]&quot;###</span>
         );
-        <span class="ident">check_reference_completion</span>(
-            <span class="string">&quot;inserts_parens_for_function_calls3&quot;</span>,
-            <span class="string">r&quot;
-            struct S {}
-            impl S {
-                fn foo(&amp;self) {}
-            }
-            fn bar(s: &amp;S) {
-                s.f&lt;|&gt;
-            }
-            &quot;</span>,
-        )
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">r&quot;
+                struct S {}
+                impl S {
+                    fn foo(&amp;self) {}
+                }
+                fn bar(s: &amp;S) {
+                    s.f&lt;|&gt;
+                }
+                &quot;</span>
+            ),
+            @<span class="string">r###&quot;[
+    CompletionItem {
+        label: &quot;foo&quot;,
+        source_range: [163; 164),
+        delete: [163; 164),
+        insert: &quot;foo()$0&quot;,
+        kind: Method,
+        detail: &quot;fn foo(&amp;self)&quot;,
+    },
+]&quot;###</span>
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">dont_render_function_parens_in_use_item</span>() {
-        <span class="ident">check_reference_completion</span>(
-            <span class="string">&quot;dont_render_function_parens_in_use_item&quot;</span>,
-            <span class="string">&quot;
-            //- /lib.rs
-            mod m { pub fn foo() {} }
-            use crate::m::f&lt;|&gt;;
-            &quot;</span>,
-        )
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">&quot;
+                //- /lib.rs
+                mod m { pub fn foo() {} }
+                use crate::m::f&lt;|&gt;;
+                &quot;</span>
+            ),
+            @<span class="string">r#&quot;[
+    CompletionItem {
+        label: &quot;foo&quot;,
+        source_range: [40; 41),
+        delete: [40; 41),
+        insert: &quot;foo&quot;,
+        kind: Function,
+        detail: &quot;pub fn foo()&quot;,
+    },
+]&quot;#</span>
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">dont_render_function_parens_if_already_call</span>() {
-        <span class="ident">check_reference_completion</span>(
-            <span class="string">&quot;dont_render_function_parens_if_already_call&quot;</span>,
-            <span class="string">&quot;
-            //- /lib.rs
-            fn frobnicate() {}
-            fn main() {
-                frob&lt;|&gt;();
-            }
-            &quot;</span>,
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">&quot;
+                //- /lib.rs
+                fn frobnicate() {}
+                fn main() {
+                    frob&lt;|&gt;();
+                }
+                &quot;</span>
+            ),
+            @<span class="string">r#&quot;[
+    CompletionItem {
+        label: &quot;frobnicate&quot;,
+        source_range: [35; 39),
+        delete: [35; 39),
+        insert: &quot;frobnicate&quot;,
+        kind: Function,
+        detail: &quot;fn frobnicate()&quot;,
+    },
+    CompletionItem {
+        label: &quot;main&quot;,
+        source_range: [35; 39),
+        delete: [35; 39),
+        insert: &quot;main&quot;,
+        kind: Function,
+        detail: &quot;fn main()&quot;,
+    },
+]&quot;#</span>
         );
-        <span class="ident">check_reference_completion</span>(
-            <span class="string">&quot;dont_render_function_parens_if_already_call_assoc_fn&quot;</span>,
-            <span class="string">&quot;
-            //- /lib.rs
-            struct Foo {}
-            impl Foo { fn new() -&gt; Foo {} }
-            fn main() {
-                Foo::ne&lt;|&gt;();
-            }
-            &quot;</span>,
-        )
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+            <span class="ident">do_reference_completion</span>(
+                <span class="string">&quot;
+                //- /lib.rs
+                struct Foo {}
+                impl Foo { fn new() -&gt; Foo {} }
+                fn main() {
+                    Foo::ne&lt;|&gt;();
+                }
+                &quot;</span>
+            ),
+            @<span class="string">r#&quot;[
+    CompletionItem {
+        label: &quot;new&quot;,
+        source_range: [67; 69),
+        delete: [67; 69),
+        insert: &quot;new&quot;,
+        kind: Function,
+        detail: &quot;fn new() -&gt; Foo&quot;,
+    },
+]&quot;#</span>
+        );
     }
-
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "ra_ide_api";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
