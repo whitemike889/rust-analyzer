@@ -178,6 +178,13 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">HirDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">FileRange</span>;
@@ -310,10 +317,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">AssistBuilder</span> {
+    <span class="doccomment">/// Replaces specified `range` of text with a given string.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">TextRange</span>, <span class="ident">replace_with</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">edit</span>.<span class="ident">replace</span>(<span class="ident">range</span>, <span class="ident">replace_with</span>.<span class="ident">into</span>())
     }
 
+    <span class="doccomment">/// Replaces specified `node` of text with a given string, reindenting the</span>
+    <span class="doccomment">/// string to maintain `node`&#39;s existing indent.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">replace_node_and_indent</span>(
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
         <span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span>,
@@ -326,27 +336,31 @@
         <span class="self">self</span>.<span class="ident">replace</span>(<span class="ident">node</span>.<span class="ident">text_range</span>(), <span class="ident">replace_with</span>)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">set_edit_builder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">edit</span>: <span class="ident">TextEditBuilder</span>) {
-        <span class="self">self</span>.<span class="ident">edit</span> <span class="op">=</span> <span class="ident">edit</span>;
-    }
-
+    <span class="doccomment">/// Remove specified `range` of text.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">delete</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">TextRange</span>) {
         <span class="self">self</span>.<span class="ident">edit</span>.<span class="ident">delete</span>(<span class="ident">range</span>)
     }
 
+    <span class="doccomment">/// Append specified `text` at the given `offset`</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">TextUnit</span>, <span class="ident">text</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">edit</span>.<span class="ident">insert</span>(<span class="ident">offset</span>, <span class="ident">text</span>.<span class="ident">into</span>())
     }
 
+    <span class="doccomment">/// Specify desired position of the cursor after the assist is applied.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">set_cursor</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">TextUnit</span>) {
         <span class="self">self</span>.<span class="ident">cursor_position</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">offset</span>)
     }
 
+    <span class="doccomment">/// Specify that the assist should be active withing the `target` range.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Target ranges are used to sort assists: the smaller the target range,</span>
+    <span class="doccomment">/// the more specific assist is, and so it should be sorted first.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">target</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="ident">TextRange</span>) {
         <span class="self">self</span>.<span class="ident">target</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">target</span>)
     }
 
+    <span class="doccomment">/// Get access to the raw `TextEditBuilder`.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">text_edit_builder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TextEditBuilder</span> {
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">edit</span>
     }
