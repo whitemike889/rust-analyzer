@@ -904,6 +904,9 @@
 <span id="904">904</span>
 <span id="905">905</span>
 <span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
@@ -1807,6 +1810,9 @@
                 <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">ForExpressionBindingType</span> <span class="op">=&gt;</span> {
                     <span class="ident">InlayKind</span>::<span class="ident">ForExpressionBindingType</span>
                 }
+                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">IfExpressionType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">IfExpressionType</span>,
+                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">WhileLetExpressionType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">WhileLetExpressionType</span>,
+                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">MatchArmType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">MatchArmType</span>,
             },
         })
         .<span class="ident">collect</span>())
