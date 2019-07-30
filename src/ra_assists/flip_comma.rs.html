@@ -36,6 +36,36 @@
 <span id="36">36</span>
 <span id="37">37</span>
 <span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">HirDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">algo</span>::<span class="ident">non_trivia_sibling</span>, <span class="ident">Direction</span>, <span class="ident">T</span>};
@@ -46,6 +76,13 @@
     <span class="kw">let</span> <span class="ident">comma</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">token_at_offset</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">leaf</span><span class="op">|</span> <span class="ident">leaf</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[,])<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">non_trivia_sibling</span>(<span class="ident">comma</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">Direction</span>::<span class="ident">Prev</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">next</span> <span class="op">=</span> <span class="ident">non_trivia_sibling</span>(<span class="ident">comma</span>.<span class="ident">clone</span>().<span class="ident">into</span>(), <span class="ident">Direction</span>::<span class="ident">Next</span>)<span class="question-mark">?</span>;
+
+    <span class="comment">// Don&#39;t apply a &quot;flip&quot; in case of a last comma</span>
+    <span class="comment">// that typically comes before punctuation</span>
+    <span class="kw">if</span> <span class="ident">next</span>.<span class="ident">kind</span>().<span class="ident">is_punct</span>() {
+        <span class="kw">return</span> <span class="prelude-val">None</span>;
+    }
+
     <span class="ident">ctx</span>.<span class="ident">add_action</span>(<span class="ident">AssistId</span>(<span class="string">&quot;flip_comma&quot;</span>), <span class="string">&quot;flip comma&quot;</span>, <span class="op">|</span><span class="ident">edit</span><span class="op">|</span> {
         <span class="ident">edit</span>.<span class="ident">target</span>(<span class="ident">comma</span>.<span class="ident">text_range</span>());
         <span class="ident">edit</span>.<span class="ident">replace</span>(<span class="ident">prev</span>.<span class="ident">text_range</span>(), <span class="ident">next</span>.<span class="ident">to_string</span>());
@@ -73,6 +110,29 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">flip_comma_target</span>() {
         <span class="ident">check_assist_target</span>(<span class="ident">flip_comma</span>, <span class="string">&quot;fn foo(x: i32,&lt;|&gt; y: Result&lt;(), ()&gt;) {}&quot;</span>, <span class="string">&quot;,&quot;</span>)
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">should_panic</span>]</span>
+    <span class="kw">fn</span> <span class="ident">flip_comma_before_punct</span>() {
+        <span class="comment">// See https://github.com/rust-analyzer/rust-analyzer/issues/1619</span>
+        <span class="comment">// &quot;Flip comma&quot; assist shouldn&#39;t be applicable to the last comma in enum or struct</span>
+        <span class="comment">// declaration body.</span>
+        <span class="ident">check_assist_target</span>(
+            <span class="ident">flip_comma</span>,
+            <span class="string">&quot;pub enum Test { \
+             A,&lt;|&gt; \
+             }&quot;</span>,
+            <span class="string">&quot;,&quot;</span>,
+        );
+
+        <span class="ident">check_assist_target</span>(
+            <span class="ident">flip_comma</span>,
+            <span class="string">&quot;pub struct Test { \
+             foo: usize,&lt;|&gt; \
+             }&quot;</span>,
+            <span class="string">&quot;,&quot;</span>,
+        );
     }
 }
 </pre></div>
