@@ -407,23 +407,89 @@
 <span id="407">407</span>
 <span id="408">408</span>
 <span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::{<span class="ident">AdtDef</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">CompletionContext</span>, <span class="ident">Completions</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::<span class="ident">completion_item</span>::<span class="ident">CompletionKind</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">completion</span>::{<span class="ident">completion_context</span>::<span class="ident">CompletionContext</span>, <span class="ident">completion_item</span>::<span class="ident">Completions</span>},
+    <span class="ident">CompletionItem</span>,
+};
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashSet</span>;
 
-<span class="doccomment">/// Complete dot accesses, i.e. fields or methods (currently only fields).</span>
+<span class="doccomment">/// Complete dot accesses, i.e. fields or methods (and .await syntax).</span>
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">complete_dot</span>(<span class="ident">acc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Completions</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">CompletionContext</span>) {
-    <span class="kw">let</span> <span class="ident">receiver_ty</span> <span class="op">=</span>
-        <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">dot_receiver</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">ctx</span>.<span class="ident">analyzer</span>.<span class="ident">type_of</span>(<span class="ident">ctx</span>.<span class="ident">db</span>, <span class="ident">it</span>)) {
-            <span class="prelude-val">Some</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
-            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span>,
-        };
+    <span class="kw">let</span> <span class="ident">dot_receiver</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">ctx</span>.<span class="ident">dot_receiver</span> {
+        <span class="prelude-val">Some</span>(<span class="ident">expr</span>) <span class="op">=&gt;</span> <span class="ident">expr</span>,
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span>,
+    };
+
+    <span class="kw">let</span> <span class="ident">receiver_ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">analyzer</span>.<span class="ident">type_of</span>(<span class="ident">ctx</span>.<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">dot_receiver</span>) {
+        <span class="prelude-val">Some</span>(<span class="ident">ty</span>) <span class="op">=&gt;</span> <span class="ident">ty</span>,
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span>,
+    };
+
     <span class="kw">if</span> <span class="op">!</span><span class="ident">ctx</span>.<span class="ident">is_call</span> {
         <span class="ident">complete_fields</span>(<span class="ident">acc</span>, <span class="ident">ctx</span>, <span class="ident">receiver_ty</span>.<span class="ident">clone</span>());
     }
-    <span class="ident">complete_methods</span>(<span class="ident">acc</span>, <span class="ident">ctx</span>, <span class="ident">receiver_ty</span>);
+    <span class="ident">complete_methods</span>(<span class="ident">acc</span>, <span class="ident">ctx</span>, <span class="ident">receiver_ty</span>.<span class="ident">clone</span>());
+
+    <span class="comment">// Suggest .await syntax for types that implement Future trait</span>
+    <span class="kw">if</span> <span class="ident">ctx</span>.<span class="ident">analyzer</span>.<span class="ident">impls_future</span>(<span class="ident">ctx</span>.<span class="ident">db</span>, <span class="ident">receiver_ty</span>) {
+        <span class="ident">CompletionItem</span>::<span class="ident">new</span>(<span class="ident">CompletionKind</span>::<span class="ident">Keyword</span>, <span class="ident">ctx</span>.<span class="ident">source_range</span>(), <span class="string">&quot;await&quot;</span>)
+            .<span class="ident">detail</span>(<span class="string">&quot;expr.await&quot;</span>)
+            .<span class="ident">insert_text</span>(<span class="string">&quot;await&quot;</span>)
+            .<span class="ident">add_to</span>(<span class="ident">acc</span>);
+    }
 }
 
 <span class="kw">fn</span> <span class="ident">complete_fields</span>(<span class="ident">acc</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Completions</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">CompletionContext</span>, <span class="ident">receiver</span>: <span class="ident">Ty</span>) {
@@ -815,6 +881,38 @@
        ⋮]
         &quot;###</span>
         );
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_completion_await_impls_future</span>() {
+        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="ident">do_completion</span>(
+            <span class="string">r###&quot;
+            //- /main.rs
+            use std::future::*;
+            struct A {}
+            impl Future for A {}
+            fn foo(a: A) {
+                a.&lt;|&gt;
+            }
+
+            //- /std/lib.rs
+            pub mod future {
+                pub trait Future {}
+            }
+            &quot;###</span>, <span class="ident">CompletionKind</span>::<span class="ident">Keyword</span>),
+        @<span class="string">r###&quot;
+       ⋮[
+       ⋮    CompletionItem {
+       ⋮        label: &quot;await&quot;,
+       ⋮        source_range: [74; 74),
+       ⋮        delete: [74; 74),
+       ⋮        insert: &quot;await&quot;,
+       ⋮        detail: &quot;expr.await&quot;,
+       ⋮    },
+       ⋮]
+        &quot;###</span>
+        )
     }
 }
 </pre></div>
