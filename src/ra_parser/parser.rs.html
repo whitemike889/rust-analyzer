@@ -435,6 +435,22 @@
 <span id="435">435</span>
 <span id="436">436</span>
 <span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
 
@@ -444,7 +460,7 @@
     <span class="ident">event</span>::<span class="ident">Event</span>,
     <span class="ident">ParseError</span>,
     <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="ident">EOF</span>, <span class="ident">ERROR</span>, <span class="ident">TOMBSTONE</span>},
-    <span class="ident">TokenSet</span>, <span class="ident">TokenSource</span>, <span class="ident">T</span>,
+    <span class="ident">Token</span>, <span class="ident">TokenSet</span>, <span class="ident">TokenSource</span>, <span class="ident">T</span>,
 };
 
 <span class="doccomment">/// `Parser` struct provides the low-level API for</span>
@@ -525,8 +541,9 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
 
         <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kind</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">i</span>).<span class="ident">kind</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">composited</span>, <span class="ident">step</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">is_composite</span>(<span class="ident">kind</span>, <span class="ident">i</span>) {
+            <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">i</span>);
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kind</span> <span class="op">=</span> <span class="ident">token</span>.<span class="ident">kind</span>;
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">composited</span>, <span class="ident">step</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">is_composite</span>(<span class="ident">token</span>, <span class="ident">i</span>) {
                 <span class="ident">kind</span> <span class="op">=</span> <span class="ident">composited</span>;
                 <span class="ident">i</span> <span class="op">+=</span> <span class="ident">step</span>;
             } <span class="kw">else</span> {
@@ -688,32 +705,47 @@
     }
 
     <span class="doccomment">/// helper function for check if it is composite.</span>
-    <span class="kw">fn</span> <span class="ident">is_composite</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SyntaxKind</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">is_composite</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">first</span>: <span class="ident">Token</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SyntaxKind</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
         <span class="comment">// We assume the dollars will not occuried between</span>
         <span class="comment">// mult-byte tokens</span>
 
-        <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span>);
+        <span class="kw">let</span> <span class="ident">jn1</span> <span class="op">=</span> <span class="ident">first</span>.<span class="ident">is_jointed_to_next</span>;
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">first</span>.<span class="ident">kind</span> <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] {
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        }
+
         <span class="kw">let</span> <span class="ident">second</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="kw">if</span> <span class="ident">first</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="op">&amp;&amp;</span> <span class="ident">second</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] {
+            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>], <span class="number">2</span>));
+        }
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">jn1</span> {
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        }
+
+        <span class="kw">match</span> (<span class="ident">first</span>.<span class="ident">kind</span>, <span class="ident">second</span>.<span class="ident">kind</span>) {
+            (<span class="macro">T</span><span class="macro">!</span>[:], <span class="macro">T</span><span class="macro">!</span>[:]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[::], <span class="number">2</span>)),
+            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>], <span class="number">2</span>)),
+            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>], <span class="number">2</span>)),
+            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>], <span class="number">2</span>)),
+            <span class="kw">_</span> <span class="op">=&gt;</span> {}
+        }
+
+        <span class="kw">if</span> <span class="ident">first</span>.<span class="ident">kind</span> <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">||</span> <span class="ident">second</span>.<span class="ident">kind</span> <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[.] {
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        }
+
         <span class="kw">let</span> <span class="ident">third</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">2</span>);
 
-        <span class="kw">let</span> <span class="ident">jn1</span> <span class="op">=</span> <span class="ident">first</span>.<span class="ident">is_jointed_to_next</span>;
-        <span class="kw">let</span> <span class="ident">la2</span> <span class="op">=</span> <span class="ident">second</span>.<span class="ident">kind</span>;
         <span class="kw">let</span> <span class="ident">jn2</span> <span class="op">=</span> <span class="ident">second</span>.<span class="ident">is_jointed_to_next</span>;
         <span class="kw">let</span> <span class="ident">la3</span> <span class="op">=</span> <span class="ident">third</span>.<span class="ident">kind</span>;
 
-        <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">&amp;&amp;</span> <span class="ident">jn2</span> <span class="op">&amp;&amp;</span> <span class="ident">la3</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[...], <span class="number">3</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">&amp;&amp;</span> <span class="ident">la3</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[..=], <span class="number">3</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[..], <span class="number">2</span>)),
-
-            <span class="macro">T</span><span class="macro">!</span>[:] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[::], <span class="number">2</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>], <span class="number">2</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>], <span class="number">2</span>)),
-
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>] <span class="kw">if</span> <span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>], <span class="number">2</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="kw">if</span> <span class="ident">la2</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>], <span class="number">2</span>)),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+        <span class="kw">if</span> <span class="ident">jn2</span> <span class="op">&amp;&amp;</span> <span class="ident">la3</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[.] {
+            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[...], <span class="number">3</span>));
         }
+        <span class="kw">if</span> <span class="ident">la3</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] {
+            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[..=], <span class="number">3</span>));
+        }
+        <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[..], <span class="number">2</span>));
     }
 
     <span class="kw">fn</span> <span class="ident">eat_dollars</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
