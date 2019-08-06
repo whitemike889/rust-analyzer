@@ -53,35 +53,35 @@
 <span id="53">53</span>
 <span id="54">54</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="ident">ra_project_model</span>::<span class="ident">ProjectRoot</span>;
+<span class="kw">use</span> <span class="ident">ra_project_model</span>::<span class="ident">PackageRoot</span>;
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">Filter</span>, <span class="ident">RelativePath</span>, <span class="ident">RootEntry</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
 
 <span class="doccomment">/// `IncludeRustFiles` is used to convert</span>
-<span class="doccomment">/// from `ProjectRoot` to `RootEntry` for VFS</span>
+<span class="doccomment">/// from `PackageRoot` to `RootEntry` for VFS</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IncludeRustFiles</span> {
-    <span class="ident">root</span>: <span class="ident">ProjectRoot</span>,
+    <span class="ident">root</span>: <span class="ident">PackageRoot</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">IncludeRustFiles</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_roots</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">roots</span>: <span class="ident">R</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">RootEntry</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">R</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">ProjectRoot</span><span class="op">&gt;</span>,
+        <span class="ident">R</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">PackageRoot</span><span class="op">&gt;</span>,
     {
         <span class="ident">roots</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">IncludeRustFiles</span>::<span class="ident">from_root</span>)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_root</span>(<span class="ident">root</span>: <span class="ident">ProjectRoot</span>) <span class="op">-&gt;</span> <span class="ident">RootEntry</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_root</span>(<span class="ident">root</span>: <span class="ident">PackageRoot</span>) <span class="op">-&gt;</span> <span class="ident">RootEntry</span> {
         <span class="ident">IncludeRustFiles</span>::<span class="ident">from</span>(<span class="ident">root</span>).<span class="ident">into</span>()
     }
 
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">external</span>(<span class="ident">path</span>: <span class="ident">PathBuf</span>) <span class="op">-&gt;</span> <span class="ident">RootEntry</span> {
-        <span class="ident">IncludeRustFiles</span>::<span class="ident">from_root</span>(<span class="ident">ProjectRoot</span>::<span class="ident">new</span>(<span class="ident">path</span>, <span class="bool-val">false</span>))
+        <span class="ident">IncludeRustFiles</span>::<span class="ident">from_root</span>(<span class="ident">PackageRoot</span>::<span class="ident">new</span>(<span class="ident">path</span>, <span class="bool-val">false</span>))
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">member</span>(<span class="ident">path</span>: <span class="ident">PathBuf</span>) <span class="op">-&gt;</span> <span class="ident">RootEntry</span> {
-        <span class="ident">IncludeRustFiles</span>::<span class="ident">from_root</span>(<span class="ident">ProjectRoot</span>::<span class="ident">new</span>(<span class="ident">path</span>, <span class="bool-val">true</span>))
+        <span class="ident">IncludeRustFiles</span>::<span class="ident">from_root</span>(<span class="ident">PackageRoot</span>::<span class="ident">new</span>(<span class="ident">path</span>, <span class="bool-val">true</span>))
     }
 }
 
@@ -95,8 +95,8 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProjectRoot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IncludeRustFiles</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">ProjectRoot</span>) <span class="op">-&gt;</span> <span class="ident">IncludeRustFiles</span> {
+<span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">From</span><span class="op">&lt;</span><span class="ident">PackageRoot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IncludeRustFiles</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">v</span>: <span class="ident">PackageRoot</span>) <span class="op">-&gt;</span> <span class="ident">IncludeRustFiles</span> {
         <span class="ident">IncludeRustFiles</span> { <span class="ident">root</span>: <span class="ident">v</span> }
     }
 }

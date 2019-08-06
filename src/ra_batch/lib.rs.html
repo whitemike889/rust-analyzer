@@ -131,7 +131,7 @@
 
 <span class="kw">use</span> <span class="ident">ra_db</span>::{<span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">SourceRootId</span>};
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>};
-<span class="kw">use</span> <span class="ident">ra_project_model</span>::{<span class="ident">ProjectRoot</span>, <span class="ident">ProjectWorkspace</span>};
+<span class="kw">use</span> <span class="ident">ra_project_model</span>::{<span class="ident">PackageRoot</span>, <span class="ident">ProjectWorkspace</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">Vfs</span>, <span class="ident">VfsChange</span>};
 <span class="kw">use</span> <span class="ident">vfs_filter</span>::<span class="ident">IncludeRustFiles</span>;
 
@@ -144,7 +144,7 @@
     <span class="ident">SourceRootId</span>(<span class="ident">r</span>.<span class="number">0</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_cargo</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">AnalysisHost</span>, <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">SourceRootId</span>, <span class="ident">ProjectRoot</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_cargo</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">AnalysisHost</span>, <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">SourceRootId</span>, <span class="ident">PackageRoot</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">current_dir</span>()<span class="question-mark">?</span>.<span class="ident">join</span>(<span class="ident">root</span>);
     <span class="kw">let</span> <span class="ident">ws</span> <span class="op">=</span> <span class="ident">ProjectWorkspace</span>::<span class="ident">discover</span>(<span class="ident">root</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">project_roots</span> <span class="op">=</span> <span class="ident">ws</span>.<span class="ident">to_roots</span>();
@@ -173,7 +173,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span>(
-    <span class="ident">source_roots</span>: <span class="kw-2">&amp;</span><span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">SourceRootId</span>, <span class="ident">ProjectRoot</span><span class="op">&gt;</span>,
+    <span class="ident">source_roots</span>: <span class="kw-2">&amp;</span><span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">SourceRootId</span>, <span class="ident">PackageRoot</span><span class="op">&gt;</span>,
     <span class="ident">crate_graph</span>: <span class="ident">CrateGraph</span>,
     <span class="ident">vfs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vfs</span>,
 ) <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
