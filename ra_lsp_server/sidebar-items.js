@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main_loop",""],["server_capabilities",""]],"mod":[["init",""],["req",""]],"struct":[["LspError",""]],"type":[["Result",""]]});
+initSidebarItems({"fn":[["main_loop",""],["server_capabilities",""]],"mod":[["config",""],["req",""]],"struct":[["LspError",""]],"type":[["Result",""]]});

@@ -621,6 +621,12 @@
 <span id="621">621</span>
 <span id="622">622</span>
 <span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -647,7 +653,7 @@
     <span class="ident">project_model</span>::<span class="ident">workspace_loader</span>,
     <span class="ident">req</span>,
     <span class="ident">world</span>::{<span class="ident">Options</span>, <span class="ident">WorldSnapshot</span>, <span class="ident">WorldState</span>},
-    <span class="ident">InitializationOptions</span>, <span class="prelude-ty">Result</span>,
+    <span class="prelude-ty">Result</span>, <span class="ident">ServerConfig</span>,
 };
 
 <span class="kw">const</span> <span class="ident">THREADPOOL_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">8</span>;
@@ -676,10 +682,11 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">main_loop</span>(
     <span class="ident">ws_roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
     <span class="ident">client_caps</span>: <span class="ident">ClientCapabilities</span>,
-    <span class="ident">options</span>: <span class="ident">InitializationOptions</span>,
+    <span class="ident">config</span>: <span class="ident">ServerConfig</span>,
     <span class="ident">msg_receiver</span>: <span class="kw-2">&amp;</span><span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;server_config: {:?}&quot;</span>, <span class="ident">config</span>);
     <span class="comment">// FIXME: support dynamic workspace loading.</span>
     <span class="kw">let</span> <span class="ident">workspaces</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="ident">ws_worker</span> <span class="op">=</span> <span class="ident">workspace_loader</span>();
@@ -701,14 +708,19 @@
         }
         <span class="ident">loaded_workspaces</span>
     };
-
+    <span class="kw">let</span> <span class="ident">globs</span> <span class="op">=</span> <span class="ident">config</span>
+        .<span class="ident">exclude_globs</span>
+        .<span class="ident">iter</span>()
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">glob</span><span class="op">|</span> <span class="ident">ra_vfs_glob</span>::<span class="ident">Glob</span>::<span class="ident">new</span>(<span class="ident">glob</span>))
+        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;&gt;</span>()<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(
         <span class="ident">ws_roots</span>,
         <span class="ident">workspaces</span>,
-        <span class="ident">options</span>.<span class="ident">lru_capacity</span>,
+        <span class="ident">config</span>.<span class="ident">lru_capacity</span>,
+        <span class="kw-2">&amp;</span><span class="ident">globs</span>,
         <span class="ident">Options</span> {
-            <span class="ident">publish_decorations</span>: <span class="ident">options</span>.<span class="ident">publish_decorations</span>,
-            <span class="ident">show_workspace_loaded</span>: <span class="ident">options</span>.<span class="ident">show_workspace_loaded</span>,
+            <span class="ident">publish_decorations</span>: <span class="ident">config</span>.<span class="ident">publish_decorations</span>,
+            <span class="ident">show_workspace_loaded</span>: <span class="ident">config</span>.<span class="ident">show_workspace_loaded</span>,
             <span class="ident">supports_location_link</span>: <span class="ident">client_caps</span>
                 .<span class="ident">text_document</span>
                 .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">definition</span>)
