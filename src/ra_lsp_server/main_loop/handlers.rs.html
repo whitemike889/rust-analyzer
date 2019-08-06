@@ -890,13 +890,6 @@
 <span id="890">890</span>
 <span id="891">891</span>
 <span id="892">892</span>
-<span id="893">893</span>
-<span id="894">894</span>
-<span id="895">895</span>
-<span id="896">896</span>
-<span id="897">897</span>
-<span id="898">898</span>
-<span id="899">899</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
@@ -1785,14 +1778,7 @@
             <span class="ident">label</span>: <span class="ident">api_type</span>.<span class="ident">label</span>.<span class="ident">to_string</span>(),
             <span class="ident">range</span>: <span class="ident">api_type</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>),
             <span class="ident">kind</span>: <span class="kw">match</span> <span class="ident">api_type</span>.<span class="ident">kind</span> {
-                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">LetBindingType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">LetBindingType</span>,
-                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">ClosureParameterType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">ClosureParameterType</span>,
-                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">ForExpressionBindingType</span> <span class="op">=&gt;</span> {
-                    <span class="ident">InlayKind</span>::<span class="ident">ForExpressionBindingType</span>
-                }
-                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">IfExpressionType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">IfExpressionType</span>,
-                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">WhileLetExpressionType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">WhileLetExpressionType</span>,
-                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">MatchArmType</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">MatchArmType</span>,
+                <span class="ident">ra_ide_api</span>::<span class="ident">InlayKind</span>::<span class="ident">TypeHint</span> <span class="op">=&gt;</span> <span class="ident">InlayKind</span>::<span class="ident">TypeHint</span>,
             },
         })
         .<span class="ident">collect</span>())
