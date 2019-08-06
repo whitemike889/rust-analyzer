@@ -897,28 +897,19 @@
 <span id="897">897</span>
 <span id="898">898</span>
 <span id="899">899</span>
-<span id="900">900</span>
-<span id="901">901</span>
-<span id="902">902</span>
-<span id="903">903</span>
-<span id="904">904</span>
-<span id="905">905</span>
-<span id="906">906</span>
-<span id="907">907</span>
-<span id="908">908</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
 <span class="kw">use</span> <span class="ident">gen_lsp_server</span>::<span class="ident">ErrorCode</span>;
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{
     <span class="ident">CodeAction</span>, <span class="ident">CodeActionResponse</span>, <span class="ident">CodeLens</span>, <span class="ident">Command</span>, <span class="ident">CompletionItem</span>, <span class="ident">Diagnostic</span>,
-    <span class="ident">DiagnosticSeverity</span>, <span class="ident">DocumentFormattingParams</span>, <span class="ident">DocumentHighlight</span>, <span class="ident">DocumentSymbol</span>, <span class="ident">FoldingRange</span>,
-    <span class="ident">FoldingRangeKind</span>, <span class="ident">FoldingRangeParams</span>, <span class="ident">Hover</span>, <span class="ident">HoverContents</span>, <span class="ident">Location</span>, <span class="ident">MarkupContent</span>,
-    <span class="ident">MarkupKind</span>, <span class="ident">Position</span>, <span class="ident">PrepareRenameResponse</span>, <span class="ident">Range</span>, <span class="ident">RenameParams</span>, <span class="ident">SymbolInformation</span>,
-    <span class="ident">TextDocumentIdentifier</span>, <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>,
+    <span class="ident">DocumentFormattingParams</span>, <span class="ident">DocumentHighlight</span>, <span class="ident">DocumentSymbol</span>, <span class="ident">FoldingRange</span>, <span class="ident">FoldingRangeKind</span>,
+    <span class="ident">FoldingRangeParams</span>, <span class="ident">Hover</span>, <span class="ident">HoverContents</span>, <span class="ident">Location</span>, <span class="ident">MarkupContent</span>, <span class="ident">MarkupKind</span>, <span class="ident">Position</span>,
+    <span class="ident">PrepareRenameResponse</span>, <span class="ident">Range</span>, <span class="ident">RenameParams</span>, <span class="ident">SymbolInformation</span>, <span class="ident">TextDocumentIdentifier</span>,
+    <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{
-    <span class="ident">AssistId</span>, <span class="ident">Cancelable</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">FoldKind</span>, <span class="ident">Query</span>, <span class="ident">RunnableKind</span>, <span class="ident">Severity</span>,
+    <span class="ident">AssistId</span>, <span class="ident">Cancelable</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">FoldKind</span>, <span class="ident">Query</span>, <span class="ident">RunnableKind</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">AstNode</span>, <span class="ident">SyntaxKind</span>, <span class="ident">TextRange</span>, <span class="ident">TextUnit</span>};
@@ -1747,7 +1738,7 @@
         .<span class="ident">into_iter</span>()
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">Diagnostic</span> {
             <span class="ident">range</span>: <span class="ident">d</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>),
-            <span class="ident">severity</span>: <span class="prelude-val">Some</span>(<span class="ident">to_diagnostic_severity</span>(<span class="ident">d</span>.<span class="ident">severity</span>)),
+            <span class="ident">severity</span>: <span class="prelude-val">Some</span>(<span class="ident">d</span>.<span class="ident">severity</span>.<span class="ident">conv</span>()),
             <span class="ident">code</span>: <span class="prelude-val">None</span>,
             <span class="ident">source</span>: <span class="prelude-val">Some</span>(<span class="string">&quot;rust-analyzer&quot;</span>.<span class="ident">to_string</span>()),
             <span class="ident">message</span>: <span class="ident">d</span>.<span class="ident">message</span>,
@@ -1778,15 +1769,6 @@
         })
         .<span class="ident">collect</span>();
     <span class="prelude-val">Ok</span>(<span class="ident">res</span>)
-}
-
-<span class="kw">fn</span> <span class="ident">to_diagnostic_severity</span>(<span class="ident">severity</span>: <span class="ident">Severity</span>) <span class="op">-&gt;</span> <span class="ident">DiagnosticSeverity</span> {
-    <span class="kw">use</span> <span class="ident">ra_ide_api</span>::<span class="ident">Severity</span>::<span class="kw-2">*</span>;
-
-    <span class="kw">match</span> <span class="ident">severity</span> {
-        <span class="ident">Error</span> <span class="op">=&gt;</span> <span class="ident">DiagnosticSeverity</span>::<span class="ident">Error</span>,
-        <span class="ident">WeakWarning</span> <span class="op">=&gt;</span> <span class="ident">DiagnosticSeverity</span>::<span class="ident">Hint</span>,
-    }
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle_inlay_hints</span>(
