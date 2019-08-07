@@ -47,6 +47,13 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -84,6 +91,13 @@
         <span class="ident">LIFETIME</span> <span class="op">=&gt;</span> {
             <span class="ident">p</span>.<span class="ident">bump</span>();
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">LIFETIME_ARG</span>);
+        }
+        <span class="comment">// test associated_type_bounds</span>
+        <span class="comment">// fn print_all&lt;T: Iterator&lt;Item: Display&gt;&gt;(printables: T) {}</span>
+        <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:] <span class="op">=&gt;</span> {
+            <span class="ident">name_ref</span>(<span class="ident">p</span>);
+            <span class="ident">type_params</span>::<span class="ident">bounds</span>(<span class="ident">p</span>);
+            <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ASSOC_TYPE_ARG</span>);
         }
         <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> {
             <span class="ident">name_ref</span>(<span class="ident">p</span>);
