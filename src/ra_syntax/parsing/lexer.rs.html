@@ -140,11 +140,6 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="kw-2">*</span>},
@@ -158,6 +153,19 @@
     <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>,
     <span class="doccomment">/// The length of the token.</span>
     <span class="kw">pub</span> <span class="ident">len</span>: <span class="ident">TextUnit</span>,
+}
+
+<span class="kw">fn</span> <span class="ident">match_literal_kind</span>(<span class="ident">kind</span>: <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxKind</span> {
+    <span class="kw">match</span> <span class="ident">kind</span> {
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Int</span> { .. } <span class="op">=&gt;</span> <span class="ident">INT_NUMBER</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Float</span> { .. } <span class="op">=&gt;</span> <span class="ident">FLOAT_NUMBER</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Char</span> { .. } <span class="op">=&gt;</span> <span class="ident">CHAR</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Byte</span> { .. } <span class="op">=&gt;</span> <span class="ident">BYTE</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Str</span> { .. } <span class="op">=&gt;</span> <span class="ident">STRING</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">ByteStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">BYTE_STRING</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">RawStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">RAW_STRING</span>,
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">RawByteStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">RAW_BYTE_STRING</span>,
+    }
 }
 
 <span class="doccomment">/// Break a string up into its component tokens</span>
@@ -201,16 +209,7 @@
                 }
             }
             <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">RawIdent</span> <span class="op">=&gt;</span> <span class="ident">IDENT</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Literal</span> { <span class="ident">kind</span>, .. } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">kind</span> {
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Int</span> { .. } <span class="op">=&gt;</span> <span class="ident">INT_NUMBER</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Float</span> { .. } <span class="op">=&gt;</span> <span class="ident">FLOAT_NUMBER</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Char</span> { .. } <span class="op">=&gt;</span> <span class="ident">CHAR</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Byte</span> { .. } <span class="op">=&gt;</span> <span class="ident">BYTE</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Str</span> { .. } <span class="op">=&gt;</span> <span class="ident">STRING</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">ByteStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">BYTE_STRING</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">RawStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">RAW_STRING</span>,
-                <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">RawByteStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">RAW_BYTE_STRING</span>,
-            },
+            <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Literal</span> { <span class="ident">kind</span>, .. } <span class="op">=&gt;</span> <span class="ident">match_literal_kind</span>(<span class="ident">kind</span>),
             <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Lifetime</span> { .. } <span class="op">=&gt;</span> <span class="ident">LIFETIME</span>,
             <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Semi</span> <span class="op">=&gt;</span> <span class="ident">SEMI</span>,
             <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Comma</span> <span class="op">=&gt;</span> <span class="ident">COMMA</span>,
@@ -279,16 +278,7 @@
         <span class="kw">return</span> <span class="prelude-val">None</span>;
     }
     <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">t</span>.<span class="ident">kind</span> {
-        <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Literal</span> { <span class="ident">kind</span>, .. } <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Int</span> { .. } <span class="op">=&gt;</span> <span class="ident">INT_NUMBER</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Float</span> { .. } <span class="op">=&gt;</span> <span class="ident">FLOAT_NUMBER</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Char</span> { .. } <span class="op">=&gt;</span> <span class="ident">CHAR</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Byte</span> { .. } <span class="op">=&gt;</span> <span class="ident">BYTE</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">Str</span> { .. } <span class="op">=&gt;</span> <span class="ident">STRING</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">ByteStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">BYTE_STRING</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">RawStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">RAW_STRING</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">LiteralKind</span>::<span class="ident">RawByteStr</span> { .. } <span class="op">=&gt;</span> <span class="ident">RAW_BYTE_STRING</span>,
-        },
+        <span class="ident">ra_rustc_lexer</span>::<span class="ident">TokenKind</span>::<span class="ident">Literal</span> { <span class="ident">kind</span>, .. } <span class="op">=&gt;</span> <span class="ident">match_literal_kind</span>(<span class="ident">kind</span>),
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
     };
     <span class="prelude-val">Some</span>(<span class="ident">Token</span> { <span class="ident">kind</span>, <span class="ident">len</span>: <span class="ident">TextUnit</span>::<span class="ident">from_usize</span>(<span class="ident">t</span>.<span class="ident">len</span>) })
