@@ -95,12 +95,12 @@
         <span class="comment">// test associated_type_bounds</span>
         <span class="comment">// fn print_all&lt;T: Iterator&lt;Item: Display&gt;&gt;(printables: T) {}</span>
         <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:] <span class="op">=&gt;</span> {
-            <span class="ident">name_ref</span>(<span class="ident">p</span>, <span class="bool-val">false</span>);
+            <span class="ident">name_ref</span>(<span class="ident">p</span>);
             <span class="ident">type_params</span>::<span class="ident">bounds</span>(<span class="ident">p</span>);
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ASSOC_TYPE_ARG</span>);
         }
         <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> {
-            <span class="ident">name_ref</span>(<span class="ident">p</span>, <span class="bool-val">false</span>);
+            <span class="ident">name_ref</span>(<span class="ident">p</span>);
             <span class="ident">p</span>.<span class="ident">bump</span>();
             <span class="ident">types</span>::<span class="ident">type_</span>(<span class="ident">p</span>);
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ASSOC_TYPE_ARG</span>);
