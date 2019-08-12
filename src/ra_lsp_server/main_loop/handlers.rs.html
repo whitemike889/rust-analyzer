@@ -881,15 +881,6 @@
 <span id="881">881</span>
 <span id="882">882</span>
 <span id="883">883</span>
-<span id="884">884</span>
-<span id="885">885</span>
-<span id="886">886</span>
-<span id="887">887</span>
-<span id="888">888</span>
-<span id="889">889</span>
-<span id="890">890</span>
-<span id="891">891</span>
-<span id="892">892</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>};
 
@@ -902,7 +893,7 @@
     <span class="ident">TextEdit</span>, <span class="ident">WorkspaceEdit</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{
-    <span class="ident">AssistId</span>, <span class="ident">Cancelable</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">FoldKind</span>, <span class="ident">Query</span>, <span class="ident">RunnableKind</span>,
+    <span class="ident">AssistId</span>, <span class="ident">Cancelable</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">FileRange</span>, <span class="ident">FoldKind</span>, <span class="ident">Query</span>, <span class="ident">Runnable</span>, <span class="ident">RunnableKind</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">AstNode</span>, <span class="ident">SyntaxKind</span>, <span class="ident">TextRange</span>, <span class="ident">TextUnit</span>};
@@ -1218,27 +1209,7 @@
                 <span class="kw">continue</span>;
             }
         }
-
-        <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">runnable_args</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">runnable</span>.<span class="ident">kind</span>)<span class="question-mark">?</span>;
-
-        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">req</span>::<span class="ident">Runnable</span> {
-            <span class="ident">range</span>: <span class="ident">runnable</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>),
-            <span class="ident">label</span>: <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">runnable</span>.<span class="ident">kind</span> {
-                <span class="ident">RunnableKind</span>::<span class="ident">Test</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;test {}&quot;</span>, <span class="ident">name</span>),
-                <span class="ident">RunnableKind</span>::<span class="ident">TestMod</span> { <span class="ident">path</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;test-mod {}&quot;</span>, <span class="ident">path</span>),
-                <span class="ident">RunnableKind</span>::<span class="ident">Bench</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;bench {}&quot;</span>, <span class="ident">name</span>),
-                <span class="ident">RunnableKind</span>::<span class="ident">Bin</span> <span class="op">=&gt;</span> <span class="string">&quot;run binary&quot;</span>.<span class="ident">to_string</span>(),
-            },
-            <span class="ident">bin</span>: <span class="string">&quot;cargo&quot;</span>.<span class="ident">to_string</span>(),
-            <span class="ident">args</span>,
-            <span class="ident">env</span>: {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">FxHashMap</span>::<span class="ident">default</span>();
-                <span class="ident">m</span>.<span class="ident">insert</span>(<span class="string">&quot;RUST_BACKTRACE&quot;</span>.<span class="ident">to_string</span>(), <span class="string">&quot;short&quot;</span>.<span class="ident">to_string</span>());
-                <span class="ident">m</span>
-            },
-            <span class="ident">cwd</span>: <span class="ident">workspace_root</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">root</span><span class="op">|</span> <span class="ident">root</span>.<span class="ident">to_string_lossy</span>().<span class="ident">to_string</span>()),
-        };
-        <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">r</span>);
+        <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">to_lsp_runnable</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>, <span class="ident">runnable</span>)<span class="question-mark">?</span>);
     }
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">check_args</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="string">&quot;check&quot;</span>.<span class="ident">to_string</span>()];
     <span class="kw">let</span> <span class="ident">label</span>;
@@ -1586,42 +1557,27 @@
     <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lenses</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CodeLens</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Default</span>::<span class="ident">default</span>();
-    <span class="kw">let</span> <span class="ident">workspace_root</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">workspace_root_for</span>(<span class="ident">file_id</span>);
 
     <span class="comment">// Gather runnables</span>
     <span class="kw">for</span> <span class="ident">runnable</span> <span class="kw">in</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">runnables</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span> {
         <span class="kw">let</span> <span class="ident">title</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">runnable</span>.<span class="ident">kind</span> {
-            <span class="ident">RunnableKind</span>::<span class="ident">Test</span> { .. } <span class="op">|</span> <span class="ident">RunnableKind</span>::<span class="ident">TestMod</span> { .. } <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;▶️Run Test&quot;</span>),
-            <span class="ident">RunnableKind</span>::<span class="ident">Bench</span> { .. } <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;Run Bench&quot;</span>),
-            <span class="ident">RunnableKind</span>::<span class="ident">Bin</span> <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="string">&quot;️Run&quot;</span>),
+            <span class="ident">RunnableKind</span>::<span class="ident">Test</span> { .. } <span class="op">|</span> <span class="ident">RunnableKind</span>::<span class="ident">TestMod</span> { .. } <span class="op">=&gt;</span> <span class="string">&quot;▶️Run Test&quot;</span>,
+            <span class="ident">RunnableKind</span>::<span class="ident">Bench</span> { .. } <span class="op">=&gt;</span> <span class="string">&quot;Run Bench&quot;</span>,
+            <span class="ident">RunnableKind</span>::<span class="ident">Bin</span> <span class="op">=&gt;</span> <span class="string">&quot;Run&quot;</span>,
+        }
+        .<span class="ident">to_string</span>();
+        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">to_lsp_runnable</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>, <span class="ident">runnable</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">lens</span> <span class="op">=</span> <span class="ident">CodeLens</span> {
+            <span class="ident">range</span>: <span class="ident">r</span>.<span class="ident">range</span>,
+            <span class="ident">command</span>: <span class="prelude-val">Some</span>(<span class="ident">Command</span> {
+                <span class="ident">title</span>,
+                <span class="ident">command</span>: <span class="string">&quot;rust-analyzer.runSingle&quot;</span>.<span class="ident">into</span>(),
+                <span class="ident">arguments</span>: <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">to_value</span>(<span class="ident">r</span>).<span class="ident">unwrap</span>()]),
+            }),
+            <span class="ident">data</span>: <span class="prelude-val">None</span>,
         };
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">title</span>) <span class="op">=</span> <span class="ident">title</span> {
-            <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">runnable_args</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">runnable</span>.<span class="ident">kind</span>)<span class="question-mark">?</span>;
-            <span class="kw">let</span> <span class="ident">range</span> <span class="op">=</span> <span class="ident">runnable</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>);
-
-            <span class="comment">// This represents the actual command that will be run.</span>
-            <span class="kw">let</span> <span class="ident">r</span>: <span class="ident">req</span>::<span class="ident">Runnable</span> <span class="op">=</span> <span class="ident">req</span>::<span class="ident">Runnable</span> {
-                <span class="ident">range</span>,
-                <span class="ident">label</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
-                <span class="ident">bin</span>: <span class="string">&quot;cargo&quot;</span>.<span class="ident">into</span>(),
-                <span class="ident">args</span>,
-                <span class="ident">env</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
-                <span class="ident">cwd</span>: <span class="ident">workspace_root</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">root</span><span class="op">|</span> <span class="ident">root</span>.<span class="ident">to_string_lossy</span>().<span class="ident">to_string</span>()),
-            };
-
-            <span class="kw">let</span> <span class="ident">lens</span> <span class="op">=</span> <span class="ident">CodeLens</span> {
-                <span class="ident">range</span>,
-                <span class="ident">command</span>: <span class="prelude-val">Some</span>(<span class="ident">Command</span> {
-                    <span class="ident">title</span>: <span class="ident">title</span>.<span class="ident">into</span>(),
-                    <span class="ident">command</span>: <span class="string">&quot;rust-analyzer.runSingle&quot;</span>.<span class="ident">into</span>(),
-                    <span class="ident">arguments</span>: <span class="prelude-val">Some</span>(<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">to_value</span>(<span class="ident">r</span>).<span class="ident">unwrap</span>()]),
-                }),
-                <span class="ident">data</span>: <span class="prelude-val">None</span>,
-            };
-
-            <span class="ident">lenses</span>.<span class="ident">push</span>(<span class="ident">lens</span>);
-        }
+        <span class="ident">lenses</span>.<span class="ident">push</span>(<span class="ident">lens</span>);
     }
 
     <span class="comment">// Handle impls</span>
@@ -1749,6 +1705,32 @@
     <span class="prelude-val">Ok</span>(<span class="ident">req</span>::<span class="ident">PublishDecorationsParams</span> { <span class="ident">uri</span>, <span class="ident">decorations</span>: <span class="ident">highlight</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>)<span class="question-mark">?</span> })
 }
 
+<span class="kw">fn</span> <span class="ident">to_lsp_runnable</span>(
+    <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>,
+    <span class="ident">file_id</span>: <span class="ident">FileId</span>,
+    <span class="ident">runnable</span>: <span class="ident">Runnable</span>,
+) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">Runnable</span><span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">runnable_args</span>(<span class="ident">world</span>, <span class="ident">file_id</span>, <span class="kw-2">&amp;</span><span class="ident">runnable</span>.<span class="ident">kind</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">label</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">runnable</span>.<span class="ident">kind</span> {
+        <span class="ident">RunnableKind</span>::<span class="ident">Test</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;test {}&quot;</span>, <span class="ident">name</span>),
+        <span class="ident">RunnableKind</span>::<span class="ident">TestMod</span> { <span class="ident">path</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;test-mod {}&quot;</span>, <span class="ident">path</span>),
+        <span class="ident">RunnableKind</span>::<span class="ident">Bench</span> { <span class="ident">name</span> } <span class="op">=&gt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;bench {}&quot;</span>, <span class="ident">name</span>),
+        <span class="ident">RunnableKind</span>::<span class="ident">Bin</span> <span class="op">=&gt;</span> <span class="string">&quot;run binary&quot;</span>.<span class="ident">to_string</span>(),
+    };
+    <span class="prelude-val">Ok</span>(<span class="ident">req</span>::<span class="ident">Runnable</span> {
+        <span class="ident">range</span>: <span class="ident">runnable</span>.<span class="ident">range</span>.<span class="ident">conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>),
+        <span class="ident">label</span>,
+        <span class="ident">bin</span>: <span class="string">&quot;cargo&quot;</span>.<span class="ident">to_string</span>(),
+        <span class="ident">args</span>,
+        <span class="ident">env</span>: {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">FxHashMap</span>::<span class="ident">default</span>();
+            <span class="ident">m</span>.<span class="ident">insert</span>(<span class="string">&quot;RUST_BACKTRACE&quot;</span>.<span class="ident">to_string</span>(), <span class="string">&quot;short&quot;</span>.<span class="ident">to_string</span>());
+            <span class="ident">m</span>
+        },
+        <span class="ident">cwd</span>: <span class="ident">world</span>.<span class="ident">workspace_root_for</span>(<span class="ident">file_id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">root</span><span class="op">|</span> <span class="ident">root</span>.<span class="ident">to_string_lossy</span>().<span class="ident">to_string</span>()),
+    })
+}
 <span class="kw">fn</span> <span class="ident">highlight</span>(<span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Decoration</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="ident">file_id</span>)<span class="question-mark">?</span>;
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">world</span>
