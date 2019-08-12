@@ -626,7 +626,6 @@
 <span id="626">626</span>
 <span id="627">627</span>
 <span id="628">628</span>
-<span id="629">629</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -976,7 +975,6 @@
         })<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">AnalyzerStatus</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_analyzer_status</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SyntaxTree</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_syntax_tree</span>)<span class="question-mark">?</span>
-        .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">ExtendSelection</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_extend_selection</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">OnTypeFormatting</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_on_type_formatting</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">DocumentSymbolRequest</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_document_symbol</span>)<span class="question-mark">?</span>
         .<span class="ident">on</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">WorkspaceSymbol</span><span class="op">&gt;</span>(<span class="ident">handlers</span>::<span class="ident">handle_workspace_symbol</span>)<span class="question-mark">?</span>
