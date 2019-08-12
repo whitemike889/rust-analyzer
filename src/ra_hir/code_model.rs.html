@@ -906,6 +906,10 @@
 <span id="906">906</span>
 <span id="907">907</span>
 <span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">src</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">docs</span>;
@@ -1745,6 +1749,10 @@
 <span class="kw">impl</span> <span class="ident">TypeAlias</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">module</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="ident">Module</span> {
         <span class="self">self</span>.<span class="ident">id</span>.<span class="ident">module</span>(<span class="ident">db</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">krate</span>(<span class="self">self</span>, <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">DefDatabase</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Crate</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">module</span>(<span class="ident">db</span>).<span class="ident">krate</span>(<span class="ident">db</span>)
     }
 
     <span class="doccomment">/// The containing impl block, if this is a method.</span>

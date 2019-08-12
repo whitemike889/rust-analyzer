@@ -935,6 +935,7 @@
 <span id="935">935</span>
 <span id="936">936</span>
 <span id="937">937</span>
+<span id="938">938</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::{<span class="self">self</span>, <span class="ident">db</span>::<span class="ident">HirDatabase</span>};
 <span class="kw">use</span> <span class="ident">ra_text_edit</span>::<span class="ident">TextEditBuilder</span>;
@@ -1009,6 +1010,7 @@
             <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">SelfKw</span> <span class="op">=&gt;</span> <span class="ident">a</span> <span class="op">==</span> <span class="string">&quot;self&quot;</span>,
             <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">SuperKw</span> <span class="op">=&gt;</span> <span class="ident">a</span> <span class="op">==</span> <span class="string">&quot;super&quot;</span>,
             <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">CrateKw</span> <span class="op">=&gt;</span> <span class="ident">a</span> <span class="op">==</span> <span class="string">&quot;crate&quot;</span>,
+            <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">Type</span> { .. } <span class="op">=&gt;</span> <span class="bool-val">false</span>, <span class="comment">// not allowed in imports</span>
         }
     } <span class="kw">else</span> {
         <span class="bool-val">false</span>

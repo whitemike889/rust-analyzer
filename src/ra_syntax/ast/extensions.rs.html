@@ -377,6 +377,16 @@
 <span id="377">377</span>
 <span id="378">378</span>
 <span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various extension methods to ast Nodes, which are hard to code-generate.</span>
 <span class="doccomment">//! Extensions for various expressions live in a sibling `expr_extensions` module.</span>
@@ -471,6 +481,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PathSegmentKind</span> {
     <span class="ident">Name</span>(<span class="ident">ast</span>::<span class="ident">NameRef</span>),
+    <span class="ident">Type</span> { <span class="ident">type_ref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">TypeRef</span><span class="op">&gt;</span>, <span class="ident">trait_ref</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">PathType</span><span class="op">&gt;</span> },
     <span class="ident">SelfKw</span>,
     <span class="ident">SuperKw</span>,
     <span class="ident">CrateKw</span>,
@@ -492,6 +503,15 @@
                 <span class="macro">T</span><span class="macro">!</span>[<span class="self">self</span>] <span class="op">=&gt;</span> <span class="ident">PathSegmentKind</span>::<span class="ident">SelfKw</span>,
                 <span class="macro">T</span><span class="macro">!</span>[<span class="kw">super</span>] <span class="op">=&gt;</span> <span class="ident">PathSegmentKind</span>::<span class="ident">SuperKw</span>,
                 <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="op">=&gt;</span> <span class="ident">PathSegmentKind</span>::<span class="ident">CrateKw</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="op">=&gt;</span> {
+                    <span class="comment">// &lt;T&gt; or &lt;T as Trait&gt;</span>
+                    <span class="comment">// T is any TypeRef, Trait has to be a PathType</span>
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">type_refs</span> <span class="op">=</span>
+                        <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">children</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">node</span><span class="op">|</span> <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">can_cast</span>(<span class="ident">node</span>.<span class="ident">kind</span>()));
+                    <span class="kw">let</span> <span class="ident">type_ref</span> <span class="op">=</span> <span class="ident">type_refs</span>.<span class="ident">next</span>().<span class="ident">and_then</span>(<span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">cast</span>);
+                    <span class="kw">let</span> <span class="ident">trait_ref</span> <span class="op">=</span> <span class="ident">type_refs</span>.<span class="ident">next</span>().<span class="ident">and_then</span>(<span class="ident">ast</span>::<span class="ident">PathType</span>::<span class="ident">cast</span>);
+                    <span class="ident">PathSegmentKind</span>::<span class="ident">Type</span> { <span class="ident">type_ref</span>, <span class="ident">trait_ref</span> }
+                }
                 <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
             }
         };

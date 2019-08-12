@@ -239,6 +239,42 @@
 <span id="239">239</span>
 <span id="240">240</span>
 <span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -267,6 +303,12 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GenericArgs</span> {
     <span class="kw">pub</span> <span class="ident">args</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">GenericArg</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// This specifies whether the args contain a Self type as the first</span>
+    <span class="doccomment">/// element. This is the case for path segments like `&lt;T as Trait&gt;`, where</span>
+    <span class="doccomment">/// `T` is actually a type parameter for the path `Trait` specifying the</span>
+    <span class="doccomment">/// Self type. Otherwise, when we have a path `Trait&lt;X, Y&gt;`, the Self type</span>
+    <span class="doccomment">/// is left out.</span>
+    <span class="kw">pub</span> <span class="ident">has_self_type</span>: <span class="ident">bool</span>,
     <span class="comment">// someday also bindings</span>
 }
 
@@ -315,6 +357,28 @@
                         <span class="ident">segment</span>.<span class="ident">type_arg_list</span>().<span class="ident">and_then</span>(<span class="ident">GenericArgs</span>::<span class="ident">from_ast</span>).<span class="ident">map</span>(<span class="ident">Arc</span>::<span class="ident">new</span>);
                     <span class="kw">let</span> <span class="ident">segment</span> <span class="op">=</span> <span class="ident">PathSegment</span> { <span class="ident">name</span>: <span class="ident">name</span>.<span class="ident">as_name</span>(), <span class="ident">args_and_bindings</span>: <span class="ident">args</span> };
                     <span class="ident">segments</span>.<span class="ident">push</span>(<span class="ident">segment</span>);
+                }
+                <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">Type</span> { <span class="ident">type_ref</span>, <span class="ident">trait_ref</span> } <span class="op">=&gt;</span> {
+                    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">path</span>.<span class="ident">qualifier</span>().<span class="ident">is_none</span>()); <span class="comment">// this can only occur at the first segment</span>
+
+                    <span class="comment">// FIXME: handle &lt;T&gt; syntax (type segments without trait)</span>
+
+                    <span class="comment">// &lt;T as Trait&lt;A&gt;&gt;::Foo desugars to Trait&lt;Self=T, A&gt;::Foo</span>
+                    <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">Path</span>::<span class="ident">from_ast</span>(<span class="ident">trait_ref</span><span class="question-mark">?</span>.<span class="ident">path</span>()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+                    <span class="ident">kind</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">kind</span>;
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prefix_segments</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">segments</span>;
+                    <span class="ident">prefix_segments</span>.<span class="ident">reverse</span>();
+                    <span class="ident">segments</span>.<span class="ident">extend</span>(<span class="ident">prefix_segments</span>);
+                    <span class="comment">// Insert the type reference (T in the above example) as Self parameter for the trait</span>
+                    <span class="kw">let</span> <span class="ident">self_type</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast</span>(<span class="ident">type_ref</span><span class="question-mark">?</span>);
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_segment</span> <span class="op">=</span> <span class="ident">segments</span>.<span class="ident">last_mut</span>()<span class="question-mark">?</span>;
+                    <span class="kw">if</span> <span class="ident">last_segment</span>.<span class="ident">args_and_bindings</span>.<span class="ident">is_none</span>() {
+                        <span class="ident">last_segment</span>.<span class="ident">args_and_bindings</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">GenericArgs</span>::<span class="ident">empty</span>()));
+                    };
+                    <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">last_segment</span>.<span class="ident">args_and_bindings</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>();
+                    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">args_inner</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">make_mut</span>(<span class="ident">args</span>);
+                    <span class="ident">args_inner</span>.<span class="ident">has_self_type</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                    <span class="ident">args_inner</span>.<span class="ident">args</span>.<span class="ident">insert</span>(<span class="number">0</span>, <span class="ident">GenericArg</span>::<span class="ident">Type</span>(<span class="ident">self_type</span>));
                 }
                 <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">CrateKw</span> <span class="op">=&gt;</span> {
                     <span class="ident">kind</span> <span class="op">=</span> <span class="ident">PathKind</span>::<span class="ident">Crate</span>;
@@ -386,10 +450,14 @@
         }
         <span class="comment">// lifetimes and assoc type args ignored for now</span>
         <span class="kw">if</span> <span class="op">!</span><span class="ident">args</span>.<span class="ident">is_empty</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">GenericArgs</span> { <span class="ident">args</span> })
+            <span class="prelude-val">Some</span>(<span class="ident">GenericArgs</span> { <span class="ident">args</span>, <span class="ident">has_self_type</span>: <span class="bool-val">false</span> })
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
         }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">empty</span>() <span class="op">-&gt;</span> <span class="ident">GenericArgs</span> {
+        <span class="ident">GenericArgs</span> { <span class="ident">args</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(), <span class="ident">has_self_type</span>: <span class="bool-val">false</span> }
     }
 }
 
@@ -477,6 +545,10 @@
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
             <span class="ident">Path</span> { <span class="ident">kind</span>: <span class="ident">PathKind</span>::<span class="ident">Super</span>, <span class="ident">segments</span>: <span class="ident">Vec</span>::<span class="ident">new</span>() }
+        }
+        <span class="ident">ast</span>::<span class="ident">PathSegmentKind</span>::<span class="ident">Type</span> { .. } <span class="op">=&gt;</span> {
+            <span class="comment">// not allowed in imports</span>
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
     };
     <span class="prelude-val">Some</span>(<span class="ident">res</span>)
