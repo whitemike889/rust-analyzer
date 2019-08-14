@@ -1167,7 +1167,7 @@
 <span class="comment">//     let _ = format!();</span>
 <span class="comment">// }</span>
 <span class="kw">fn</span> <span class="ident">path_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">r</span>: <span class="ident">Restrictions</span>) <span class="op">-&gt;</span> (<span class="ident">CompletedMarker</span>, <span class="ident">BlockLike</span>) {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]));
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="ident">paths</span>::<span class="ident">expr_path</span>(<span class="ident">p</span>);
     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {

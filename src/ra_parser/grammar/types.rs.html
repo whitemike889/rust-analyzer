@@ -306,6 +306,7 @@
 <span id="306">306</span>
 <span id="307">307</span>
 <span id="308">308</span>
+<span id="309">309</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -338,7 +339,7 @@
         <span class="macro">T</span><span class="macro">!</span>[<span class="kw">dyn</span> ] <span class="op">=&gt;</span> <span class="ident">dyn_trait_type</span>(<span class="ident">p</span>),
         <span class="comment">// Some path types are not allowed to have bounds (no plus)</span>
         <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="op">=&gt;</span> <span class="ident">path_type_</span>(<span class="ident">p</span>, <span class="ident">allow_bounds</span>),
-        <span class="kw">_</span> <span class="kw">if</span> <span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> <span class="ident">path_or_macro_type_</span>(<span class="ident">p</span>, <span class="ident">allow_bounds</span>),
+        <span class="kw">_</span> <span class="kw">if</span> <span class="ident">paths</span>::<span class="ident">is_use_path_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> <span class="ident">path_or_macro_type_</span>(<span class="ident">p</span>, <span class="ident">allow_bounds</span>),
         <span class="kw">_</span> <span class="op">=&gt;</span> {
             <span class="ident">p</span>.<span class="ident">err_recover</span>(<span class="string">&quot;expected type&quot;</span>, <span class="ident">TYPE_RECOVERY_SET</span>);
         }
@@ -514,6 +515,7 @@
 <span class="comment">// type A = for&lt;&#39;a&gt; fn() -&gt; ();</span>
 <span class="comment">// fn foo&lt;T&gt;(_t: &amp;T) where for&lt;&#39;a&gt; &amp;&#39;a T: Iterator {}</span>
 <span class="comment">// fn bar&lt;T&gt;(_t: &amp;T) where for&lt;&#39;a&gt; &amp;&#39;a mut T: Iterator {}</span>
+<span class="comment">// fn baz&lt;T&gt;(_t: &amp;T) where for&lt;&#39;a&gt; &lt;&amp;&#39;a T as Baz&gt;::Foo: Iterator {}</span>
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">for_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">for</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
@@ -560,7 +562,7 @@
 <span class="comment">// type A = foo!();</span>
 <span class="comment">// type B = crate::foo!();</span>
 <span class="kw">fn</span> <span class="ident">path_or_macro_type_</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">allow_bounds</span>: <span class="ident">bool</span>) {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]));
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="ident">paths</span>::<span class="ident">type_path</span>(<span class="ident">p</span>);
 
@@ -579,7 +581,7 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">path_type_</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">allow_bounds</span>: <span class="ident">bool</span>) {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]));
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="ident">paths</span>::<span class="ident">type_path</span>(<span class="ident">p</span>);
 

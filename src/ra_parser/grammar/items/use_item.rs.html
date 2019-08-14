@@ -189,7 +189,7 @@
         <span class="comment">// use crate::Item;</span>
         <span class="comment">// use self::some::Struct;</span>
         <span class="comment">// use crate_name::some_item;</span>
-        <span class="kw">_</span> <span class="kw">if</span> <span class="ident">paths</span>::<span class="ident">is_path_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> {
+        <span class="kw">_</span> <span class="kw">if</span> <span class="ident">paths</span>::<span class="ident">is_use_path_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> {
             <span class="ident">paths</span>::<span class="ident">use_path</span>(<span class="ident">p</span>);
             <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
                 <span class="macro">T</span><span class="macro">!</span>[<span class="kw">as</span>] <span class="op">=&gt;</span> {
