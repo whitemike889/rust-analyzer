@@ -91,7 +91,7 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>};
 
 <span class="kw">use</span> <span class="ident">ra_db</span>::{
-    <span class="ident">salsa</span>::{<span class="self">self</span>, <span class="ident">Database</span>},
+    <span class="ident">salsa</span>::{<span class="self">self</span>, <span class="ident">Database</span>, <span class="ident">Durability</span>},
     <span class="ident">Canceled</span>, <span class="ident">CheckCanceled</span>, <span class="ident">FileId</span>, <span class="ident">SourceDatabase</span>,
 };
 
@@ -147,9 +147,9 @@
             <span class="ident">last_gc</span>: <span class="ident">time</span>::<span class="ident">Instant</span>::<span class="ident">now</span>(),
             <span class="ident">last_gc_check</span>: <span class="ident">time</span>::<span class="ident">Instant</span>::<span class="ident">now</span>(),
         };
-        <span class="ident">db</span>.<span class="ident">set_crate_graph</span>(<span class="ident">Default</span>::<span class="ident">default</span>());
-        <span class="ident">db</span>.<span class="ident">set_local_roots</span>(<span class="ident">Default</span>::<span class="ident">default</span>());
-        <span class="ident">db</span>.<span class="ident">set_library_roots</span>(<span class="ident">Default</span>::<span class="ident">default</span>());
+        <span class="ident">db</span>.<span class="ident">set_crate_graph_with_durability</span>(<span class="ident">Default</span>::<span class="ident">default</span>(), <span class="ident">Durability</span>::<span class="ident">HIGH</span>);
+        <span class="ident">db</span>.<span class="ident">set_local_roots_with_durability</span>(<span class="ident">Default</span>::<span class="ident">default</span>(), <span class="ident">Durability</span>::<span class="ident">HIGH</span>);
+        <span class="ident">db</span>.<span class="ident">set_library_roots_with_durability</span>(<span class="ident">Default</span>::<span class="ident">default</span>(), <span class="ident">Durability</span>::<span class="ident">HIGH</span>);
         <span class="kw">let</span> <span class="ident">lru_capacity</span> <span class="op">=</span> <span class="ident">lru_capacity</span>.<span class="ident">unwrap_or</span>(<span class="ident">ra_db</span>::<span class="ident">DEFAULT_LRU_CAP</span>);
         <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">ra_db</span>::<span class="ident">ParseQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_capacity</span>);
         <span class="ident">db</span>.<span class="ident">query_mut</span>(<span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">ParseMacroQuery</span>).<span class="ident">set_lru_capacity</span>(<span class="ident">lru_capacity</span>);
