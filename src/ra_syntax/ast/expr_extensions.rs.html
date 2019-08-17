@@ -297,6 +297,10 @@
 <span id="297">297</span>
 <span id="298">298</span>
 <span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various extension methods to ast Expr Nodes, which are hard to code-generate.</span>
 
@@ -402,10 +406,6 @@
     <span class="ident">BitwiseOr</span>,
     <span class="doccomment">/// The `&amp;` operator for bitwise AND</span>
     <span class="ident">BitwiseAnd</span>,
-    <span class="doccomment">/// The `..` operator for right-open ranges</span>
-    <span class="ident">RangeRightOpen</span>,
-    <span class="doccomment">/// The `..=` operator for right-closed ranges</span>
-    <span class="ident">RangeRightClosed</span>,
     <span class="doccomment">/// The `=` operator for assignment</span>
     <span class="ident">Assignment</span>,
     <span class="doccomment">/// The `+=` operator for assignment after addition</span>
@@ -432,41 +432,40 @@
 
 <span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">BinExpr</span> {
     <span class="kw">fn</span> <span class="ident">op_details</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SyntaxToken</span>, <span class="ident">BinOp</span>)<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">children_with_tokens</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>()).<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">c</span>
-            .<span class="ident">kind</span>()
-        {
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BooleanOr</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BooleanAnd</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">EqualityTest</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">NegatedEqualityTest</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">LesserEqualTest</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">GreaterEqualTest</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">LesserTest</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">GreaterTest</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">Addition</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">Multiplication</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">Subtraction</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">Division</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">Remainder</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">LeftShift</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">RightShift</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BitwiseXor</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BitwiseOr</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BitwiseAnd</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">RangeRightOpen</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[..=] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">RangeRightClosed</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">Assignment</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">AddAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">DivAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">MulAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">RemAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">ShrAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">ShlAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">SubAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BitOrAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BitAndAssign</span>)),
-            <span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>] <span class="op">=&gt;</span> <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">BinOp</span>::<span class="ident">BitXorAssign</span>)),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+        <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">children_with_tokens</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>()).<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">bin_op</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">c</span>.<span class="ident">kind</span>() {
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BooleanOr</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BooleanAnd</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">EqualityTest</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">NegatedEqualityTest</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">LesserEqualTest</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">GreaterEqualTest</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">LesserTest</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">GreaterTest</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">Addition</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">Multiplication</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">Subtraction</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">Division</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">Remainder</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">LeftShift</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">RightShift</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BitwiseXor</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BitwiseOr</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BitwiseAnd</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">Assignment</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">AddAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">DivAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">MulAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">RemAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">ShrAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">ShlAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">SubAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BitOrAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BitAndAssign</span>,
+                <span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>] <span class="op">=&gt;</span> <span class="ident">BinOp</span>::<span class="ident">BitXorAssign</span>,
+                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+            };
+            <span class="prelude-val">Some</span>((<span class="ident">c</span>, <span class="ident">bin_op</span>))
         })
     }
 
@@ -491,6 +490,15 @@
         <span class="kw">let</span> <span class="ident">first</span> <span class="op">=</span> <span class="ident">children</span>.<span class="ident">next</span>();
         <span class="kw">let</span> <span class="ident">second</span> <span class="op">=</span> <span class="ident">children</span>.<span class="ident">next</span>();
         (<span class="ident">first</span>, <span class="ident">second</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">IndexExpr</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expr</span><span class="op">&gt;</span> {
+        <span class="ident">children</span>(<span class="self">self</span>).<span class="ident">nth</span>(<span class="number">0</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expr</span><span class="op">&gt;</span> {
+        <span class="ident">children</span>(<span class="self">self</span>).<span class="ident">nth</span>(<span class="number">1</span>)
     }
 }
 
