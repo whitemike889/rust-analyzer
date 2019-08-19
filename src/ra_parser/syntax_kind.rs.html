@@ -28,19 +28,19 @@
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">mod</span> <span class="ident">generated</span>;
 
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
-
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">generated</span>::<span class="ident">SyntaxKind</span>;
 
-<span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">SyntaxKind</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">info</span>().<span class="ident">name</span>;
-        <span class="ident">f</span>.<span class="ident">write_str</span>(<span class="ident">name</span>)
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SyntaxKind</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">d</span>: <span class="ident">u16</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxKind</span> {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">d</span> <span class="op">&lt;=</span> (<span class="ident">SyntaxKind</span>::<span class="ident">__LAST</span> <span class="kw">as</span> <span class="ident">u16</span>));
+        <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">SyntaxKind</span><span class="op">&gt;</span>(<span class="ident">d</span>) }
     }
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">SyntaxInfo</span> {
-    <span class="kw">pub</span> <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">SyntaxKind</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">u16</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">k</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">u16</span> {
+        <span class="ident">k</span> <span class="kw">as</span> <span class="ident">u16</span>
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">SyntaxKind</span> {

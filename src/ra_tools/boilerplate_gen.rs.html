@@ -312,34 +312,6 @@
 <span id="312">312</span>
 <span id="313">313</span>
 <span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
-<span id="327">327</span>
-<span id="328">328</span>
-<span id="329">329</span>
-<span id="330">330</span>
-<span id="331">331</span>
-<span id="332">332</span>
-<span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">collections</span>::<span class="ident">BTreeMap</span>,
@@ -538,10 +510,8 @@
 
     <span class="kw">let</span> <span class="ident">ast</span> <span class="op">=</span> <span class="macro">quote</span><span class="macro">!</span> {
         <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">bad_style</span>, <span class="ident">missing_docs</span>, <span class="ident">unreachable_pub</span>)]</span>
-        <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">SyntaxInfo</span>;
-
         <span class="doccomment">/// The kind of syntax node, e.g. `IDENT`, `USE_KW`, or `STRUCT_DEF`.</span>
-        <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
+        <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>, <span class="ident">Debug</span>)]</span>
         <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u16</span>)]</span>
         <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SyntaxKind</span> {
             <span class="comment">// Technical SyntaxKinds: they appear temporally during parsing,</span>
@@ -562,19 +532,6 @@
         }
         <span class="kw">use</span> <span class="self">self</span>::<span class="ident">SyntaxKind</span>::<span class="kw-2">*</span>;
 
-        <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SyntaxKind</span> {
-            <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">d</span>: <span class="ident">u16</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxKind</span> {
-                <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">d</span> <span class="op">&lt;=</span> (<span class="ident">__LAST</span> <span class="kw">as</span> <span class="ident">u16</span>));
-                <span class="kw">unsafe</span> { <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">SyntaxKind</span><span class="op">&gt;</span>(<span class="ident">d</span>) }
-            }
-        }
-
-        <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">SyntaxKind</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">u16</span> {
-            <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">k</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">u16</span> {
-                <span class="ident">k</span> <span class="kw">as</span> <span class="ident">u16</span>
-            }
-        }
-
         <span class="kw">impl</span> <span class="ident">SyntaxKind</span> {
             <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_keyword</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
                 <span class="kw">match</span> <span class="self">self</span> {
@@ -594,19 +551,6 @@
                 <span class="kw">match</span> <span class="self">self</span> {
                     #(#<span class="ident">literals</span>)<span class="op">|</span><span class="op">*</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
                     <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-                }
-            }
-
-            <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">info</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">SyntaxInfo</span> {
-                <span class="kw">match</span> <span class="self">self</span> {
-                    #(#<span class="ident">punctuation</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="macro">stringify</span><span class="macro">!</span>(#<span class="ident">punctuation</span>) },)<span class="op">*</span>
-                    #(#<span class="ident">all_keywords</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="macro">stringify</span><span class="macro">!</span>(#<span class="ident">all_keywords</span>) },)<span class="op">*</span>
-                    #(#<span class="ident">literals</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="macro">stringify</span><span class="macro">!</span>(#<span class="ident">literals</span>) },)<span class="op">*</span>
-                    #(#<span class="ident">tokens</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="macro">stringify</span><span class="macro">!</span>(#<span class="ident">tokens</span>) },)<span class="op">*</span>
-                    #(#<span class="ident">nodes</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="macro">stringify</span><span class="macro">!</span>(#<span class="ident">nodes</span>) },)<span class="op">*</span>
-                    <span class="ident">TOMBSTONE</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="string">&quot;TOMBSTONE&quot;</span> },
-                    <span class="ident">EOF</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="string">&quot;EOF&quot;</span> },
-                    <span class="ident">__LAST</span> <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxInfo</span> { <span class="ident">name</span>: <span class="string">&quot;__LAST&quot;</span> },
                 }
             }
 
