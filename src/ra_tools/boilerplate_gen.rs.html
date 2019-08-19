@@ -325,6 +325,33 @@
 <span id="325">325</span>
 <span id="326">326</span>
 <span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">collections</span>::<span class="ident">BTreeMap</span>,
@@ -333,7 +360,6 @@
     <span class="ident">process</span>::{<span class="ident">Command</span>, <span class="ident">Stdio</span>},
 };
 
-<span class="kw">use</span> <span class="ident">heck</span>::{<span class="ident">ShoutySnakeCase</span>, <span class="ident">SnakeCase</span>};
 <span class="kw">use</span> <span class="ident">proc_macro2</span>::{<span class="ident">Punct</span>, <span class="ident">Spacing</span>};
 <span class="kw">use</span> <span class="ident">quote</span>::{<span class="ident">format_ident</span>, <span class="ident">quote</span>};
 <span class="kw">use</span> <span class="ident">ron</span>;
@@ -366,7 +392,7 @@
         <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">name</span>);
 
         <span class="kw">let</span> <span class="ident">adt</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">variants</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">name</span>.<span class="ident">to_string</span>().<span class="ident">to_shouty_snake_case</span>());
+            <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">to_upper_snake_case</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>()));
             <span class="macro">quote</span><span class="macro">!</span> {
                 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
                 <span class="kw">pub</span> <span class="kw">struct</span> #<span class="ident">name</span> {
@@ -389,7 +415,7 @@
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">kinds</span> <span class="op">=</span> <span class="ident">variants</span>
                 .<span class="ident">iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">name</span>.<span class="ident">to_string</span>().<span class="ident">to_shouty_snake_case</span>()))
+                .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">to_upper_snake_case</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>.<span class="ident">to_string</span>())))
                 .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
 
             <span class="macro">quote</span><span class="macro">!</span> {
@@ -450,7 +476,7 @@
 
         <span class="kw">let</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">ast_node</span>.<span class="ident">options</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">attr</span><span class="op">|</span> {
             <span class="kw">let</span> <span class="ident">method_name</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">attr</span> {
-                <span class="ident">Attr</span>::<span class="ident">Type</span>(<span class="ident">t</span>) <span class="op">=&gt;</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">t</span>.<span class="ident">to_snake_case</span>()),
+                <span class="ident">Attr</span>::<span class="ident">Type</span>(<span class="ident">t</span>) <span class="op">=&gt;</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">to_lower_snake_case</span>(<span class="kw-2">&amp;</span><span class="ident">t</span>)),
                 <span class="ident">Attr</span>::<span class="ident">NameType</span>(<span class="ident">n</span>, <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">n</span>),
             };
             <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">attr</span> {
@@ -517,14 +543,14 @@
 
     <span class="kw">let</span> <span class="ident">full_keywords_values</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">grammar</span>.<span class="ident">keywords</span>;
     <span class="kw">let</span> <span class="ident">full_keywords</span> <span class="op">=</span>
-        <span class="ident">full_keywords_values</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">kw</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}_KW&quot;</span>, <span class="ident">kw</span>.<span class="ident">to_shouty_snake_case</span>()));
+        <span class="ident">full_keywords_values</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">kw</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}_KW&quot;</span>, <span class="ident">to_upper_snake_case</span>(<span class="kw-2">&amp;</span><span class="ident">kw</span>)));
 
     <span class="kw">let</span> <span class="ident">all_keywords_values</span> <span class="op">=</span>
         <span class="ident">grammar</span>.<span class="ident">keywords</span>.<span class="ident">iter</span>().<span class="ident">chain</span>(<span class="ident">grammar</span>.<span class="ident">contextual_keywords</span>.<span class="ident">iter</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
     <span class="kw">let</span> <span class="ident">all_keywords_idents</span> <span class="op">=</span> <span class="ident">all_keywords_values</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">kw</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">kw</span>));
     <span class="kw">let</span> <span class="ident">all_keywords</span> <span class="op">=</span> <span class="ident">all_keywords_values</span>
         .<span class="ident">iter</span>()
-        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}_KW&quot;</span>, <span class="ident">name</span>.<span class="ident">to_shouty_snake_case</span>()))
+        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">name</span><span class="op">|</span> <span class="macro">format_ident</span><span class="macro">!</span>(<span class="string">&quot;{}_KW&quot;</span>, <span class="ident">to_upper_snake_case</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>)))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
 
     <span class="kw">let</span> <span class="ident">literals</span> <span class="op">=</span>
@@ -652,6 +678,34 @@
 <span class="kw">enum</span> <span class="ident">Attr</span> {
     <span class="ident">Type</span>(<span class="ident">String</span>),
     <span class="ident">NameType</span>(<span class="ident">String</span>, <span class="ident">String</span>),
+}
+
+<span class="kw">fn</span> <span class="ident">to_upper_snake_case</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">with_capacity</span>(<span class="ident">s</span>.<span class="ident">len</span>());
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev_is_upper</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+    <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="ident">s</span>.<span class="ident">chars</span>() {
+        <span class="kw">if</span> <span class="ident">c</span>.<span class="ident">is_ascii_uppercase</span>() <span class="op">&amp;&amp;</span> <span class="ident">prev_is_upper</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="bool-val">false</span>) {
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;_&#39;</span>)
+        }
+        <span class="ident">prev_is_upper</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>.<span class="ident">is_ascii_uppercase</span>());
+
+        <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">c</span>.<span class="ident">to_ascii_uppercase</span>());
+    }
+    <span class="ident">buf</span>
+}
+
+<span class="kw">fn</span> <span class="ident">to_lower_snake_case</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">with_capacity</span>(<span class="ident">s</span>.<span class="ident">len</span>());
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev_is_upper</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+    <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="ident">s</span>.<span class="ident">chars</span>() {
+        <span class="kw">if</span> <span class="ident">c</span>.<span class="ident">is_ascii_uppercase</span>() <span class="op">&amp;&amp;</span> <span class="ident">prev_is_upper</span> <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="bool-val">false</span>) {
+            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="string">&#39;_&#39;</span>)
+        }
+        <span class="ident">prev_is_upper</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">c</span>.<span class="ident">is_ascii_uppercase</span>());
+
+        <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">c</span>.<span class="ident">to_ascii_lowercase</span>());
+    }
+    <span class="ident">buf</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "ra_tools";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
