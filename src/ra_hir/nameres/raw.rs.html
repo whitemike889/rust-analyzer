@@ -576,24 +576,24 @@
     }
 
     <span class="kw">fn</span> <span class="ident">add_item</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">current_module</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Module</span><span class="op">&gt;</span>, <span class="ident">item</span>: <span class="ident">ast</span>::<span class="ident">ModuleItem</span>) {
-        <span class="kw">let</span> (<span class="ident">kind</span>, <span class="ident">name</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">item</span>.<span class="ident">kind</span>() {
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">Module</span>(<span class="ident">module</span>) <span class="op">=&gt;</span> {
+        <span class="kw">let</span> (<span class="ident">kind</span>, <span class="ident">name</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">item</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">Module</span>(<span class="ident">module</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">add_module</span>(<span class="ident">current_module</span>, <span class="ident">module</span>);
                 <span class="kw">return</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">UseItem</span>(<span class="ident">use_item</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">UseItem</span>(<span class="ident">use_item</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">add_use_item</span>(<span class="ident">current_module</span>, <span class="ident">use_item</span>);
                 <span class="kw">return</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">ExternCrateItem</span>(<span class="ident">extern_crate</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">ExternCrateItem</span>(<span class="ident">extern_crate</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">add_extern_crate_item</span>(<span class="ident">current_module</span>, <span class="ident">extern_crate</span>);
                 <span class="kw">return</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">ImplBlock</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">ImplBlock</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
                 <span class="comment">// impls don&#39;t participate in name resolution</span>
                 <span class="kw">return</span>;
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">StructDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">StructDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>);
                 <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">it</span>.<span class="ident">name</span>();
                 <span class="kw">if</span> <span class="ident">it</span>.<span class="ident">is_union</span>() {
@@ -602,22 +602,22 @@
                     (<span class="ident">DefKind</span>::<span class="ident">Struct</span>(<span class="ident">id</span>), <span class="ident">name</span>)
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">EnumDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">EnumDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 (<span class="ident">DefKind</span>::<span class="ident">Enum</span>(<span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>)), <span class="ident">it</span>.<span class="ident">name</span>())
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">FnDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">FnDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 (<span class="ident">DefKind</span>::<span class="ident">Function</span>(<span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>)), <span class="ident">it</span>.<span class="ident">name</span>())
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">TraitDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">TraitDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 (<span class="ident">DefKind</span>::<span class="ident">Trait</span>(<span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>)), <span class="ident">it</span>.<span class="ident">name</span>())
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 (<span class="ident">DefKind</span>::<span class="ident">TypeAlias</span>(<span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>)), <span class="ident">it</span>.<span class="ident">name</span>())
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">ConstDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">ConstDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 (<span class="ident">DefKind</span>::<span class="ident">Const</span>(<span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>)), <span class="ident">it</span>.<span class="ident">name</span>())
             }
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">StaticDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">StaticDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
                 (<span class="ident">DefKind</span>::<span class="ident">Static</span>(<span class="self">self</span>.<span class="ident">source_ast_id_map</span>.<span class="ident">ast_id</span>(<span class="kw-2">&amp;</span><span class="ident">it</span>)), <span class="ident">it</span>.<span class="ident">name</span>())
             }
         };

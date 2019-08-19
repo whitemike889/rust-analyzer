@@ -3821,12 +3821,6 @@
 <span id="3821">3821</span>
 <span id="3822">3822</span>
 <span id="3823">3823</span>
-<span id="3824">3824</span>
-<span id="3825">3825</span>
-<span id="3826">3826</span>
-<span id="3827">3827</span>
-<span id="3828">3828</span>
-<span id="3829">3829</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Generated file, do not edit by hand, see `crate/ra_tools/src/codegen`</span>
 
@@ -4421,34 +4415,7 @@
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Expr</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
-}
-<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">Expr</span> {
-    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">TUPLE_EXPR</span> <span class="op">|</span> <span class="ident">ARRAY_EXPR</span> <span class="op">|</span> <span class="ident">PAREN_EXPR</span> <span class="op">|</span> <span class="ident">PATH_EXPR</span> <span class="op">|</span> <span class="ident">LAMBDA_EXPR</span> <span class="op">|</span> <span class="ident">IF_EXPR</span>
-            <span class="op">|</span> <span class="ident">LOOP_EXPR</span> <span class="op">|</span> <span class="ident">FOR_EXPR</span> <span class="op">|</span> <span class="ident">WHILE_EXPR</span> <span class="op">|</span> <span class="ident">CONTINUE_EXPR</span> <span class="op">|</span> <span class="ident">BREAK_EXPR</span> <span class="op">|</span> <span class="ident">LABEL</span>
-            <span class="op">|</span> <span class="ident">BLOCK_EXPR</span> <span class="op">|</span> <span class="ident">RETURN_EXPR</span> <span class="op">|</span> <span class="ident">MATCH_EXPR</span> <span class="op">|</span> <span class="ident">STRUCT_LIT</span> <span class="op">|</span> <span class="ident">CALL_EXPR</span> <span class="op">|</span> <span class="ident">INDEX_EXPR</span>
-            <span class="op">|</span> <span class="ident">METHOD_CALL_EXPR</span> <span class="op">|</span> <span class="ident">FIELD_EXPR</span> <span class="op">|</span> <span class="ident">AWAIT_EXPR</span> <span class="op">|</span> <span class="ident">TRY_EXPR</span> <span class="op">|</span> <span class="ident">TRY_BLOCK_EXPR</span>
-            <span class="op">|</span> <span class="ident">CAST_EXPR</span> <span class="op">|</span> <span class="ident">REF_EXPR</span> <span class="op">|</span> <span class="ident">PREFIX_EXPR</span> <span class="op">|</span> <span class="ident">RANGE_EXPR</span> <span class="op">|</span> <span class="ident">BIN_EXPR</span> <span class="op">|</span> <span class="ident">LITERAL</span> <span class="op">|</span> <span class="ident">MACRO_CALL</span> <span class="op">=&gt;</span> {
-                <span class="bool-val">true</span>
-            }
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ExprKind</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Expr</span> {
     <span class="ident">TupleExpr</span>(<span class="ident">TupleExpr</span>),
     <span class="ident">ArrayExpr</span>(<span class="ident">ArrayExpr</span>),
     <span class="ident">ParenExpr</span>(<span class="ident">ParenExpr</span>),
@@ -4482,189 +4449,235 @@
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TupleExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TupleExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">TupleExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ArrayExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ArrayExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">ArrayExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ParenExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ParenExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">ParenExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PathExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PathExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">PathExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">LambdaExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">LambdaExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">LambdaExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">IfExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">IfExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">IfExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">LoopExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">LoopExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">LoopExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ForExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ForExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">ForExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">WhileExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">WhileExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">WhileExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ContinueExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ContinueExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">ContinueExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BreakExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">BreakExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">BreakExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Label</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">Label</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">Label</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BlockExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">BlockExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">BlockExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ReturnExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ReturnExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">ReturnExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">MatchExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">MatchExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">MatchExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StructLit</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">StructLit</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">StructLit</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">CallExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">CallExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">CallExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">IndexExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">IndexExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">IndexExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">MethodCallExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">MethodCallExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">MethodCallExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FieldExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">FieldExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">FieldExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">AwaitExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">AwaitExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">AwaitExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TryExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TryExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">TryExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TryBlockExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TryBlockExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">TryBlockExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">CastExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">CastExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">CastExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RefExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">RefExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">RefExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PrefixExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PrefixExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">PrefixExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RangeExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">RangeExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">RangeExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BinExpr</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">BinExpr</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">BinExpr</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Literal</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">Literal</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">Literal</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">MacroCall</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Expr</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">MacroCall</span>) <span class="op">-&gt;</span> <span class="ident">Expr</span> {
-        <span class="ident">Expr</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Expr</span>::<span class="ident">MacroCall</span>(<span class="ident">node</span>)
     }
 }
-<span class="kw">impl</span> <span class="ident">Expr</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ExprKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">TUPLE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">TupleExpr</span>(<span class="ident">TupleExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">ARRAY_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">ArrayExpr</span>(<span class="ident">ArrayExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PAREN_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">ParenExpr</span>(<span class="ident">ParenExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PATH_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">PathExpr</span>(<span class="ident">PathExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">LAMBDA_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">LambdaExpr</span>(<span class="ident">LambdaExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">IF_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">IfExpr</span>(<span class="ident">IfExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">LOOP_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">LoopExpr</span>(<span class="ident">LoopExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">FOR_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">ForExpr</span>(<span class="ident">ForExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">WHILE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">WhileExpr</span>(<span class="ident">WhileExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">CONTINUE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">ContinueExpr</span>(<span class="ident">ContinueExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">BREAK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">BreakExpr</span>(<span class="ident">BreakExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">LABEL</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">Label</span>(<span class="ident">Label</span> { <span class="ident">syntax</span> }),
-            <span class="ident">BLOCK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">BlockExpr</span>(<span class="ident">BlockExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">RETURN_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">ReturnExpr</span>(<span class="ident">ReturnExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">MATCH_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">MatchExpr</span>(<span class="ident">MatchExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">STRUCT_LIT</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">StructLit</span>(<span class="ident">StructLit</span> { <span class="ident">syntax</span> }),
-            <span class="ident">CALL_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">CallExpr</span>(<span class="ident">CallExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">INDEX_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">IndexExpr</span>(<span class="ident">IndexExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">METHOD_CALL_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">MethodCallExpr</span>(<span class="ident">MethodCallExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">FIELD_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">FieldExpr</span>(<span class="ident">FieldExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">AWAIT_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">AwaitExpr</span>(<span class="ident">AwaitExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TRY_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">TryExpr</span>(<span class="ident">TryExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TRY_BLOCK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">TryBlockExpr</span>(<span class="ident">TryBlockExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">CAST_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">CastExpr</span>(<span class="ident">CastExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">REF_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">RefExpr</span>(<span class="ident">RefExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PREFIX_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">PrefixExpr</span>(<span class="ident">PrefixExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">RANGE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">RangeExpr</span>(<span class="ident">RangeExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">BIN_EXPR</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">BinExpr</span>(<span class="ident">BinExpr</span> { <span class="ident">syntax</span> }),
-            <span class="ident">LITERAL</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">Literal</span>(<span class="ident">Literal</span> { <span class="ident">syntax</span> }),
-            <span class="ident">MACRO_CALL</span> <span class="op">=&gt;</span> <span class="ident">ExprKind</span>::<span class="ident">MacroCall</span>(<span class="ident">MacroCall</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">Expr</span> {
+    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="ident">TUPLE_EXPR</span> <span class="op">|</span> <span class="ident">ARRAY_EXPR</span> <span class="op">|</span> <span class="ident">PAREN_EXPR</span> <span class="op">|</span> <span class="ident">PATH_EXPR</span> <span class="op">|</span> <span class="ident">LAMBDA_EXPR</span> <span class="op">|</span> <span class="ident">IF_EXPR</span>
+            <span class="op">|</span> <span class="ident">LOOP_EXPR</span> <span class="op">|</span> <span class="ident">FOR_EXPR</span> <span class="op">|</span> <span class="ident">WHILE_EXPR</span> <span class="op">|</span> <span class="ident">CONTINUE_EXPR</span> <span class="op">|</span> <span class="ident">BREAK_EXPR</span> <span class="op">|</span> <span class="ident">LABEL</span>
+            <span class="op">|</span> <span class="ident">BLOCK_EXPR</span> <span class="op">|</span> <span class="ident">RETURN_EXPR</span> <span class="op">|</span> <span class="ident">MATCH_EXPR</span> <span class="op">|</span> <span class="ident">STRUCT_LIT</span> <span class="op">|</span> <span class="ident">CALL_EXPR</span> <span class="op">|</span> <span class="ident">INDEX_EXPR</span>
+            <span class="op">|</span> <span class="ident">METHOD_CALL_EXPR</span> <span class="op">|</span> <span class="ident">FIELD_EXPR</span> <span class="op">|</span> <span class="ident">AWAIT_EXPR</span> <span class="op">|</span> <span class="ident">TRY_EXPR</span> <span class="op">|</span> <span class="ident">TRY_BLOCK_EXPR</span>
+            <span class="op">|</span> <span class="ident">CAST_EXPR</span> <span class="op">|</span> <span class="ident">REF_EXPR</span> <span class="op">|</span> <span class="ident">PREFIX_EXPR</span> <span class="op">|</span> <span class="ident">RANGE_EXPR</span> <span class="op">|</span> <span class="ident">BIN_EXPR</span> <span class="op">|</span> <span class="ident">LITERAL</span> <span class="op">|</span> <span class="ident">MACRO_CALL</span> <span class="op">=&gt;</span> {
+                <span class="bool-val">true</span>
+            }
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">TUPLE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">TupleExpr</span>(<span class="ident">TupleExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">ARRAY_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">ArrayExpr</span>(<span class="ident">ArrayExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PAREN_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">ParenExpr</span>(<span class="ident">ParenExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PATH_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">PathExpr</span>(<span class="ident">PathExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">LAMBDA_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">LambdaExpr</span>(<span class="ident">LambdaExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">IF_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">IfExpr</span>(<span class="ident">IfExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">LOOP_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">LoopExpr</span>(<span class="ident">LoopExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">FOR_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">ForExpr</span>(<span class="ident">ForExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">WHILE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">WhileExpr</span>(<span class="ident">WhileExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">CONTINUE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">ContinueExpr</span>(<span class="ident">ContinueExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">BREAK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">BreakExpr</span>(<span class="ident">BreakExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">LABEL</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">Label</span>(<span class="ident">Label</span> { <span class="ident">syntax</span> }),
+            <span class="ident">BLOCK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">BlockExpr</span>(<span class="ident">BlockExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">RETURN_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">ReturnExpr</span>(<span class="ident">ReturnExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">MATCH_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">MatchExpr</span>(<span class="ident">MatchExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">STRUCT_LIT</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">StructLit</span>(<span class="ident">StructLit</span> { <span class="ident">syntax</span> }),
+            <span class="ident">CALL_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">CallExpr</span>(<span class="ident">CallExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">INDEX_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">IndexExpr</span>(<span class="ident">IndexExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">METHOD_CALL_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">MethodCallExpr</span>(<span class="ident">MethodCallExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">FIELD_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">FieldExpr</span>(<span class="ident">FieldExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">AWAIT_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">AwaitExpr</span>(<span class="ident">AwaitExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TRY_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">TryExpr</span>(<span class="ident">TryExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TRY_BLOCK_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">TryBlockExpr</span>(<span class="ident">TryBlockExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">CAST_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">CastExpr</span>(<span class="ident">CastExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">REF_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">RefExpr</span>(<span class="ident">RefExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PREFIX_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">PrefixExpr</span>(<span class="ident">PrefixExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">RANGE_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">RangeExpr</span>(<span class="ident">RangeExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">BIN_EXPR</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">BinExpr</span>(<span class="ident">BinExpr</span> { <span class="ident">syntax</span> }),
+            <span class="ident">LITERAL</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">Literal</span>(<span class="ident">Literal</span> { <span class="ident">syntax</span> }),
+            <span class="ident">MACRO_CALL</span> <span class="op">=&gt;</span> <span class="ident">Expr</span>::<span class="ident">MacroCall</span>(<span class="ident">MacroCall</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
+    }
+    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">Expr</span>::<span class="ident">TupleExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">ArrayExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">ParenExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">PathExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">LambdaExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">IfExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">LoopExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">ForExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">WhileExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">ContinueExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">BreakExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">Label</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">BlockExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">ReturnExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">MatchExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">StructLit</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">CallExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">IndexExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">MethodCallExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">FieldExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">AwaitExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">TryExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">TryBlockExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">CastExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">RefExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">PrefixExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">RangeExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">BinExpr</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">Literal</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Expr</span>::<span class="ident">MacroCall</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }
@@ -4997,8 +5010,25 @@
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ImplItem</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ImplItem</span> {
+    <span class="ident">FnDef</span>(<span class="ident">FnDef</span>),
+    <span class="ident">TypeAliasDef</span>(<span class="ident">TypeAliasDef</span>),
+    <span class="ident">ConstDef</span>(<span class="ident">ConstDef</span>),
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FnDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">FnDef</span>) <span class="op">-&gt;</span> <span class="ident">ImplItem</span> {
+        <span class="ident">ImplItem</span>::<span class="ident">FnDef</span>(<span class="ident">node</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TypeAliasDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TypeAliasDef</span>) <span class="op">-&gt;</span> <span class="ident">ImplItem</span> {
+        <span class="ident">ImplItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">node</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ConstDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ConstDef</span>) <span class="op">-&gt;</span> <span class="ident">ImplItem</span> {
+        <span class="ident">ImplItem</span>::<span class="ident">ConstDef</span>(<span class="ident">node</span>)
+    }
 }
 <span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
     <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
@@ -5008,44 +5038,19 @@
         }
     }
     <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">FN_DEF</span> <span class="op">=&gt;</span> <span class="ident">ImplItem</span>::<span class="ident">FnDef</span>(<span class="ident">FnDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">=&gt;</span> <span class="ident">ImplItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">TypeAliasDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">CONST_DEF</span> <span class="op">=&gt;</span> <span class="ident">ImplItem</span>::<span class="ident">ConstDef</span>(<span class="ident">ConstDef</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
     }
     <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ImplItemKind</span> {
-    <span class="ident">FnDef</span>(<span class="ident">FnDef</span>),
-    <span class="ident">TypeAliasDef</span>(<span class="ident">TypeAliasDef</span>),
-    <span class="ident">ConstDef</span>(<span class="ident">ConstDef</span>),
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FnDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">FnDef</span>) <span class="op">-&gt;</span> <span class="ident">ImplItem</span> {
-        <span class="ident">ImplItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TypeAliasDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TypeAliasDef</span>) <span class="op">-&gt;</span> <span class="ident">ImplItem</span> {
-        <span class="ident">ImplItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ConstDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ImplItem</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ConstDef</span>) <span class="op">-&gt;</span> <span class="ident">ImplItem</span> {
-        <span class="ident">ImplItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">ImplItem</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ImplItemKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">FN_DEF</span> <span class="op">=&gt;</span> <span class="ident">ImplItemKind</span>::<span class="ident">FnDef</span>(<span class="ident">FnDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">=&gt;</span> <span class="ident">ImplItemKind</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">TypeAliasDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">CONST_DEF</span> <span class="op">=&gt;</span> <span class="ident">ImplItemKind</span>::<span class="ident">ConstDef</span>(<span class="ident">ConstDef</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">ImplItem</span>::<span class="ident">FnDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ImplItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ImplItem</span>::<span class="ident">ConstDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }
@@ -5604,29 +5609,7 @@
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ModuleItem</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
-}
-<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
-    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">STRUCT_DEF</span> <span class="op">|</span> <span class="ident">ENUM_DEF</span> <span class="op">|</span> <span class="ident">FN_DEF</span> <span class="op">|</span> <span class="ident">TRAIT_DEF</span> <span class="op">|</span> <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">|</span> <span class="ident">IMPL_BLOCK</span> <span class="op">|</span> <span class="ident">USE_ITEM</span>
-            <span class="op">|</span> <span class="ident">EXTERN_CRATE_ITEM</span> <span class="op">|</span> <span class="ident">CONST_DEF</span> <span class="op">|</span> <span class="ident">STATIC_DEF</span> <span class="op">|</span> <span class="ident">MODULE</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ModuleItemKind</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ModuleItem</span> {
     <span class="ident">StructDef</span>(<span class="ident">StructDef</span>),
     <span class="ident">EnumDef</span>(<span class="ident">EnumDef</span>),
     <span class="ident">FnDef</span>(<span class="ident">FnDef</span>),
@@ -5641,75 +5624,97 @@
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StructDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">StructDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">StructDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">EnumDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">EnumDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">EnumDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FnDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">FnDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">FnDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TraitDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TraitDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">TraitDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TypeAliasDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TypeAliasDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ImplBlock</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ImplBlock</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">ImplBlock</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">UseItem</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">UseItem</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">UseItem</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ExternCrateItem</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ExternCrateItem</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">ExternCrateItem</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ConstDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ConstDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">ConstDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StaticDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">StaticDef</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">StaticDef</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Module</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">Module</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItem</span> {
-        <span class="ident">ModuleItem</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">ModuleItem</span>::<span class="ident">Module</span>(<span class="ident">node</span>)
     }
 }
-<span class="kw">impl</span> <span class="ident">ModuleItem</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ModuleItemKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">STRUCT_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">StructDef</span>(<span class="ident">StructDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">ENUM_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">EnumDef</span>(<span class="ident">EnumDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">FN_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">FnDef</span>(<span class="ident">FnDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TRAIT_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">TraitDef</span>(<span class="ident">TraitDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">TypeAliasDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">IMPL_BLOCK</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">ImplBlock</span>(<span class="ident">ImplBlock</span> { <span class="ident">syntax</span> }),
-            <span class="ident">USE_ITEM</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">UseItem</span>(<span class="ident">UseItem</span> { <span class="ident">syntax</span> }),
-            <span class="ident">EXTERN_CRATE_ITEM</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">ExternCrateItem</span>(<span class="ident">ExternCrateItem</span> { <span class="ident">syntax</span> }),
-            <span class="ident">CONST_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">ConstDef</span>(<span class="ident">ConstDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">STATIC_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">StaticDef</span>(<span class="ident">StaticDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">MODULE</span> <span class="op">=&gt;</span> <span class="ident">ModuleItemKind</span>::<span class="ident">Module</span>(<span class="ident">Module</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">ModuleItem</span> {
+    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="ident">STRUCT_DEF</span> <span class="op">|</span> <span class="ident">ENUM_DEF</span> <span class="op">|</span> <span class="ident">FN_DEF</span> <span class="op">|</span> <span class="ident">TRAIT_DEF</span> <span class="op">|</span> <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">|</span> <span class="ident">IMPL_BLOCK</span> <span class="op">|</span> <span class="ident">USE_ITEM</span>
+            <span class="op">|</span> <span class="ident">EXTERN_CRATE_ITEM</span> <span class="op">|</span> <span class="ident">CONST_DEF</span> <span class="op">|</span> <span class="ident">STATIC_DEF</span> <span class="op">|</span> <span class="ident">MODULE</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">STRUCT_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">StructDef</span>(<span class="ident">StructDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">ENUM_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">EnumDef</span>(<span class="ident">EnumDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">FN_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">FnDef</span>(<span class="ident">FnDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TRAIT_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">TraitDef</span>(<span class="ident">TraitDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">TypeAliasDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">IMPL_BLOCK</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">ImplBlock</span>(<span class="ident">ImplBlock</span> { <span class="ident">syntax</span> }),
+            <span class="ident">USE_ITEM</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">UseItem</span>(<span class="ident">UseItem</span> { <span class="ident">syntax</span> }),
+            <span class="ident">EXTERN_CRATE_ITEM</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">ExternCrateItem</span>(<span class="ident">ExternCrateItem</span> { <span class="ident">syntax</span> }),
+            <span class="ident">CONST_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">ConstDef</span>(<span class="ident">ConstDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">STATIC_DEF</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">StaticDef</span>(<span class="ident">StaticDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">MODULE</span> <span class="op">=&gt;</span> <span class="ident">ModuleItem</span>::<span class="ident">Module</span>(<span class="ident">Module</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
+    }
+    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">ModuleItem</span>::<span class="ident">StructDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">EnumDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">FnDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">TraitDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">TypeAliasDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">ImplBlock</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">UseItem</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">ExternCrateItem</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">ConstDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">StaticDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">ModuleItem</span>::<span class="ident">Module</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }
@@ -5899,8 +5904,19 @@
 }
 <span class="kw">impl</span> <span class="ident">NeverType</span> {}
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NominalDef</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NominalDef</span> {
+    <span class="ident">StructDef</span>(<span class="ident">StructDef</span>),
+    <span class="ident">EnumDef</span>(<span class="ident">EnumDef</span>),
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StructDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NominalDef</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">StructDef</span>) <span class="op">-&gt;</span> <span class="ident">NominalDef</span> {
+        <span class="ident">NominalDef</span>::<span class="ident">StructDef</span>(<span class="ident">node</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">EnumDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NominalDef</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">EnumDef</span>) <span class="op">-&gt;</span> <span class="ident">NominalDef</span> {
+        <span class="ident">NominalDef</span>::<span class="ident">EnumDef</span>(<span class="ident">node</span>)
+    }
 }
 <span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">NominalDef</span> {
     <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
@@ -5910,37 +5926,17 @@
         }
     }
     <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">STRUCT_DEF</span> <span class="op">=&gt;</span> <span class="ident">NominalDef</span>::<span class="ident">StructDef</span>(<span class="ident">StructDef</span> { <span class="ident">syntax</span> }),
+            <span class="ident">ENUM_DEF</span> <span class="op">=&gt;</span> <span class="ident">NominalDef</span>::<span class="ident">EnumDef</span>(<span class="ident">EnumDef</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
     }
     <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NominalDefKind</span> {
-    <span class="ident">StructDef</span>(<span class="ident">StructDef</span>),
-    <span class="ident">EnumDef</span>(<span class="ident">EnumDef</span>),
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StructDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NominalDef</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">StructDef</span>) <span class="op">-&gt;</span> <span class="ident">NominalDef</span> {
-        <span class="ident">NominalDef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">EnumDef</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NominalDef</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">EnumDef</span>) <span class="op">-&gt;</span> <span class="ident">NominalDef</span> {
-        <span class="ident">NominalDef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">NominalDef</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">NominalDefKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">STRUCT_DEF</span> <span class="op">=&gt;</span> <span class="ident">NominalDefKind</span>::<span class="ident">StructDef</span>(<span class="ident">StructDef</span> { <span class="ident">syntax</span> }),
-            <span class="ident">ENUM_DEF</span> <span class="op">=&gt;</span> <span class="ident">NominalDefKind</span>::<span class="ident">EnumDef</span>(<span class="ident">EnumDef</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">NominalDef</span>::<span class="ident">StructDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">NominalDef</span>::<span class="ident">EnumDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }
@@ -6062,29 +6058,7 @@
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Pat</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
-}
-<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">Pat</span> {
-    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">REF_PAT</span> <span class="op">|</span> <span class="ident">BIND_PAT</span> <span class="op">|</span> <span class="ident">PLACEHOLDER_PAT</span> <span class="op">|</span> <span class="ident">PATH_PAT</span> <span class="op">|</span> <span class="ident">STRUCT_PAT</span> <span class="op">|</span> <span class="ident">TUPLE_STRUCT_PAT</span>
-            <span class="op">|</span> <span class="ident">TUPLE_PAT</span> <span class="op">|</span> <span class="ident">SLICE_PAT</span> <span class="op">|</span> <span class="ident">RANGE_PAT</span> <span class="op">|</span> <span class="ident">LITERAL_PAT</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PatKind</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Pat</span> {
     <span class="ident">RefPat</span>(<span class="ident">RefPat</span>),
     <span class="ident">BindPat</span>(<span class="ident">BindPat</span>),
     <span class="ident">PlaceholderPat</span>(<span class="ident">PlaceholderPat</span>),
@@ -6098,69 +6072,90 @@
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RefPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">RefPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">RefPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BindPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">BindPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">BindPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PlaceholderPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PlaceholderPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">PlaceholderPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PathPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PathPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">PathPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">StructPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">StructPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">StructPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TupleStructPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TupleStructPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">TupleStructPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TuplePat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TuplePat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">TuplePat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">SlicePat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">SlicePat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">SlicePat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RangePat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">RangePat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">RangePat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">LiteralPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">LiteralPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
-        <span class="ident">Pat</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">Pat</span>::<span class="ident">LiteralPat</span>(<span class="ident">node</span>)
     }
 }
-<span class="kw">impl</span> <span class="ident">Pat</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PatKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">REF_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">RefPat</span>(<span class="ident">RefPat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">BIND_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">BindPat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PLACEHOLDER_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">PlaceholderPat</span>(<span class="ident">PlaceholderPat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PATH_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">PathPat</span>(<span class="ident">PathPat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">STRUCT_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">StructPat</span>(<span class="ident">StructPat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TUPLE_STRUCT_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">TupleStructPat</span>(<span class="ident">TupleStructPat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TUPLE_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">TuplePat</span>(<span class="ident">TuplePat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">SLICE_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">SlicePat</span>(<span class="ident">SlicePat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">RANGE_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">RangePat</span>(<span class="ident">RangePat</span> { <span class="ident">syntax</span> }),
-            <span class="ident">LITERAL_PAT</span> <span class="op">=&gt;</span> <span class="ident">PatKind</span>::<span class="ident">LiteralPat</span>(<span class="ident">LiteralPat</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">Pat</span> {
+    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="ident">REF_PAT</span> <span class="op">|</span> <span class="ident">BIND_PAT</span> <span class="op">|</span> <span class="ident">PLACEHOLDER_PAT</span> <span class="op">|</span> <span class="ident">PATH_PAT</span> <span class="op">|</span> <span class="ident">STRUCT_PAT</span> <span class="op">|</span> <span class="ident">TUPLE_STRUCT_PAT</span>
+            <span class="op">|</span> <span class="ident">TUPLE_PAT</span> <span class="op">|</span> <span class="ident">SLICE_PAT</span> <span class="op">|</span> <span class="ident">RANGE_PAT</span> <span class="op">|</span> <span class="ident">LITERAL_PAT</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">REF_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">RefPat</span>(<span class="ident">RefPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">BIND_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">BindPat</span>(<span class="ident">BindPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PLACEHOLDER_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">PlaceholderPat</span>(<span class="ident">PlaceholderPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PATH_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">PathPat</span>(<span class="ident">PathPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">STRUCT_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">StructPat</span>(<span class="ident">StructPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TUPLE_STRUCT_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">TupleStructPat</span>(<span class="ident">TupleStructPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TUPLE_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">TuplePat</span>(<span class="ident">TuplePat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">SLICE_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">SlicePat</span>(<span class="ident">SlicePat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">RANGE_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">RangePat</span>(<span class="ident">RangePat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">LITERAL_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">LiteralPat</span>(<span class="ident">LiteralPat</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
+    }
+    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">Pat</span>::<span class="ident">RefPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">BindPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">PlaceholderPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">PathPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">StructPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">TupleStructPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">TuplePat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">SlicePat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">RangePat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">LiteralPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }
@@ -6781,8 +6776,19 @@
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Stmt</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Stmt</span> {
+    <span class="ident">ExprStmt</span>(<span class="ident">ExprStmt</span>),
+    <span class="ident">LetStmt</span>(<span class="ident">LetStmt</span>),
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ExprStmt</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Stmt</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ExprStmt</span>) <span class="op">-&gt;</span> <span class="ident">Stmt</span> {
+        <span class="ident">Stmt</span>::<span class="ident">ExprStmt</span>(<span class="ident">node</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">LetStmt</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Stmt</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">LetStmt</span>) <span class="op">-&gt;</span> <span class="ident">Stmt</span> {
+        <span class="ident">Stmt</span>::<span class="ident">LetStmt</span>(<span class="ident">node</span>)
+    }
 }
 <span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">Stmt</span> {
     <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
@@ -6792,37 +6798,17 @@
         }
     }
     <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">EXPR_STMT</span> <span class="op">=&gt;</span> <span class="ident">Stmt</span>::<span class="ident">ExprStmt</span>(<span class="ident">ExprStmt</span> { <span class="ident">syntax</span> }),
+            <span class="ident">LET_STMT</span> <span class="op">=&gt;</span> <span class="ident">Stmt</span>::<span class="ident">LetStmt</span>(<span class="ident">LetStmt</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
     }
     <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StmtKind</span> {
-    <span class="ident">ExprStmt</span>(<span class="ident">ExprStmt</span>),
-    <span class="ident">LetStmt</span>(<span class="ident">LetStmt</span>),
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ExprStmt</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Stmt</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ExprStmt</span>) <span class="op">-&gt;</span> <span class="ident">Stmt</span> {
-        <span class="ident">Stmt</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">LetStmt</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Stmt</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">LetStmt</span>) <span class="op">-&gt;</span> <span class="ident">Stmt</span> {
-        <span class="ident">Stmt</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">Stmt</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">StmtKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">EXPR_STMT</span> <span class="op">=&gt;</span> <span class="ident">StmtKind</span>::<span class="ident">ExprStmt</span>(<span class="ident">ExprStmt</span> { <span class="ident">syntax</span> }),
-            <span class="ident">LET_STMT</span> <span class="op">=&gt;</span> <span class="ident">StmtKind</span>::<span class="ident">LetStmt</span>(<span class="ident">LetStmt</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">Stmt</span>::<span class="ident">ExprStmt</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Stmt</span>::<span class="ident">LetStmt</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }
@@ -7338,30 +7324,7 @@
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TypeRef</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
-}
-<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
-    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">PAREN_TYPE</span> <span class="op">|</span> <span class="ident">TUPLE_TYPE</span> <span class="op">|</span> <span class="ident">NEVER_TYPE</span> <span class="op">|</span> <span class="ident">PATH_TYPE</span> <span class="op">|</span> <span class="ident">POINTER_TYPE</span> <span class="op">|</span> <span class="ident">ARRAY_TYPE</span>
-            <span class="op">|</span> <span class="ident">SLICE_TYPE</span> <span class="op">|</span> <span class="ident">REFERENCE_TYPE</span> <span class="op">|</span> <span class="ident">PLACEHOLDER_TYPE</span> <span class="op">|</span> <span class="ident">FN_POINTER_TYPE</span> <span class="op">|</span> <span class="ident">FOR_TYPE</span>
-            <span class="op">|</span> <span class="ident">IMPL_TRAIT_TYPE</span> <span class="op">|</span> <span class="ident">DYN_TRAIT_TYPE</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
-            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
-    }
-}
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TypeRefKind</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TypeRef</span> {
     <span class="ident">ParenType</span>(<span class="ident">ParenType</span>),
     <span class="ident">TupleType</span>(<span class="ident">TupleType</span>),
     <span class="ident">NeverType</span>(<span class="ident">NeverType</span>),
@@ -7378,87 +7341,112 @@
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ParenType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ParenType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">ParenType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">TupleType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">TupleType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">TupleType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">NeverType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">NeverType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">NeverType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PathType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PathType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">PathType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PointerType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PointerType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">PointerType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ArrayType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ArrayType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">ArrayType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">SliceType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">SliceType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">SliceType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ReferenceType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ReferenceType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">ReferenceType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PlaceholderType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">PlaceholderType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">PlaceholderType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FnPointerType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">FnPointerType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">FnPointerType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ForType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ForType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">ForType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ImplTraitType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">ImplTraitType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">ImplTraitType</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">DynTraitType</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">DynTraitType</span>) <span class="op">-&gt;</span> <span class="ident">TypeRef</span> {
-        <span class="ident">TypeRef</span> { <span class="ident">syntax</span>: <span class="ident">node</span>.<span class="ident">syntax</span> }
+        <span class="ident">TypeRef</span>::<span class="ident">DynTraitType</span>(<span class="ident">node</span>)
     }
 }
-<span class="kw">impl</span> <span class="ident">TypeRef</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TypeRefKind</span> {
-        <span class="kw">let</span> <span class="ident">syntax</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">syntax</span>.<span class="ident">clone</span>();
-        <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
-            <span class="ident">PAREN_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">ParenType</span>(<span class="ident">ParenType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">TUPLE_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">TupleType</span>(<span class="ident">TupleType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">NEVER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">NeverType</span>(<span class="ident">NeverType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PATH_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">PathType</span>(<span class="ident">PathType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">POINTER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">PointerType</span>(<span class="ident">PointerType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">ARRAY_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">ArrayType</span>(<span class="ident">ArrayType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">SLICE_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">SliceType</span>(<span class="ident">SliceType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">REFERENCE_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">ReferenceType</span>(<span class="ident">ReferenceType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">PLACEHOLDER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">PlaceholderType</span>(<span class="ident">PlaceholderType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">FN_POINTER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">FnPointerType</span>(<span class="ident">FnPointerType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">FOR_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">ForType</span>(<span class="ident">ForType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">IMPL_TRAIT_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">ImplTraitType</span>(<span class="ident">ImplTraitType</span> { <span class="ident">syntax</span> }),
-            <span class="ident">DYN_TRAIT_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRefKind</span>::<span class="ident">DynTraitType</span>(<span class="ident">DynTraitType</span> { <span class="ident">syntax</span> }),
-            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">TypeRef</span> {
+    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="ident">PAREN_TYPE</span> <span class="op">|</span> <span class="ident">TUPLE_TYPE</span> <span class="op">|</span> <span class="ident">NEVER_TYPE</span> <span class="op">|</span> <span class="ident">PATH_TYPE</span> <span class="op">|</span> <span class="ident">POINTER_TYPE</span> <span class="op">|</span> <span class="ident">ARRAY_TYPE</span>
+            <span class="op">|</span> <span class="ident">SLICE_TYPE</span> <span class="op">|</span> <span class="ident">REFERENCE_TYPE</span> <span class="op">|</span> <span class="ident">PLACEHOLDER_TYPE</span> <span class="op">|</span> <span class="ident">FN_POINTER_TYPE</span> <span class="op">|</span> <span class="ident">FOR_TYPE</span>
+            <span class="op">|</span> <span class="ident">IMPL_TRAIT_TYPE</span> <span class="op">|</span> <span class="ident">DYN_TRAIT_TYPE</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
+            <span class="ident">PAREN_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">ParenType</span>(<span class="ident">ParenType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">TUPLE_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">TupleType</span>(<span class="ident">TupleType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">NEVER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">NeverType</span>(<span class="ident">NeverType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PATH_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">PathType</span>(<span class="ident">PathType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">POINTER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">PointerType</span>(<span class="ident">PointerType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">ARRAY_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">ArrayType</span>(<span class="ident">ArrayType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">SLICE_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">SliceType</span>(<span class="ident">SliceType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">REFERENCE_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">ReferenceType</span>(<span class="ident">ReferenceType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">PLACEHOLDER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">PlaceholderType</span>(<span class="ident">PlaceholderType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">FN_POINTER_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">FnPointerType</span>(<span class="ident">FnPointerType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">FOR_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">ForType</span>(<span class="ident">ForType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">IMPL_TRAIT_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">ImplTraitType</span>(<span class="ident">ImplTraitType</span> { <span class="ident">syntax</span> }),
+            <span class="ident">DYN_TRAIT_TYPE</span> <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">DynTraitType</span>(<span class="ident">DynTraitType</span> { <span class="ident">syntax</span> }),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
+        };
+        <span class="prelude-val">Some</span>(<span class="ident">res</span>)
+    }
+    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">TypeRef</span>::<span class="ident">ParenType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">TupleType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">NeverType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">PathType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">PointerType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">ArrayType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">SliceType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">ReferenceType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">PlaceholderType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">FnPointerType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">ForType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">ImplTraitType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">TypeRef</span>::<span class="ident">DynTraitType</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
         }
     }
 }

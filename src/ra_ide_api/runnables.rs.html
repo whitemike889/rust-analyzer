@@ -286,8 +286,8 @@
     <span class="kw">let</span> <span class="ident">has_test_function</span> <span class="op">=</span> <span class="ident">module</span>
         .<span class="ident">item_list</span>()<span class="question-mark">?</span>
         .<span class="ident">items</span>()
-        .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">it</span>.<span class="ident">kind</span>() {
-            <span class="ident">ast</span>::<span class="ident">ModuleItemKind</span>::<span class="ident">FnDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">it</span>),
+        .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">it</span> {
+            <span class="ident">ast</span>::<span class="ident">ModuleItem</span>::<span class="ident">FnDef</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">it</span>),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
         })
         .<span class="ident">any</span>(<span class="op">|</span><span class="ident">f</span><span class="op">|</span> <span class="ident">f</span>.<span class="ident">has_atom_attr</span>(<span class="string">&quot;test&quot;</span>));

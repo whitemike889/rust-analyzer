@@ -637,7 +637,7 @@
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">HirDatabase</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{
-    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">AstNode</span>, <span class="ident">AstToken</span>, <span class="ident">ExprKind</span>, <span class="ident">PatKind</span>},
+    <span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">AstNode</span>, <span class="ident">AstToken</span>},
     <span class="ident">TextRange</span>,
 };
 
@@ -646,8 +646,8 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">inline_local_varialbe</span>(<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">AssistCtx</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Assist</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">let_stmt</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">node_at_offset</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">LetStmt</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">bind_pat</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">let_stmt</span>.<span class="ident">pat</span>()<span class="question-mark">?</span>.<span class="ident">kind</span>() {
-        <span class="ident">PatKind</span>::<span class="ident">BindPat</span>(<span class="ident">pat</span>) <span class="op">=&gt;</span> <span class="ident">pat</span>,
+    <span class="kw">let</span> <span class="ident">bind_pat</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">let_stmt</span>.<span class="ident">pat</span>()<span class="question-mark">?</span> {
+        <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">BindPat</span>(<span class="ident">pat</span>) <span class="op">=&gt;</span> <span class="ident">pat</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">None</span>,
     };
     <span class="kw">if</span> <span class="ident">bind_pat</span>.<span class="ident">is_mutable</span>() {
@@ -685,28 +685,28 @@
             }
         };
 
-        <span class="ident">wrap_in_parens</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="kw">match</span> (<span class="ident">initializer_expr</span>.<span class="ident">kind</span>(), <span class="ident">usage_parent</span>.<span class="ident">kind</span>()) {
-            (<span class="ident">ExprKind</span>::<span class="ident">CallExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">IndexExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">MethodCallExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">FieldExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">TryExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">RefExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">Literal</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">TupleExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">ArrayExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">ParenExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">PathExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="ident">ExprKind</span>::<span class="ident">BlockExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">CallExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">TupleExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">ArrayExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">ParenExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">ForExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">WhileExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">BreakExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">ReturnExpr</span>(<span class="kw">_</span>))
-            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ExprKind</span>::<span class="ident">MatchExpr</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+        <span class="ident">wrap_in_parens</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="kw">match</span> (<span class="kw-2">&amp;</span><span class="ident">initializer_expr</span>, <span class="ident">usage_parent</span>) {
+            (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">CallExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">IndexExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">MethodCallExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">FieldExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">TryExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">RefExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">Literal</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">TupleExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">ArrayExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">ParenExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">PathExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">BlockExpr</span>(<span class="kw">_</span>), <span class="kw">_</span>)
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">CallExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">TupleExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">ArrayExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">ParenExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">ForExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">WhileExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">BreakExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">ReturnExpr</span>(<span class="kw">_</span>))
+            <span class="op">|</span> (<span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">Expr</span>::<span class="ident">MatchExpr</span>(<span class="kw">_</span>)) <span class="op">=&gt;</span> <span class="bool-val">false</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
         };
     }

@@ -107,6 +107,11 @@
 <span id="107">107</span>
 <span id="108">108</span>
 <span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! HIR for references to types. Paths in these are not yet resolved. They can</span>
 <span class="doccomment">//! be directly created from an ast::TypeRef, without further queries.</span>
@@ -167,28 +172,33 @@
 <span class="kw">impl</span> <span class="ident">TypeRef</span> {
     <span class="doccomment">/// Converts an `ast::TypeRef` to a `hir::TypeRef`.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_ast</span>(<span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">TypeRef</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::<span class="ident">TypeRefKind</span>::<span class="kw-2">*</span>;
-        <span class="kw">match</span> <span class="ident">node</span>.<span class="ident">kind</span>() {
-            <span class="ident">ParenType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>()),
-            <span class="ident">TupleType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Tuple</span>(<span class="ident">inner</span>.<span class="ident">fields</span>().<span class="ident">map</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast</span>).<span class="ident">collect</span>()),
-            <span class="ident">NeverType</span>(..) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Never</span>,
-            <span class="ident">PathType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+        <span class="kw">match</span> <span class="ident">node</span> {
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">ParenType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>()),
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">TupleType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+                <span class="ident">TypeRef</span>::<span class="ident">Tuple</span>(<span class="ident">inner</span>.<span class="ident">fields</span>().<span class="ident">map</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast</span>).<span class="ident">collect</span>())
+            }
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">NeverType</span>(..) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Never</span>,
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">PathType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
                 <span class="ident">inner</span>.<span class="ident">path</span>().<span class="ident">and_then</span>(<span class="ident">Path</span>::<span class="ident">from_ast</span>).<span class="ident">map</span>(<span class="ident">TypeRef</span>::<span class="ident">Path</span>).<span class="ident">unwrap_or</span>(<span class="ident">TypeRef</span>::<span class="ident">Error</span>)
             }
-            <span class="ident">PointerType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">PointerType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">inner_ty</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>());
                 <span class="kw">let</span> <span class="ident">mutability</span> <span class="op">=</span> <span class="ident">Mutability</span>::<span class="ident">from_mutable</span>(<span class="ident">inner</span>.<span class="ident">is_mut</span>());
                 <span class="ident">TypeRef</span>::<span class="ident">RawPtr</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">inner_ty</span>), <span class="ident">mutability</span>)
             }
-            <span class="ident">ArrayType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Array</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>()))),
-            <span class="ident">SliceType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Slice</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>()))),
-            <span class="ident">ReferenceType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">ArrayType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+                <span class="ident">TypeRef</span>::<span class="ident">Array</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>())))
+            }
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">SliceType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+                <span class="ident">TypeRef</span>::<span class="ident">Slice</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>())))
+            }
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">ReferenceType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">inner_ty</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>());
                 <span class="kw">let</span> <span class="ident">mutability</span> <span class="op">=</span> <span class="ident">Mutability</span>::<span class="ident">from_mutable</span>(<span class="ident">inner</span>.<span class="ident">is_mut</span>());
                 <span class="ident">TypeRef</span>::<span class="ident">Reference</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">inner_ty</span>), <span class="ident">mutability</span>)
             }
-            <span class="ident">PlaceholderType</span>(<span class="ident">_inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Placeholder</span>,
-            <span class="ident">FnPointerType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">PlaceholderType</span>(<span class="ident">_inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Placeholder</span>,
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">FnPointerType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="ident">ret_ty</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">ret_type</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">rt</span><span class="op">|</span> <span class="ident">rt</span>.<span class="ident">type_ref</span>()));
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">params</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pl</span>) <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">param_list</span>() {
                     <span class="ident">pl</span>.<span class="ident">params</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">ascribed_type</span>()).<span class="ident">map</span>(<span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>).<span class="ident">collect</span>()
@@ -199,9 +209,9 @@
                 <span class="ident">TypeRef</span>::<span class="ident">Fn</span>(<span class="ident">params</span>)
             }
             <span class="comment">// for types are close enough for our purposes to the inner type for now...</span>
-            <span class="ident">ForType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>()),
-            <span class="ident">ImplTraitType</span>(<span class="ident">_inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Error</span>,
-            <span class="ident">DynTraitType</span>(<span class="ident">_inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Error</span>,
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">ForType</span>(<span class="ident">inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">inner</span>.<span class="ident">type_ref</span>()),
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">ImplTraitType</span>(<span class="ident">_inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Error</span>,
+            <span class="ident">ast</span>::<span class="ident">TypeRef</span>::<span class="ident">DynTraitType</span>(<span class="ident">_inner</span>) <span class="op">=&gt;</span> <span class="ident">TypeRef</span>::<span class="ident">Error</span>,
         }
     }
 
