@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["InitializationOptions","Client provided initialization options"]]});
