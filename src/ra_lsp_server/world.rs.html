@@ -243,6 +243,10 @@
 <span id="243">243</span>
 <span id="244">244</span>
 <span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -255,7 +259,7 @@
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{
     <span class="ident">Analysis</span>, <span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>, <span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>, <span class="ident">SourceRootId</span>,
 };
-<span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>};
+<span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">LineEndings</span>, <span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs_glob</span>::{<span class="ident">Glob</span>, <span class="ident">RustPackageFilterBuilder</span>};
 <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 
@@ -454,6 +458,10 @@
         <span class="kw">let</span> <span class="ident">url</span> <span class="op">=</span> <span class="ident">Url</span>::<span class="ident">from_file_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)
             .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;can&#39;t convert path to url: {}&quot;</span>, <span class="ident">path</span>.<span class="ident">display</span>()))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">url</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_line_endings</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="ident">LineEndings</span> {
+        <span class="self">self</span>.<span class="ident">vfs</span>.<span class="ident">read</span>().<span class="ident">file_line_endings</span>(<span class="ident">VfsFile</span>(<span class="ident">id</span>.<span class="number">0</span>))
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">path_to_uri</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">SourceRootId</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">RelativePathBuf</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Url</span><span class="op">&gt;</span> {

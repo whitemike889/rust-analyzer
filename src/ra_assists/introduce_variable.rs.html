@@ -511,9 +511,6 @@
 <span id="511">511</span>
 <span id="512">512</span>
 <span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">format_buf</span>::<span class="ident">format</span>;
 <span class="kw">use</span> <span class="ident">hir</span>::<span class="ident">db</span>::<span class="ident">HirDatabase</span>;
@@ -573,10 +570,7 @@
             <span class="comment">// but we do not want to duplicate possible</span>
             <span class="comment">// extra newlines in the indent block</span>
             <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">indent</span>.<span class="ident">text</span>();
-            <span class="kw">if</span> <span class="ident">text</span>.<span class="ident">starts_with</span>(<span class="string">&quot;\r\n&quot;</span>) {
-                <span class="ident">buf</span>.<span class="ident">push_str</span>(<span class="string">&quot;\r\n&quot;</span>);
-                <span class="ident">buf</span>.<span class="ident">push_str</span>(<span class="ident">text</span>.<span class="ident">trim_start_matches</span>(<span class="string">&quot;\r\n&quot;</span>));
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">text</span>.<span class="ident">starts_with</span>(<span class="string">&#39;\n&#39;</span>) {
+            <span class="kw">if</span> <span class="ident">text</span>.<span class="ident">starts_with</span>(<span class="string">&#39;\n&#39;</span>) {
                 <span class="ident">buf</span>.<span class="ident">push_str</span>(<span class="string">&quot;\n&quot;</span>);
                 <span class="ident">buf</span>.<span class="ident">push_str</span>(<span class="ident">text</span>.<span class="ident">trim_start_matches</span>(<span class="string">&#39;\n&#39;</span>));
             } <span class="kw">else</span> {

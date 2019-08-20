@@ -490,24 +490,6 @@
 <span id="490">490</span>
 <span id="491">491</span>
 <span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{
     <span class="self">self</span>, <span class="ident">CreateFile</span>, <span class="ident">DiagnosticSeverity</span>, <span class="ident">DocumentChangeOperation</span>, <span class="ident">DocumentChanges</span>, <span class="ident">Documentation</span>,
@@ -522,6 +504,7 @@
 };
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">SyntaxKind</span>, <span class="ident">TextRange</span>, <span class="ident">TextUnit</span>};
 <span class="kw">use</span> <span class="ident">ra_text_edit</span>::{<span class="ident">AtomTextEdit</span>, <span class="ident">TextEdit</span>};
+<span class="kw">use</span> <span class="ident">ra_vfs</span>::<span class="ident">LineEndings</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">req</span>, <span class="ident">world</span>::<span class="ident">WorldSnapshot</span>, <span class="prelude-ty">Result</span>};
 
@@ -530,16 +513,14 @@
     <span class="kw">fn</span> <span class="ident">conv</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ConvWith</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
-    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>;
+    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryConvWith</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
-    <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">Conv</span> <span class="kw">for</span> <span class="ident">SyntaxKind</span> {
@@ -600,11 +581,10 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="ident">CompletionItem</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">LineIndex</span>, <span class="ident">LineEndings</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CompletionItem</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> ::<span class="ident">lsp_types</span>::<span class="ident">CompletionItem</span>;
 
-    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> ::<span class="ident">lsp_types</span>::<span class="ident">CompletionItem</span> {
+    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: (<span class="kw-2">&amp;</span><span class="ident">LineIndex</span>, <span class="ident">LineEndings</span>)) <span class="op">-&gt;</span> ::<span class="ident">lsp_types</span>::<span class="ident">CompletionItem</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">additional_text_edits</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">text_edit</span> <span class="op">=</span> <span class="prelude-val">None</span>;
         <span class="comment">// LSP does not allow arbitrary edits in completion, so we have to do a</span>
@@ -649,8 +629,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="ident">Position</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">LineIndex</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Position</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">TextUnit</span>;
 
     <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> <span class="ident">TextUnit</span> {
@@ -659,8 +638,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="ident">TextUnit</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">LineIndex</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TextUnit</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Position</span>;
 
     <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> <span class="ident">Position</span> {
@@ -669,8 +647,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="ident">TextRange</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">LineIndex</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TextRange</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Range</span>;
 
     <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> <span class="ident">Range</span> {
@@ -678,8 +655,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="ident">Range</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">LineIndex</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Range</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">TextRange</span>;
 
     <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> <span class="ident">TextRange</span> {
@@ -719,77 +695,73 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="ident">TextEdit</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">LineIndex</span>, <span class="ident">LineEndings</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TextEdit</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">lsp_types</span>::<span class="ident">TextEdit</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">lsp_types</span>::<span class="ident">TextEdit</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">as_atoms</span>().<span class="ident">iter</span>().<span class="ident">map_conv_with</span>(<span class="ident">line_index</span>).<span class="ident">collect</span>()
+    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: (<span class="kw-2">&amp;</span><span class="ident">LineIndex</span>, <span class="ident">LineEndings</span>)) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">lsp_types</span>::<span class="ident">TextEdit</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">as_atoms</span>().<span class="ident">iter</span>().<span class="ident">map_conv_with</span>(<span class="ident">ctx</span>).<span class="ident">collect</span>()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">AtomTextEdit</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">LineIndex</span>;
+<span class="kw">impl</span> <span class="ident">ConvWith</span><span class="op">&lt;</span>(<span class="kw-2">&amp;</span><span class="ident">LineIndex</span>, <span class="ident">LineEndings</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">AtomTextEdit</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">lsp_types</span>::<span class="ident">TextEdit</span>;
 
-    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">line_index</span>: <span class="kw-2">&amp;</span><span class="ident">LineIndex</span>) <span class="op">-&gt;</span> <span class="ident">lsp_types</span>::<span class="ident">TextEdit</span> {
-        <span class="ident">lsp_types</span>::<span class="ident">TextEdit</span> {
-            <span class="ident">range</span>: <span class="self">self</span>.<span class="ident">delete</span>.<span class="ident">conv_with</span>(<span class="ident">line_index</span>),
-            <span class="ident">new_text</span>: <span class="self">self</span>.<span class="ident">insert</span>.<span class="ident">clone</span>(),
+    <span class="kw">fn</span> <span class="ident">conv_with</span>(
+        <span class="self">self</span>,
+        (<span class="ident">line_index</span>, <span class="ident">line_endings</span>): (<span class="kw-2">&amp;</span><span class="ident">LineIndex</span>, <span class="ident">LineEndings</span>),
+    ) <span class="op">-&gt;</span> <span class="ident">lsp_types</span>::<span class="ident">TextEdit</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_text</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">insert</span>.<span class="ident">clone</span>();
+        <span class="kw">if</span> <span class="ident">line_endings</span> <span class="op">==</span> <span class="ident">LineEndings</span>::<span class="ident">Dos</span> {
+            <span class="ident">new_text</span> <span class="op">=</span> <span class="ident">new_text</span>.<span class="ident">replace</span>(<span class="string">&#39;\n&#39;</span>, <span class="string">&quot;\r\n&quot;</span>);
         }
+        <span class="ident">lsp_types</span>::<span class="ident">TextEdit</span> { <span class="ident">range</span>: <span class="self">self</span>.<span class="ident">delete</span>.<span class="ident">conv_with</span>(<span class="ident">line_index</span>), <span class="ident">new_text</span> }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ConvWith</span><span class="op">&gt;</span> <span class="ident">ConvWith</span> <span class="kw">for</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&gt;</span>::<span class="ident">Ctx</span>;
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>, <span class="ident">CTX</span><span class="op">&gt;</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span>::<span class="ident">Output</span><span class="op">&gt;</span>;
+
+    <span class="kw">fn</span> <span class="ident">conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span> {
         <span class="self">self</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">ConvWith</span>::<span class="ident">conv_with</span>(<span class="ident">x</span>, <span class="ident">ctx</span>))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Url</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">Url</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">FileId</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
         <span class="ident">world</span>.<span class="ident">uri_to_file_id</span>(<span class="self">self</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="ident">FileId</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FileId</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Url</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Url</span><span class="op">&gt;</span> {
         <span class="ident">world</span>.<span class="ident">file_id_to_uri</span>(<span class="self">self</span>)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TextDocumentItem</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">TextDocumentItem</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">FileId</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">uri</span>.<span class="ident">try_conv_with</span>(<span class="ident">world</span>)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">VersionedTextDocumentIdentifier</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">VersionedTextDocumentIdentifier</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">FileId</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">uri</span>.<span class="ident">try_conv_with</span>(<span class="ident">world</span>)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TextDocumentIdentifier</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">TextDocumentIdentifier</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">FileId</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
         <span class="ident">world</span>.<span class="ident">uri_to_file_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">uri</span>)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TextDocumentPositionParams</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">TextDocumentPositionParams</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">FilePosition</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FilePosition</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">text_document</span>.<span class="ident">try_conv_with</span>(<span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -799,8 +771,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> (<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TextDocumentIdentifier</span>, <span class="ident">Range</span>) {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="kw-2">&amp;</span><span class="ident">TextDocumentIdentifier</span>, <span class="ident">Range</span>) {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">FileRange</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">FileRange</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">try_conv_with</span>(<span class="ident">world</span>)<span class="question-mark">?</span>;
@@ -810,10 +781,9 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">TryConvWith</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&gt;</span>::<span class="ident">Ctx</span>;
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>, <span class="ident">CTX</span>: <span class="ident">Copy</span><span class="op">&gt;</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;&gt;</span>::<span class="ident">Output</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="self">self</span>.<span class="ident">len</span>());
         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="self">self</span> {
             <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">item</span>.<span class="ident">try_conv_with</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>);
@@ -822,8 +792,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="ident">SourceChange</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SourceChange</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">req</span>::<span class="ident">SourceChange</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">SourceChange</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">cursor_position</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">cursor_position</span> {
@@ -862,8 +831,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="ident">SourceFileEdit</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SourceFileEdit</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">TextDocumentEdit</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">TextDocumentEdit</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">text_document</span> <span class="op">=</span> <span class="ident">VersionedTextDocumentIdentifier</span> {
@@ -871,13 +839,14 @@
             <span class="ident">version</span>: <span class="prelude-val">None</span>,
         };
         <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="self">self</span>.<span class="ident">file_id</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">edits</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">edit</span>.<span class="ident">as_atoms</span>().<span class="ident">iter</span>().<span class="ident">map_conv_with</span>(<span class="kw-2">&amp;</span><span class="ident">line_index</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">line_endings</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">file_line_endings</span>(<span class="self">self</span>.<span class="ident">file_id</span>);
+        <span class="kw">let</span> <span class="ident">edits</span> <span class="op">=</span>
+            <span class="self">self</span>.<span class="ident">edit</span>.<span class="ident">as_atoms</span>().<span class="ident">iter</span>().<span class="ident">map_conv_with</span>((<span class="kw-2">&amp;</span><span class="ident">line_index</span>, <span class="ident">line_endings</span>)).<span class="ident">collect</span>();
         <span class="prelude-val">Ok</span>(<span class="ident">TextDocumentEdit</span> { <span class="ident">text_document</span>, <span class="ident">edits</span> })
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="ident">FileSystemEdit</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">FileSystemEdit</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ResourceOp</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ResourceOp</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span> {
@@ -895,8 +864,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">NavigationTarget</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">NavigationTarget</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">Location</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Location</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">line_index</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">analysis</span>().<span class="ident">file_line_index</span>(<span class="self">self</span>.<span class="ident">file_id</span>())<span class="question-mark">?</span>;
@@ -905,8 +873,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> (<span class="ident">FileId</span>, <span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;</span>) {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="ident">FileId</span>, <span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;</span>) {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">LocationLink</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LocationLink</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">src_file_id</span>, <span class="ident">target</span>) <span class="op">=</span> <span class="self">self</span>;
@@ -933,8 +900,7 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryConvWith</span> <span class="kw">for</span> (<span class="ident">FileId</span>, <span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;&gt;</span>) {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">WorldSnapshot</span>;
+<span class="kw">impl</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span><span class="op">&gt;</span> <span class="kw">for</span> (<span class="ident">FileId</span>, <span class="ident">RangeInfo</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NavigationTarget</span><span class="op">&gt;&gt;</span>) {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">req</span>::<span class="ident">GotoDefinitionResponse</span>;
     <span class="kw">fn</span> <span class="ident">try_conv_with</span>(<span class="self">self</span>, <span class="ident">world</span>: <span class="kw-2">&amp;</span><span class="ident">WorldSnapshot</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">GotoTypeDefinitionResponse</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">file_id</span>, <span class="ident">RangeInfo</span> { <span class="ident">range</span>, <span class="ident">info</span>: <span class="ident">navs</span> }) <span class="op">=</span> <span class="self">self</span>;
@@ -965,57 +931,55 @@
     <span class="prelude-val">Ok</span>(<span class="ident">loc</span>)
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MapConvWith</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MapConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>: <span class="ident">Sized</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
 
-    <span class="kw">fn</span> <span class="ident">map_conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="ident">ConvWithIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="self">Self</span>, <span class="self">Self</span>::<span class="ident">Ctx</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">map_conv_with</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="ident">ConvWithIter</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">CTX</span><span class="op">&gt;</span> {
         <span class="ident">ConvWithIter</span> { <span class="ident">iter</span>: <span class="self">self</span>, <span class="ident">ctx</span> }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="ident">MapConvWith</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">I</span>
-<span class="kw">where</span>
-    <span class="ident">I</span>: <span class="ident">Iterator</span> <span class="op">+</span> <span class="lifetime">&#39;a</span>,
-    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">ConvWith</span>,
-{
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&gt;</span>::<span class="ident">Ctx</span>;
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&gt;</span>::<span class="ident">Output</span>;
-}
-
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConvWithIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span>, <span class="ident">Ctx</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">iter</span>: <span class="ident">I</span>,
-    <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Ctx</span>,
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span>, <span class="ident">Ctx</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ConvWithIter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span>, <span class="ident">Ctx</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">CTX</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="ident">MapConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">I</span>
 <span class="kw">where</span>
     <span class="ident">I</span>: <span class="ident">Iterator</span>,
-    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">Ctx</span> <span class="op">=</span> <span class="ident">Ctx</span><span class="op">&gt;</span>,
+    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>,
 {
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&gt;</span>::<span class="ident">Output</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;&gt;</span>::<span class="ident">Output</span>;
+}
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConvWithIter</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">CTX</span><span class="op">&gt;</span> {
+    <span class="ident">iter</span>: <span class="ident">I</span>,
+    <span class="ident">ctx</span>: <span class="ident">CTX</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">CTX</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ConvWithIter</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">CTX</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">I</span>: <span class="ident">Iterator</span>,
+    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>,
+    <span class="ident">CTX</span>: <span class="ident">Copy</span>,
+{
+    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">ConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;&gt;</span>::<span class="ident">Output</span>;
 
     <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Item</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">iter</span>.<span class="ident">next</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="ident">item</span>.<span class="ident">conv_with</span>(<span class="self">self</span>.<span class="ident">ctx</span>))
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryConvWithToVec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
-    <span class="kw">type</span> <span class="ident">Ctx</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">TryConvWithToVec</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>: <span class="ident">Sized</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
 
-    <span class="kw">fn</span> <span class="ident">try_conv_with_to_vec</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">try_conv_with_to_vec</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;&gt;</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span><span class="op">&gt;</span> <span class="ident">TryConvWithToVec</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">I</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span>, <span class="ident">CTX</span><span class="op">&gt;</span> <span class="ident">TryConvWithToVec</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">I</span>
 <span class="kw">where</span>
-    <span class="ident">I</span>: <span class="ident">Iterator</span> <span class="op">+</span> <span class="lifetime">&#39;a</span>,
-    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">TryConvWith</span>,
+    <span class="ident">I</span>: <span class="ident">Iterator</span>,
+    <span class="ident">I</span>::<span class="ident">Item</span>: <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;</span>,
+    <span class="ident">CTX</span>: <span class="ident">Copy</span>,
 {
-    <span class="kw">type</span> <span class="ident">Ctx</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&gt;</span>::<span class="ident">Ctx</span>;
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&gt;</span>::<span class="ident">Output</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">I</span>::<span class="ident">Item</span> <span class="kw">as</span> <span class="ident">TryConvWith</span><span class="op">&lt;</span><span class="ident">CTX</span><span class="op">&gt;&gt;</span>::<span class="ident">Output</span>;
 
-    <span class="kw">fn</span> <span class="ident">try_conv_with_to_vec</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>::<span class="ident">Ctx</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">try_conv_with_to_vec</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">CTX</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;&gt;</span> {
         <span class="self">self</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">try_conv_with</span>(<span class="ident">ctx</span>)).<span class="ident">collect</span>()
     }
 }

@@ -202,12 +202,10 @@
 <span id="202">202</span>
 <span id="203">203</span>
 <span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">block</span>;
 
-<span class="kw">use</span> <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>;
+<span class="kw">use</span> <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">algo</span>::<span class="ident">visit</span>::{<span class="ident">visitor_ctx</span>, <span class="ident">VisitorCtx</span>},
@@ -239,64 +237,62 @@
     <span class="ident">NonAsciiCharInByte</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">EscapeError</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">EscapeError</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">match</span> <span class="ident">err</span> {
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">ZeroChars</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">ZeroChars</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">MoreThanOneChar</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">MoreThanOneChar</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">LoneSlash</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">LoneSlash</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">InvalidEscape</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">InvalidEscape</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">BareCarriageReturn</span>
-            <span class="op">|</span> <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">BareCarriageReturnInRawString</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">ZeroChars</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">ZeroChars</span>,
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">MoreThanOneChar</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">MoreThanOneChar</span>,
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">LoneSlash</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">LoneSlash</span>,
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">InvalidEscape</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">InvalidEscape</span>,
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">BareCarriageReturn</span>
+            <span class="op">|</span> <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">BareCarriageReturnInRawString</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">BareCarriageReturn</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">EscapeOnlyChar</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">EscapeOnlyChar</span>,
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">TooShortHexEscape</span> <span class="op">=&gt;</span> {
-                <span class="ident">EscapeError</span>::<span class="ident">TooShortHexEscape</span>
-            }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">InvalidCharInHexEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">EscapeOnlyChar</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">EscapeOnlyChar</span>,
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">TooShortHexEscape</span> <span class="op">=&gt;</span> <span class="ident">EscapeError</span>::<span class="ident">TooShortHexEscape</span>,
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">InvalidCharInHexEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">InvalidCharInHexEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">OutOfRangeHexEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">OutOfRangeHexEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">OutOfRangeHexEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">NoBraceInUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">NoBraceInUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">NoBraceInUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">InvalidCharInUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">InvalidCharInUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">InvalidCharInUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">EmptyUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">EmptyUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">EmptyUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">UnclosedUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">UnclosedUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">UnclosedUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">LeadingUnderscoreUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">LeadingUnderscoreUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">LeadingUnderscoreUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">OverlongUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">OverlongUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">OverlongUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">LoneSurrogateUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">LoneSurrogateUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">LoneSurrogateUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">OutOfRangeUnicodeEscape</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">OutOfRangeUnicodeEscape</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">OutOfRangeUnicodeEscape</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">UnicodeEscapeInByte</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">UnicodeEscapeInByte</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">UnicodeEscapeInByte</span>
             }
-            <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">NonAsciiCharInByte</span>
-            <span class="op">|</span> <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">NonAsciiCharInByteString</span> <span class="op">=&gt;</span> {
+            <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">NonAsciiCharInByte</span>
+            <span class="op">|</span> <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>::<span class="ident">NonAsciiCharInByteString</span> <span class="op">=&gt;</span> {
                 <span class="ident">EscapeError</span>::<span class="ident">NonAsciiCharInByte</span>
             }
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SyntaxErrorKind</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">ra_rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">SyntaxErrorKind</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">rustc_lexer</span>::<span class="ident">unescape</span>::<span class="ident">EscapeError</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="ident">SyntaxErrorKind</span>::<span class="ident">EscapeError</span>(<span class="ident">err</span>.<span class="ident">into</span>())
     }
 }
