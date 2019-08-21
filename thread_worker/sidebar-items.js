@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ScopedThread","Like `std::thread::JoinHandle<()>`, but joins thread in drop automatically."],["Worker","A wrapper around event-processing thread with automatic shutdown semantics."]]});
+initSidebarItems({"struct":[["Worker","A wrapper around event-processing thread with automatic shutdown semantics."]]});
