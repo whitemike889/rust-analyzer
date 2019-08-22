@@ -370,10 +370,6 @@
 <span id="370">370</span>
 <span id="371">371</span>
 <span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::{<span class="ident">FxHashMap</span>, <span class="ident">FxHashSet</span>};
 
@@ -535,21 +531,17 @@
                         } <span class="kw">else</span> {
                             <span class="string">&quot;variable&quot;</span>
                         }
-                    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">name</span>
-                        .<span class="ident">syntax</span>()
-                        .<span class="ident">parent</span>()
-                        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
-                            <span class="ident">x</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">TYPE_PARAM</span>
-                                <span class="op">||</span> <span class="ident">x</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">STRUCT_DEF</span>
-                                <span class="op">||</span> <span class="ident">x</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">ENUM_DEF</span>
-                                <span class="op">||</span> <span class="ident">x</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">TRAIT_DEF</span>
-                                <span class="op">||</span> <span class="ident">x</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">TYPE_ALIAS_DEF</span>
-                        })
-                        .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
-                    {
-                        <span class="string">&quot;type&quot;</span>
                     } <span class="kw">else</span> {
-                        <span class="string">&quot;function&quot;</span>
+                        <span class="ident">name</span>.<span class="ident">syntax</span>()
+                            .<span class="ident">parent</span>()
+                            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">x</span>.<span class="ident">kind</span>() {
+                                <span class="ident">TYPE_PARAM</span> <span class="op">|</span> <span class="ident">STRUCT_DEF</span> <span class="op">|</span> <span class="ident">ENUM_DEF</span> <span class="op">|</span> <span class="ident">TRAIT_DEF</span> <span class="op">|</span> <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">=&gt;</span> {
+                                    <span class="string">&quot;type&quot;</span>
+                                }
+                                <span class="ident">NAMED_FIELD_DEF</span> <span class="op">=&gt;</span> <span class="string">&quot;field&quot;</span>,
+                                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="string">&quot;function&quot;</span>,
+                            })
+                            .<span class="ident">unwrap_or</span>(<span class="string">&quot;function&quot;</span>)
                     }
                 } <span class="kw">else</span> {
                     <span class="string">&quot;text&quot;</span>
