@@ -554,6 +554,8 @@
 <span id="554">554</span>
 <span id="555">555</span>
 <span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -971,6 +973,8 @@
 <span class="comment">//         X | Y if Z =&gt; (),</span>
 <span class="comment">//         | X | Y if Z =&gt; (),</span>
 <span class="comment">//         | X =&gt; (),</span>
+<span class="comment">//         box X =&gt; (),</span>
+<span class="comment">//         Some(box X) =&gt; (),</span>
 <span class="comment">//     };</span>
 <span class="comment">// }</span>
 <span class="kw">fn</span> <span class="ident">match_arm</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">BlockLike</span> {

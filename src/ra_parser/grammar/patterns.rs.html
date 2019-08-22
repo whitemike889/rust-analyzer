@@ -279,7 +279,7 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const</span> <span class="ident">PATTERN_FIRST</span>: <span class="ident">TokenSet</span> <span class="op">=</span> <span class="ident">expressions</span>::<span class="ident">LITERAL_FIRST</span>
     .<span class="ident">union</span>(<span class="ident">paths</span>::<span class="ident">PATH_FIRST</span>)
-    .<span class="ident">union</span>(<span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">REF_KW</span>, <span class="ident">MUT_KW</span>, <span class="ident">L_PAREN</span>, <span class="ident">L_BRACK</span>, <span class="ident">AMP</span>, <span class="ident">UNDERSCORE</span>, <span class="ident">MINUS</span>]);
+    .<span class="ident">union</span>(<span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">BOX_KW</span>, <span class="ident">REF_KW</span>, <span class="ident">MUT_KW</span>, <span class="ident">L_PAREN</span>, <span class="ident">L_BRACK</span>, <span class="ident">AMP</span>, <span class="ident">UNDERSCORE</span>, <span class="ident">MINUS</span>]);
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">pattern</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="ident">pattern_r</span>(<span class="ident">p</span>, <span class="ident">PAT_RECOVERY_SET</span>);
