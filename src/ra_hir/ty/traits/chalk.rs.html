@@ -708,6 +708,8 @@
 <span id="708">708</span>
 <span id="709">709</span>
 <span id="710">710</span>
+<span id="711">711</span>
+<span id="712">712</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Conversion code from/to Chalk.</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -791,7 +793,9 @@
             <span class="comment">// FIXME this is clearly incorrect, but probably not too incorrect</span>
             <span class="comment">// and I&#39;m not sure what to actually do with Ty::Unknown</span>
             <span class="comment">// maybe an alternative would be `for&lt;T&gt; T`? (meaningless in rust, but expressible in chalk&#39;s Ty)</span>
-            <span class="ident">Ty</span>::<span class="ident">Unknown</span> <span class="op">=&gt;</span> {
+            <span class="comment">//</span>
+            <span class="comment">// FIXME also dyn and impl Trait are currently handled like Unknown because Chalk doesn&#39;t have them yet</span>
+            <span class="ident">Ty</span>::<span class="ident">Unknown</span> <span class="op">|</span> <span class="ident">Ty</span>::<span class="ident">Dyn</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">Ty</span>::<span class="ident">Opaque</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
                 <span class="ident">PlaceholderIndex</span> { <span class="ident">ui</span>: <span class="ident">UniverseIndex</span>::<span class="ident">ROOT</span>, <span class="ident">idx</span>: <span class="ident">usize</span>::<span class="ident">max_value</span>() }.<span class="ident">to_ty</span>()
             }
         }

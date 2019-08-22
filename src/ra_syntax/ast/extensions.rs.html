@@ -399,6 +399,35 @@
 <span id="399">399</span>
 <span id="400">400</span>
 <span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various extension methods to ast Nodes, which are hard to code-generate.</span>
 <span class="doccomment">//! Extensions for various expressions live in a sibling `expr_extensions` module.</span>
@@ -784,7 +813,36 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TypeBoundKind</span> {
+    <span class="doccomment">/// Trait</span>
+    <span class="ident">PathType</span>(<span class="ident">ast</span>::<span class="ident">PathType</span>),
+    <span class="doccomment">/// for&lt;&#39;a&gt; ...</span>
+    <span class="ident">ForType</span>(<span class="ident">ast</span>::<span class="ident">ForType</span>),
+    <span class="doccomment">/// &#39;a</span>
+    <span class="ident">Lifetime</span>(<span class="ident">ast</span>::<span class="ident">SyntaxToken</span>),
+}
+
 <span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">TypeBound</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kind</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TypeBoundKind</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">path_type</span>) <span class="op">=</span> <span class="ident">children</span>(<span class="self">self</span>).<span class="ident">next</span>() {
+            <span class="ident">TypeBoundKind</span>::<span class="ident">PathType</span>(<span class="ident">path_type</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">for_type</span>) <span class="op">=</span> <span class="ident">children</span>(<span class="self">self</span>).<span class="ident">next</span>() {
+            <span class="ident">TypeBoundKind</span>::<span class="ident">ForType</span>(<span class="ident">for_type</span>)
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">lifetime</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">lifetime</span>() {
+            <span class="ident">TypeBoundKind</span>::<span class="ident">Lifetime</span>(<span class="ident">lifetime</span>)
+        } <span class="kw">else</span> {
+            <span class="macro">unreachable</span><span class="macro">!</span>()
+        }
+    }
+
+    <span class="kw">fn</span> <span class="ident">lifetime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">syntax</span>()
+            .<span class="ident">children_with_tokens</span>()
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
+            .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">LIFETIME</span>)
+    }
+
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">question_mark_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">syntax</span>()
             .<span class="ident">children_with_tokens</span>()

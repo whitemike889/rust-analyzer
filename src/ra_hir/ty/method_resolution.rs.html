@@ -327,6 +327,18 @@
 <span id="327">327</span>
 <span id="328">328</span>
 <span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module is concerned with finding methods that a given type provides.</span>
 <span class="doccomment">//! For details about how this works in rustc, see the method lookup page in the</span>
@@ -541,12 +553,19 @@
     <span class="kw">let</span> <span class="ident">krate</span> <span class="op">=</span> <span class="ident">resolver</span>.<span class="ident">krate</span>()<span class="question-mark">?</span>;
     <span class="comment">// FIXME: maybe put the trait_env behind a query (need to figure out good input parameters for that)</span>
     <span class="kw">let</span> <span class="ident">env</span> <span class="op">=</span> <span class="ident">lower</span>::<span class="ident">trait_env</span>(<span class="ident">db</span>, <span class="ident">resolver</span>);
-    <span class="lifetime">&#39;traits</span>: <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">resolver</span>.<span class="ident">traits_in_scope</span>(<span class="ident">db</span>) {
+    <span class="comment">// if ty is `impl Trait` or `dyn Trait`, the trait doesn&#39;t need to be in scope</span>
+    <span class="kw">let</span> <span class="ident">traits</span> <span class="op">=</span> <span class="ident">ty</span>.<span class="ident">value</span>.<span class="ident">inherent_trait</span>().<span class="ident">into_iter</span>().<span class="ident">chain</span>(<span class="ident">resolver</span>.<span class="ident">traits_in_scope</span>(<span class="ident">db</span>));
+    <span class="lifetime">&#39;traits</span>: <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">traits</span> {
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">t</span>.<span class="ident">trait_data</span>(<span class="ident">db</span>);
+
+        <span class="comment">// FIXME this is a bit of a hack, since Chalk should say the same thing</span>
+        <span class="comment">// anyway, but currently Chalk doesn&#39;t implement `dyn/impl Trait` yet</span>
+        <span class="kw">let</span> <span class="ident">inherently_implemented</span> <span class="op">=</span> <span class="ident">ty</span>.<span class="ident">value</span>.<span class="ident">inherent_trait</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="ident">t</span>);
+
         <span class="comment">// we&#39;ll be lazy about checking whether the type implements the</span>
         <span class="comment">// trait, but if we find out it doesn&#39;t, we&#39;ll skip the rest of the</span>
         <span class="comment">// iteration</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">known_implemented</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">known_implemented</span> <span class="op">=</span> <span class="ident">inherently_implemented</span>;
         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">data</span>.<span class="ident">items</span>() {
             <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TraitItem</span>::<span class="ident">Function</span>(<span class="ident">m</span>) <span class="op">=</span> <span class="kw-2">*</span><span class="ident">item</span> {
                 <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">data</span>(<span class="ident">db</span>);
@@ -601,6 +620,11 @@
     <span class="ident">krate</span>: <span class="ident">Crate</span>,
     <span class="ident">trait_</span>: <span class="ident">Trait</span>,
 ) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">if</span> <span class="ident">ty</span>.<span class="ident">value</span>.<span class="ident">inherent_trait</span>() <span class="op">==</span> <span class="prelude-val">Some</span>(<span class="ident">trait_</span>) {
+        <span class="comment">// FIXME this is a bit of a hack, since Chalk should say the same thing</span>
+        <span class="comment">// anyway, but currently Chalk doesn&#39;t implement `dyn/impl Trait` yet</span>
+        <span class="kw">return</span> <span class="bool-val">true</span>;
+    }
     <span class="kw">let</span> <span class="ident">env</span> <span class="op">=</span> <span class="ident">lower</span>::<span class="ident">trait_env</span>(<span class="ident">db</span>, <span class="ident">resolver</span>);
     <span class="kw">let</span> <span class="ident">goal</span> <span class="op">=</span> <span class="ident">generic_implements_goal</span>(<span class="ident">db</span>, <span class="ident">env</span>.<span class="ident">clone</span>(), <span class="ident">trait_</span>, <span class="ident">ty</span>.<span class="ident">clone</span>());
     <span class="kw">let</span> <span class="ident">solution</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">trait_solve</span>(<span class="ident">krate</span>, <span class="ident">goal</span>);
