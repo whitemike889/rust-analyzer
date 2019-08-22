@@ -387,6 +387,18 @@
 <span id="387">387</span>
 <span id="388">388</span>
 <span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various extension methods to ast Nodes, which are hard to code-generate.</span>
 <span class="doccomment">//! Extensions for various expressions live in a sibling `expr_extensions` module.</span>
@@ -769,6 +781,18 @@
             .<span class="ident">children_with_tokens</span>()
             .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
             .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">LIFETIME</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">TypeBound</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">question_mark_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SyntaxToken</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">syntax</span>()
+            .<span class="ident">children_with_tokens</span>()
+            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">into_token</span>())
+            .<span class="ident">find</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="question-mark">?</span>])
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_question_mark</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">question_mark_token</span>().<span class="ident">is_some</span>()
     }
 }
 
