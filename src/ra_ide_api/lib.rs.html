@@ -543,6 +543,16 @@
 <span id="543">543</span>
 <span id="544">544</span>
 <span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! ra_ide_api crate provides &quot;ide-centric&quot; APIs for the rust-analyzer. That is,</span>
 <span class="doccomment">//! it generally operates with files and text ranges, and returns results as</span>
@@ -560,6 +570,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mock_analysis</span>;
 <span class="kw">mod</span> <span class="ident">symbol_index</span>;
 <span class="kw">mod</span> <span class="ident">change</span>;
+<span class="kw">mod</span> <span class="ident">feature_flags</span>;
 
 <span class="kw">mod</span> <span class="ident">status</span>;
 <span class="kw">mod</span> <span class="ident">completion</span>;
@@ -609,6 +620,7 @@
     <span class="ident">completion</span>::{<span class="ident">CompletionItem</span>, <span class="ident">CompletionItemKind</span>, <span class="ident">InsertTextFormat</span>},
     <span class="ident">diagnostics</span>::<span class="ident">Severity</span>,
     <span class="ident">display</span>::{<span class="ident">file_structure</span>, <span class="ident">FunctionSignature</span>, <span class="ident">NavigationTarget</span>, <span class="ident">StructureNode</span>},
+    <span class="ident">feature_flags</span>::<span class="ident">FeatureFlags</span>,
     <span class="ident">folding_ranges</span>::{<span class="ident">Fold</span>, <span class="ident">FoldKind</span>},
     <span class="ident">hover</span>::<span class="ident">HoverResult</span>,
     <span class="ident">inlay_hints</span>::{<span class="ident">InlayHint</span>, <span class="ident">InlayKind</span>},
@@ -793,18 +805,22 @@
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">AnalysisHost</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
-        <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>)
+        <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>, <span class="ident">FeatureFlags</span>::<span class="ident">default</span>())
     }
 }
 
 <span class="kw">impl</span> <span class="ident">AnalysisHost</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lru_capcity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
-        <span class="ident">AnalysisHost</span> { <span class="ident">db</span>: <span class="ident">db</span>::<span class="ident">RootDatabase</span>::<span class="ident">new</span>(<span class="ident">lru_capcity</span>) }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">lru_capcity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">feature_flags</span>: <span class="ident">FeatureFlags</span>) <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
+        <span class="ident">AnalysisHost</span> { <span class="ident">db</span>: <span class="ident">db</span>::<span class="ident">RootDatabase</span>::<span class="ident">new</span>(<span class="ident">lru_capcity</span>, <span class="ident">feature_flags</span>) }
     }
     <span class="doccomment">/// Returns a snapshot of the current state, which you can query for</span>
     <span class="doccomment">/// semantic information.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">analysis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Analysis</span> {
         <span class="ident">Analysis</span> { <span class="ident">db</span>: <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">snapshot</span>() }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">feature_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FeatureFlags</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">db</span>.<span class="ident">feature_flags</span>
     }
 
     <span class="doccomment">/// Applies changes to the current state of the world. If there are</span>
@@ -863,6 +879,10 @@
         <span class="ident">change</span>.<span class="ident">set_crate_graph</span>(<span class="ident">crate_graph</span>);
         <span class="ident">host</span>.<span class="ident">apply_change</span>(<span class="ident">change</span>);
         (<span class="ident">host</span>.<span class="ident">analysis</span>(), <span class="ident">file_id</span>)
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">feature_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FeatureFlags</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">db</span>.<span class="ident">feature_flags</span>
     }
 
     <span class="doccomment">/// Debug info about the current state of the analysis</span>

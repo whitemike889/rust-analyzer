@@ -247,6 +247,15 @@
 <span id="247">247</span>
 <span id="248">248</span>
 <span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -257,7 +266,8 @@
 <span class="kw">use</span> <span class="ident">lsp_types</span>::<span class="ident">Url</span>;
 <span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">RwLock</span>;
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::{
-    <span class="ident">Analysis</span>, <span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>, <span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>, <span class="ident">SourceRootId</span>,
+    <span class="ident">Analysis</span>, <span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>, <span class="ident">CrateGraph</span>, <span class="ident">FeatureFlags</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>,
+    <span class="ident">SourceRootId</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">LineEndings</span>, <span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs_glob</span>::{<span class="ident">Glob</span>, <span class="ident">RustPackageFilterBuilder</span>};
@@ -272,7 +282,6 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Options</span> {
     <span class="kw">pub</span> <span class="ident">publish_decorations</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">show_workspace_loaded</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">supports_location_link</span>: <span class="ident">bool</span>,
 }
 
@@ -308,6 +317,7 @@
         <span class="ident">lru_capacity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
         <span class="ident">exclude_globs</span>: <span class="kw-2">&amp;</span>[<span class="ident">Glob</span>],
         <span class="ident">options</span>: <span class="ident">Options</span>,
+        <span class="ident">feature_flags</span>: <span class="ident">FeatureFlags</span>,
     ) <span class="op">-&gt;</span> <span class="ident">WorldState</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">change</span> <span class="op">=</span> <span class="ident">AnalysisChange</span>::<span class="ident">new</span>();
 
@@ -349,7 +359,7 @@
         }
         <span class="ident">change</span>.<span class="ident">set_crate_graph</span>(<span class="ident">crate_graph</span>);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">analysis_host</span> <span class="op">=</span> <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="ident">lru_capacity</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">analysis_host</span> <span class="op">=</span> <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="ident">lru_capacity</span>, <span class="ident">feature_flags</span>);
         <span class="ident">analysis_host</span>.<span class="ident">apply_change</span>(<span class="ident">change</span>);
         <span class="ident">WorldState</span> {
             <span class="ident">options</span>,
@@ -434,6 +444,10 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">complete_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">request</span>: <span class="ident">CompletedRequest</span>) {
         <span class="self">self</span>.<span class="ident">latest_requests</span>.<span class="ident">write</span>().<span class="ident">record</span>(<span class="ident">request</span>)
     }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">feature_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FeatureFlags</span> {
+        <span class="self">self</span>.<span class="ident">analysis_host</span>.<span class="ident">feature_flags</span>()
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">WorldSnapshot</span> {
@@ -495,6 +509,10 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">workspace_root_for</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Path</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vfs</span>.<span class="ident">read</span>().<span class="ident">file2path</span>(<span class="ident">VfsFile</span>(<span class="ident">file_id</span>.<span class="number">0</span>));
         <span class="self">self</span>.<span class="ident">workspaces</span>.<span class="ident">iter</span>().<span class="ident">find_map</span>(<span class="op">|</span><span class="ident">ws</span><span class="op">|</span> <span class="ident">ws</span>.<span class="ident">workspace_root_for</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>))
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">feature_flags</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">FeatureFlags</span> {
+        <span class="self">self</span>.<span class="ident">analysis</span>.<span class="ident">feature_flags</span>()
     }
 }
 </pre></div>

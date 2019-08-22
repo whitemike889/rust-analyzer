@@ -627,6 +627,28 @@
 <span id="627">627</span>
 <span id="628">628</span>
 <span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -639,7 +661,7 @@
     <span class="ident">handle_shutdown</span>, <span class="ident">ErrorCode</span>, <span class="ident">RawMessage</span>, <span class="ident">RawNotification</span>, <span class="ident">RawRequest</span>, <span class="ident">RawResponse</span>,
 };
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{<span class="ident">ClientCapabilities</span>, <span class="ident">NumberOrString</span>};
-<span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">Canceled</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>};
+<span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">Canceled</span>, <span class="ident">FeatureFlags</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>};
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::<span class="ident">VfsTask</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>::<span class="ident">DeserializeOwned</span>, <span class="ident">Serialize</span>};
@@ -686,7 +708,7 @@
     <span class="ident">msg_receiver</span>: <span class="kw-2">&amp;</span><span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
     <span class="ident">msg_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;server_config: {:?}&quot;</span>, <span class="ident">config</span>);
+    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;server_config: {:#?}&quot;</span>, <span class="ident">config</span>);
     <span class="comment">// FIXME: support dynamic workspace loading.</span>
     <span class="kw">let</span> <span class="ident">workspaces</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="ident">ws_worker</span> <span class="op">=</span> <span class="ident">workspace_loader</span>(<span class="ident">config</span>.<span class="ident">with_sysroot</span>);
@@ -713,6 +735,21 @@
         .<span class="ident">iter</span>()
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">glob</span><span class="op">|</span> <span class="ident">ra_vfs_glob</span>::<span class="ident">Glob</span>::<span class="ident">new</span>(<span class="ident">glob</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;&gt;</span>()<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="ident">feature_flags</span> <span class="op">=</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ff</span> <span class="op">=</span> <span class="ident">FeatureFlags</span>::<span class="ident">default</span>();
+        <span class="kw">for</span> (<span class="ident">flag</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">feature_flags</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">ff</span>.<span class="ident">set</span>(<span class="ident">flag</span>.<span class="ident">as_str</span>(), <span class="ident">value</span>) {
+                <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;unknown feature flag: {:?}&quot;</span>, <span class="ident">flag</span>);
+                <span class="ident">show_message</span>(
+                    <span class="ident">req</span>::<span class="ident">MessageType</span>::<span class="ident">Error</span>,
+                    <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;unknown feature flag: {:?}&quot;</span>, <span class="ident">flag</span>),
+                    <span class="ident">msg_sender</span>,
+                );
+            }
+        }
+        <span class="ident">ff</span>
+    };
+    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;feature_flags: {:#?}&quot;</span>, <span class="ident">feature_flags</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(
         <span class="ident">ws_roots</span>,
         <span class="ident">workspaces</span>,
@@ -720,13 +757,13 @@
         <span class="kw-2">&amp;</span><span class="ident">globs</span>,
         <span class="ident">Options</span> {
             <span class="ident">publish_decorations</span>: <span class="ident">config</span>.<span class="ident">publish_decorations</span>,
-            <span class="ident">show_workspace_loaded</span>: <span class="ident">config</span>.<span class="ident">show_workspace_loaded</span>,
             <span class="ident">supports_location_link</span>: <span class="ident">client_caps</span>
                 .<span class="ident">text_document</span>
                 .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">definition</span>)
                 .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">link_support</span>)
                 .<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>),
         },
+        <span class="ident">feature_flags</span>,
     );
 
     <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">THREADPOOL_SIZE</span>);
@@ -906,7 +943,7 @@
             <span class="op">&amp;&amp;</span> <span class="ident">in_flight_libraries</span> <span class="op">==</span> <span class="number">0</span>
         {
             <span class="kw">let</span> <span class="ident">n_packages</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">workspaces</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">n_packages</span>()).<span class="ident">sum</span>();
-            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">options</span>.<span class="ident">show_workspace_loaded</span> {
+            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">feature_flags</span>().<span class="ident">get</span>(<span class="string">&quot;notifications.workspace-loaded&quot;</span>) {
                 <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;workspace loaded, {} rust packages&quot;</span>, <span class="ident">n_packages</span>);
                 <span class="ident">show_message</span>(<span class="ident">req</span>::<span class="ident">MessageType</span>::<span class="ident">Info</span>, <span class="ident">msg</span>, <span class="ident">msg_sender</span>);
             }
@@ -1217,17 +1254,20 @@
     <span class="ident">subscriptions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span>,
 ) {
     <span class="ident">log</span>::<span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;updating notifications for {:?}&quot;</span>, <span class="ident">subscriptions</span>);
+    <span class="kw">let</span> <span class="ident">publish_diagnostics</span> <span class="op">=</span> <span class="ident">world</span>.<span class="ident">feature_flags</span>().<span class="ident">get</span>(<span class="string">&quot;lsp.diagnostics&quot;</span>);
     <span class="ident">pool</span>.<span class="ident">execute</span>(<span class="kw">move</span> <span class="op">||</span> {
         <span class="kw">for</span> <span class="ident">file_id</span> <span class="kw">in</span> <span class="ident">subscriptions</span> {
-            <span class="kw">match</span> <span class="ident">handlers</span>::<span class="ident">publish_diagnostics</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>) {
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">if</span> <span class="op">!</span><span class="ident">is_canceled</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>) {
-                        <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;failed to compute diagnostics: {:?}&quot;</span>, <span class="ident">e</span>);
+            <span class="kw">if</span> <span class="ident">publish_diagnostics</span> {
+                <span class="kw">match</span> <span class="ident">handlers</span>::<span class="ident">publish_diagnostics</span>(<span class="kw-2">&amp;</span><span class="ident">world</span>, <span class="ident">file_id</span>) {
+                    <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
+                        <span class="kw">if</span> <span class="op">!</span><span class="ident">is_canceled</span>(<span class="kw-2">&amp;</span><span class="ident">e</span>) {
+                            <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;failed to compute diagnostics: {:?}&quot;</span>, <span class="ident">e</span>);
+                        }
                     }
-                }
-                <span class="prelude-val">Ok</span>(<span class="ident">params</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">not</span> <span class="op">=</span> <span class="ident">RawNotification</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">PublishDiagnostics</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">params</span>);
-                    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Task</span>::<span class="ident">Notify</span>(<span class="ident">not</span>)).<span class="ident">unwrap</span>();
+                    <span class="prelude-val">Ok</span>(<span class="ident">params</span>) <span class="op">=&gt;</span> {
+                        <span class="kw">let</span> <span class="ident">not</span> <span class="op">=</span> <span class="ident">RawNotification</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">PublishDiagnostics</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">params</span>);
+                        <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">Task</span>::<span class="ident">Notify</span>(<span class="ident">not</span>)).<span class="ident">unwrap</span>();
+                    }
                 }
             }
             <span class="kw">if</span> <span class="ident">publish_decorations</span> {
@@ -1247,7 +1287,11 @@
     });
 }
 
-<span class="kw">fn</span> <span class="ident">show_message</span>(<span class="ident">typ</span>: <span class="ident">req</span>::<span class="ident">MessageType</span>, <span class="ident">message</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>, <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>) {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">show_message</span>(
+    <span class="ident">typ</span>: <span class="ident">req</span>::<span class="ident">MessageType</span>,
+    <span class="ident">message</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">RawMessage</span><span class="op">&gt;</span>,
+) {
     <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">message</span>.<span class="ident">into</span>();
     <span class="kw">let</span> <span class="ident">params</span> <span class="op">=</span> <span class="ident">req</span>::<span class="ident">ShowMessageParams</span> { <span class="ident">typ</span>, <span class="ident">message</span> };
     <span class="kw">let</span> <span class="ident">not</span> <span class="op">=</span> <span class="ident">RawNotification</span>::<span class="ident">new</span>::<span class="op">&lt;</span><span class="ident">req</span>::<span class="ident">ShowMessage</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">params</span>);

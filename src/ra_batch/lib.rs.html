@@ -138,7 +138,7 @@
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
 <span class="kw">use</span> <span class="ident">ra_db</span>::{<span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">SourceRootId</span>};
-<span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>};
+<span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>, <span class="ident">FeatureFlags</span>};
 <span class="kw">use</span> <span class="ident">ra_project_model</span>::{<span class="ident">PackageRoot</span>, <span class="ident">ProjectWorkspace</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs_glob</span>::<span class="ident">RustPackageFilterBuilder</span>;
@@ -198,7 +198,7 @@
     <span class="ident">vfs</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vfs</span>,
 ) <span class="op">-&gt;</span> <span class="ident">AnalysisHost</span> {
     <span class="kw">let</span> <span class="ident">lru_cap</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">env</span>::<span class="ident">var</span>(<span class="string">&quot;RA_LRU_CAP&quot;</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>().<span class="ident">ok</span>());
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">host</span> <span class="op">=</span> <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="ident">lru_cap</span>);
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">host</span> <span class="op">=</span> <span class="ident">AnalysisHost</span>::<span class="ident">new</span>(<span class="ident">lru_cap</span>, <span class="ident">FeatureFlags</span>::<span class="ident">default</span>());
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">analysis_change</span> <span class="op">=</span> <span class="ident">AnalysisChange</span>::<span class="ident">new</span>();
     <span class="ident">analysis_change</span>.<span class="ident">set_crate_graph</span>(<span class="ident">crate_graph</span>);
 

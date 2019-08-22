@@ -74,8 +74,9 @@
 <span id="74">74</span>
 <span id="75">75</span>
 <span id="76">76</span>
-<span id="77">77</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
+
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Deserializer</span>};
 
 <span class="doccomment">/// Client provided initialization options</span>
@@ -90,12 +91,6 @@
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deserialize_with</span> <span class="op">=</span> <span class="string">&quot;nullable_bool_false&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">publish_decorations</span>: <span class="ident">bool</span>,
 
-    <span class="doccomment">/// Whether or not the workspace loaded notification should be sent</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Defaults to `true`</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deserialize_with</span> <span class="op">=</span> <span class="string">&quot;nullable_bool_true&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">show_workspace_loaded</span>: <span class="ident">bool</span>,
-
     <span class="kw">pub</span> <span class="ident">exclude_globs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="kw">pub</span> <span class="ident">lru_capacity</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
@@ -103,16 +98,19 @@
     <span class="doccomment">/// For internal usage to make integrated tests faster.</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">deserialize_with</span> <span class="op">=</span> <span class="string">&quot;nullable_bool_true&quot;</span>)]</span>
     <span class="kw">pub</span> <span class="ident">with_sysroot</span>: <span class="ident">bool</span>,
+
+    <span class="doccomment">/// Fine grained feature flags to disable specific features.</span>
+    <span class="kw">pub</span> <span class="ident">feature_flags</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">bool</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ServerConfig</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">ServerConfig</span> {
         <span class="ident">ServerConfig</span> {
             <span class="ident">publish_decorations</span>: <span class="bool-val">false</span>,
-            <span class="ident">show_workspace_loaded</span>: <span class="bool-val">true</span>,
             <span class="ident">exclude_globs</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             <span class="ident">lru_capacity</span>: <span class="prelude-val">None</span>,
             <span class="ident">with_sysroot</span>: <span class="bool-val">true</span>,
+            <span class="ident">feature_flags</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
         }
     }
 }
