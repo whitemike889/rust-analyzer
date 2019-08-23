@@ -432,6 +432,9 @@
 <span id="432">432</span>
 <span id="433">433</span>
 <span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">iter</span>, <span class="ident">ops</span>::<span class="ident">RangeInclusive</span>};
 
@@ -454,7 +457,10 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">AstNode</span><span class="op">&gt;</span> <span class="ident">AstEditor</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">node</span>: <span class="ident">N</span>) <span class="op">-&gt;</span> <span class="ident">AstEditor</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">node</span>: <span class="ident">N</span>) <span class="op">-&gt;</span> <span class="ident">AstEditor</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">N</span>: <span class="ident">Clone</span>,
+    {
         <span class="ident">AstEditor</span> { <span class="ident">original_ast</span>: <span class="ident">node</span>.<span class="ident">clone</span>(), <span class="ident">ast</span>: <span class="ident">node</span> }
     }
 
@@ -814,7 +820,7 @@
 
 <span class="kw">fn</span> <span class="ident">ast_node_from_file_text</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">AstNode</span><span class="op">&gt;</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">N</span> {
     <span class="kw">let</span> <span class="ident">parse</span> <span class="op">=</span> <span class="ident">SourceFile</span>::<span class="ident">parse</span>(<span class="ident">text</span>);
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>().<span class="ident">descendants</span>().<span class="ident">find_map</span>(<span class="ident">N</span>::<span class="ident">cast</span>).<span class="ident">unwrap</span>().<span class="ident">to_owned</span>();
+    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">parse</span>.<span class="ident">tree</span>().<span class="ident">syntax</span>().<span class="ident">descendants</span>().<span class="ident">find_map</span>(<span class="ident">N</span>::<span class="ident">cast</span>).<span class="ident">unwrap</span>();
     <span class="ident">res</span>
 }
 
