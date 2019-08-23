@@ -600,9 +600,9 @@
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">lit</span>.<span class="ident">token</span>().<span class="ident">text</span>(), <span class="string">r#&quot;&quot;Hello&quot;&quot;#</span>);
 }
 
-<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">NamedField</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parent_struct_lit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">StructLit</span> {
-        <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">ancestors</span>().<span class="ident">find_map</span>(<span class="ident">ast</span>::<span class="ident">StructLit</span>::<span class="ident">cast</span>).<span class="ident">unwrap</span>()
+<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">RecordField</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parent_record_lit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">RecordLit</span> {
+        <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">ancestors</span>().<span class="ident">find_map</span>(<span class="ident">ast</span>::<span class="ident">RecordLit</span>::<span class="ident">cast</span>).<span class="ident">unwrap</span>()
     }
 }
 </pre></div>

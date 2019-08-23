@@ -626,16 +626,16 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StructKind</span> {
-    <span class="ident">Tuple</span>(<span class="ident">ast</span>::<span class="ident">PosFieldDefList</span>),
-    <span class="ident">Named</span>(<span class="ident">ast</span>::<span class="ident">NamedFieldDefList</span>),
+    <span class="ident">Tuple</span>(<span class="ident">ast</span>::<span class="ident">TupleFieldDefList</span>),
+    <span class="ident">Named</span>(<span class="ident">ast</span>::<span class="ident">RecordFieldDefList</span>),
     <span class="ident">Unit</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">StructKind</span> {
     <span class="kw">fn</span> <span class="ident">from_node</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">AstNode</span><span class="op">&gt;</span>(<span class="ident">node</span>: <span class="kw-2">&amp;</span><span class="ident">N</span>) <span class="op">-&gt;</span> <span class="ident">StructKind</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nfdl</span>) <span class="op">=</span> <span class="ident">child_opt</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">NamedFieldDefList</span><span class="op">&gt;</span>(<span class="ident">node</span>) {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nfdl</span>) <span class="op">=</span> <span class="ident">child_opt</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">RecordFieldDefList</span><span class="op">&gt;</span>(<span class="ident">node</span>) {
             <span class="ident">StructKind</span>::<span class="ident">Named</span>(<span class="ident">nfdl</span>)
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pfl</span>) <span class="op">=</span> <span class="ident">child_opt</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">PosFieldDefList</span><span class="op">&gt;</span>(<span class="ident">node</span>) {
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pfl</span>) <span class="op">=</span> <span class="ident">child_opt</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">ast</span>::<span class="ident">TupleFieldDefList</span><span class="op">&gt;</span>(<span class="ident">node</span>) {
             <span class="ident">StructKind</span>::<span class="ident">Tuple</span>(<span class="ident">pfl</span>)
         } <span class="kw">else</span> {
             <span class="ident">StructKind</span>::<span class="ident">Unit</span>

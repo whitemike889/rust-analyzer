@@ -313,7 +313,7 @@
 ) <span class="op">-&gt;</span> <span class="ident">usize</span> {
     <span class="kw">match</span> <span class="ident">kind</span> {
         <span class="ident">CONST_DEF</span> <span class="op">|</span> <span class="ident">TYPE_ALIAS_DEF</span> <span class="op">|</span> <span class="ident">STRUCT_DEF</span> <span class="op">|</span> <span class="ident">ENUM_DEF</span> <span class="op">|</span> <span class="ident">ENUM_VARIANT</span> <span class="op">|</span> <span class="ident">FN_DEF</span> <span class="op">|</span> <span class="ident">TRAIT_DEF</span>
-        <span class="op">|</span> <span class="ident">MODULE</span> <span class="op">|</span> <span class="ident">NAMED_FIELD_DEF</span> <span class="op">=&gt;</span> {
+        <span class="op">|</span> <span class="ident">MODULE</span> <span class="op">|</span> <span class="ident">RECORD_FIELD_DEF</span> <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="number">0</span>;
             <span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">kind</span>, <span class="ident">text</span>)) <span class="kw">in</span> <span class="ident">trivias</span>.<span class="ident">enumerate</span>() {
                 <span class="kw">match</span> <span class="ident">kind</span> {

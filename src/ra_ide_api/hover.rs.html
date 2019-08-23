@@ -901,7 +901,7 @@
                 .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">TraitDef</span><span class="op">|</span> {
                     <span class="ident">hover_text</span>(<span class="ident">node</span>.<span class="ident">doc_comment_text</span>(), <span class="ident">node</span>.<span class="ident">short_label</span>())
                 })
-                .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">NamedFieldDef</span><span class="op">|</span> {
+                .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">RecordFieldDef</span><span class="op">|</span> {
                     <span class="ident">hover_text</span>(<span class="ident">node</span>.<span class="ident">doc_comment_text</span>(), <span class="ident">node</span>.<span class="ident">short_label</span>())
                 })
                 .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">Module</span><span class="op">|</span> <span class="ident">hover_text</span>(<span class="ident">node</span>.<span class="ident">doc_comment_text</span>(), <span class="ident">node</span>.<span class="ident">short_label</span>()))

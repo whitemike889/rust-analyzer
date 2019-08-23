@@ -1231,8 +1231,8 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">FieldSource</span> {
-    <span class="ident">Named</span>(<span class="ident">ast</span>::<span class="ident">NamedFieldDef</span>),
-    <span class="ident">Pos</span>(<span class="ident">ast</span>::<span class="ident">PosFieldDef</span>),
+    <span class="ident">Named</span>(<span class="ident">ast</span>::<span class="ident">RecordFieldDef</span>),
+    <span class="ident">Pos</span>(<span class="ident">ast</span>::<span class="ident">TupleFieldDef</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">StructField</span> {

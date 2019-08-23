@@ -627,13 +627,13 @@
                     <span class="ident">pats_to_process</span>.<span class="ident">push_back</span>(<span class="ident">arg_pat</span>);
                 }
             }
-            <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">StructPat</span>(<span class="ident">struct_pat</span>) <span class="op">=&gt;</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pat_list</span>) <span class="op">=</span> <span class="ident">struct_pat</span>.<span class="ident">field_pat_list</span>() {
+            <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">RecordPat</span>(<span class="ident">record_pat</span>) <span class="op">=&gt;</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pat_list</span>) <span class="op">=</span> <span class="ident">record_pat</span>.<span class="ident">record_field_pat_list</span>() {
                     <span class="ident">pats_to_process</span>.<span class="ident">extend</span>(
                         <span class="ident">pat_list</span>
-                            .<span class="ident">field_pats</span>()
-                            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">field_pat</span><span class="op">|</span> {
-                                <span class="ident">field_pat</span>
+                            .<span class="ident">record_field_pats</span>()
+                            .<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">record_field_pat</span><span class="op">|</span> {
+                                <span class="ident">record_field_pat</span>
                                     .<span class="ident">pat</span>()
                                     .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">pat</span><span class="op">|</span> <span class="ident">pat</span>.<span class="ident">syntax</span>().<span class="ident">kind</span>() <span class="op">!=</span> <span class="ident">SyntaxKind</span>::<span class="ident">BIND_PAT</span>)
                             })

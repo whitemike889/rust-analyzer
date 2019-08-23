@@ -520,7 +520,7 @@
             <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">td</span>.<span class="ident">type_ref</span>();
             <span class="ident">decl_with_type_ref</span>(<span class="ident">td</span>, <span class="ident">ty</span>)
         })
-        .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">NamedFieldDef</span><span class="op">&gt;</span>)
+        .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">RecordFieldDef</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">ConstDef</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="ident">decl_with_ascription</span>::<span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">StaticDef</span><span class="op">&gt;</span>)
         .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">im</span>: <span class="ident">ast</span>::<span class="ident">ImplBlock</span><span class="op">|</span> {
@@ -618,7 +618,7 @@ fn very_obsolete() {}
         label: &quot;x&quot;,
         navigation_range: [18; 19),
         node_range: [18; 24),
-        kind: NAMED_FIELD_DEF,
+        kind: RECORD_FIELD_DEF,
         detail: Some(
             &quot;i32&quot;,
         ),

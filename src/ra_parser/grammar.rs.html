@@ -459,8 +459,8 @@
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>)<span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">node</span> {
         <span class="ident">BLOCK</span> <span class="op">=&gt;</span> <span class="ident">expressions</span>::<span class="ident">block</span>,
-        <span class="ident">NAMED_FIELD_DEF_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">named_field_def_list</span>,
-        <span class="ident">NAMED_FIELD_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">named_field_list</span>,
+        <span class="ident">RECORD_FIELD_DEF_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">record_field_def_list</span>,
+        <span class="ident">RECORD_FIELD_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">record_field_list</span>,
         <span class="ident">ENUM_VARIANT_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">enum_variant_list</span>,
         <span class="ident">MATCH_ARM_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">match_arm_list</span>,
         <span class="ident">USE_TREE_LIST</span> <span class="op">=&gt;</span> <span class="ident">items</span>::<span class="ident">use_tree_list</span>,

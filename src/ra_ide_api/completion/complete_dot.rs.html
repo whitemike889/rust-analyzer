@@ -504,7 +504,7 @@
                 <span class="comment">// FIXME unions</span>
                 <span class="ident">TypeCtor</span>::<span class="ident">Tuple</span> { .. } <span class="op">=&gt;</span> {
                     <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">ty</span>) <span class="kw">in</span> <span class="ident">a_ty</span>.<span class="ident">parameters</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                        <span class="ident">acc</span>.<span class="ident">add_pos_field</span>(<span class="ident">ctx</span>, <span class="ident">i</span>, <span class="ident">ty</span>);
+                        <span class="ident">acc</span>.<span class="ident">add_tuple_field</span>(<span class="ident">ctx</span>, <span class="ident">i</span>, <span class="ident">ty</span>);
                     }
                 }
                 <span class="kw">_</span> <span class="op">=&gt;</span> {}

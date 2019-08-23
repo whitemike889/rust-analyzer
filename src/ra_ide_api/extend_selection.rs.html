@@ -404,11 +404,11 @@
 <span class="kw">fn</span> <span class="ident">try_extend_selection</span>(<span class="ident">root</span>: <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span>, <span class="ident">range</span>: <span class="ident">TextRange</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TextRange</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">string_kinds</span> <span class="op">=</span> [<span class="ident">COMMENT</span>, <span class="ident">STRING</span>, <span class="ident">RAW_STRING</span>, <span class="ident">BYTE_STRING</span>, <span class="ident">RAW_BYTE_STRING</span>];
     <span class="kw">let</span> <span class="ident">list_kinds</span> <span class="op">=</span> [
-        <span class="ident">FIELD_PAT_LIST</span>,
+        <span class="ident">RECORD_FIELD_PAT_LIST</span>,
         <span class="ident">MATCH_ARM_LIST</span>,
-        <span class="ident">NAMED_FIELD_DEF_LIST</span>,
-        <span class="ident">POS_FIELD_DEF_LIST</span>,
-        <span class="ident">NAMED_FIELD_LIST</span>,
+        <span class="ident">RECORD_FIELD_DEF_LIST</span>,
+        <span class="ident">TUPLE_FIELD_DEF_LIST</span>,
+        <span class="ident">RECORD_FIELD_LIST</span>,
         <span class="ident">ENUM_VARIANT_LIST</span>,
         <span class="ident">USE_TREE_LIST</span>,
         <span class="ident">TYPE_PARAM_LIST</span>,

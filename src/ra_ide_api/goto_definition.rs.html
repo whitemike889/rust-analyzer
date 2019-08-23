@@ -731,7 +731,7 @@
                 <span class="ident">node</span>.<span class="ident">short_label</span>(),
             )
         })
-        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">NamedFieldDef</span><span class="op">|</span> {
+        .<span class="ident">visit</span>(<span class="op">|</span><span class="ident">node</span>: <span class="ident">ast</span>::<span class="ident">RecordFieldDef</span><span class="op">|</span> {
             <span class="ident">NavigationTarget</span>::<span class="ident">from_named</span>(
                 <span class="ident">file_id</span>,
                 <span class="kw-2">&amp;</span><span class="ident">node</span>,
@@ -897,13 +897,13 @@
                 foo.spam&lt;|&gt;;
             }
             &quot;</span>,
-            <span class="string">&quot;spam NAMED_FIELD_DEF FileId(1) [17; 26) [17; 21)&quot;</span>,
+            <span class="string">&quot;spam RECORD_FIELD_DEF FileId(1) [17; 26) [17; 21)&quot;</span>,
         );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">goto_definition_works_for_named_fields</span>() {
-        <span class="macro">covers</span><span class="macro">!</span>(<span class="ident">goto_definition_works_for_named_fields</span>);
+    <span class="kw">fn</span> <span class="ident">goto_definition_works_for_record_fields</span>() {
+        <span class="macro">covers</span><span class="macro">!</span>(<span class="ident">goto_definition_works_for_record_fields</span>);
         <span class="ident">check_goto</span>(
             <span class="string">&quot;
             //- /lib.rs
@@ -917,7 +917,7 @@
                 }
             }
             &quot;</span>,
-            <span class="string">&quot;spam NAMED_FIELD_DEF FileId(1) [17; 26) [17; 21)&quot;</span>,
+            <span class="string">&quot;spam RECORD_FIELD_DEF FileId(1) [17; 26) [17; 21)&quot;</span>,
         );
     }
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -1026,7 +1026,7 @@
                 field&lt;|&gt;: string,
             }
             &quot;#</span>,
-            <span class="string">&quot;field NAMED_FIELD_DEF FileId(1) [17; 30) [17; 22)&quot;</span>,
+            <span class="string">&quot;field RECORD_FIELD_DEF FileId(1) [17; 30) [17; 22)&quot;</span>,
         );
 
         <span class="ident">check_goto</span>(
