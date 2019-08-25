@@ -869,7 +869,7 @@
                 <span class="prelude-val">Err</span>(<span class="ident">RecvError</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;client exited without shutdown&quot;</span>)<span class="question-mark">?</span>,
             },
             <span class="ident">recv</span>(<span class="ident">task_receiver</span>) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Task</span>(<span class="ident">task</span>.<span class="ident">unwrap</span>()),
-            <span class="ident">recv</span>(<span class="ident">state</span>.<span class="ident">vfs</span>.<span class="ident">read</span>().<span class="ident">task_receiver</span>()) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">task</span> {
+            <span class="ident">recv</span>(<span class="ident">state</span>.<span class="ident">task_receiver</span>) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">task</span> {
                 <span class="prelude-val">Ok</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Vfs</span>(<span class="ident">task</span>),
                 <span class="prelude-val">Err</span>(<span class="ident">RecvError</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;vfs died&quot;</span>)<span class="question-mark">?</span>,
             },

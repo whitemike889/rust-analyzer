@@ -256,12 +256,17 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
     <span class="ident">sync</span>::<span class="ident">Arc</span>,
 };
 
+<span class="kw">use</span> <span class="ident">crossbeam_channel</span>::{<span class="ident">unbounded</span>, <span class="ident">Receiver</span>};
 <span class="kw">use</span> <span class="ident">gen_lsp_server</span>::<span class="ident">ErrorCode</span>;
 <span class="kw">use</span> <span class="ident">lsp_types</span>::<span class="ident">Url</span>;
 <span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">RwLock</span>;
@@ -269,7 +274,7 @@
     <span class="ident">Analysis</span>, <span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>, <span class="ident">CrateGraph</span>, <span class="ident">FeatureFlags</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>,
     <span class="ident">SourceRootId</span>,
 };
-<span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">LineEndings</span>, <span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>};
+<span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">LineEndings</span>, <span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>, <span class="ident">VfsTask</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs_glob</span>::{<span class="ident">Glob</span>, <span class="ident">RustPackageFilterBuilder</span>};
 <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 
@@ -298,6 +303,7 @@
     <span class="kw">pub</span> <span class="ident">workspaces</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProjectWorkspace</span><span class="op">&gt;&gt;</span>,
     <span class="kw">pub</span> <span class="ident">analysis_host</span>: <span class="ident">AnalysisHost</span>,
     <span class="kw">pub</span> <span class="ident">vfs</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">Vfs</span><span class="op">&gt;&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">task_receiver</span>: <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">VfsTask</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">latest_requests</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RwLock</span><span class="op">&lt;</span><span class="ident">LatestRequests</span><span class="op">&gt;&gt;</span>,
 }
 
@@ -339,8 +345,9 @@
                 <span class="ident">RootEntry</span>::<span class="ident">new</span>(<span class="ident">pkg_root</span>.<span class="ident">path</span>().<span class="ident">clone</span>(), <span class="ident">filter</span>.<span class="ident">into_vfs_filter</span>())
             }));
         }
-
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">vfs</span>, <span class="ident">vfs_roots</span>) <span class="op">=</span> <span class="ident">Vfs</span>::<span class="ident">new</span>(<span class="ident">roots</span>);
+        <span class="kw">let</span> (<span class="ident">task_sender</span>, <span class="ident">task_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>();
+        <span class="kw">let</span> <span class="ident">task_sender</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">t</span><span class="op">|</span> <span class="ident">task_sender</span>.<span class="ident">send</span>(<span class="ident">t</span>).<span class="ident">unwrap</span>());
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">vfs</span>, <span class="ident">vfs_roots</span>) <span class="op">=</span> <span class="ident">Vfs</span>::<span class="ident">new</span>(<span class="ident">roots</span>, <span class="ident">task_sender</span>);
         <span class="kw">let</span> <span class="ident">roots_to_scan</span> <span class="op">=</span> <span class="ident">vfs_roots</span>.<span class="ident">len</span>();
         <span class="kw">for</span> <span class="ident">r</span> <span class="kw">in</span> <span class="ident">vfs_roots</span> {
             <span class="kw">let</span> <span class="ident">vfs_root_path</span> <span class="op">=</span> <span class="ident">vfs</span>.<span class="ident">root2path</span>(<span class="ident">r</span>);
@@ -368,6 +375,7 @@
             <span class="ident">workspaces</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">workspaces</span>),
             <span class="ident">analysis_host</span>,
             <span class="ident">vfs</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">RwLock</span>::<span class="ident">new</span>(<span class="ident">vfs</span>)),
+            <span class="ident">task_receiver</span>,
             <span class="ident">latest_requests</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
         }
     }
