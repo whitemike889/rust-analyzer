@@ -3821,6 +3821,41 @@
 <span id="3821">3821</span>
 <span id="3822">3822</span>
 <span id="3823">3823</span>
+<span id="3824">3824</span>
+<span id="3825">3825</span>
+<span id="3826">3826</span>
+<span id="3827">3827</span>
+<span id="3828">3828</span>
+<span id="3829">3829</span>
+<span id="3830">3830</span>
+<span id="3831">3831</span>
+<span id="3832">3832</span>
+<span id="3833">3833</span>
+<span id="3834">3834</span>
+<span id="3835">3835</span>
+<span id="3836">3836</span>
+<span id="3837">3837</span>
+<span id="3838">3838</span>
+<span id="3839">3839</span>
+<span id="3840">3840</span>
+<span id="3841">3841</span>
+<span id="3842">3842</span>
+<span id="3843">3843</span>
+<span id="3844">3844</span>
+<span id="3845">3845</span>
+<span id="3846">3846</span>
+<span id="3847">3847</span>
+<span id="3848">3848</span>
+<span id="3849">3849</span>
+<span id="3850">3850</span>
+<span id="3851">3851</span>
+<span id="3852">3852</span>
+<span id="3853">3853</span>
+<span id="3854">3854</span>
+<span id="3855">3855</span>
+<span id="3856">3856</span>
+<span id="3857">3857</span>
+<span id="3858">3858</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Generated file, do not edit by hand, see `crate/ra_tools/src/codegen`</span>
 
@@ -4127,6 +4162,33 @@
 }
 <span class="kw">impl</span> <span class="ident">BlockExpr</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
+        <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()
+    }
+}
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BoxPat</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
+}
+<span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">BoxPat</span> {
+    <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="ident">BOX_PAT</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">can_cast</span>(<span class="ident">syntax</span>.<span class="ident">kind</span>()) {
+            <span class="prelude-val">Some</span>(<span class="self">Self</span> { <span class="ident">syntax</span> })
+        } <span class="kw">else</span> {
+            <span class="prelude-val">None</span>
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
+    }
+}
+<span class="kw">impl</span> <span class="ident">BoxPat</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Pat</span><span class="op">&gt;</span> {
         <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()
     }
 }
@@ -5887,6 +5949,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Pat</span> {
     <span class="ident">RefPat</span>(<span class="ident">RefPat</span>),
+    <span class="ident">BoxPat</span>(<span class="ident">BoxPat</span>),
     <span class="ident">BindPat</span>(<span class="ident">BindPat</span>),
     <span class="ident">PlaceholderPat</span>(<span class="ident">PlaceholderPat</span>),
     <span class="ident">PathPat</span>(<span class="ident">PathPat</span>),
@@ -5900,6 +5963,11 @@
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RefPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">RefPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
         <span class="ident">Pat</span>::<span class="ident">RefPat</span>(<span class="ident">node</span>)
+    }
+}
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BoxPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">node</span>: <span class="ident">BoxPat</span>) <span class="op">-&gt;</span> <span class="ident">Pat</span> {
+        <span class="ident">Pat</span>::<span class="ident">BoxPat</span>(<span class="ident">node</span>)
     }
 }
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BindPat</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pat</span> {
@@ -5950,14 +6018,15 @@
 <span class="kw">impl</span> <span class="ident">AstNode</span> <span class="kw">for</span> <span class="ident">Pat</span> {
     <span class="kw">fn</span> <span class="ident">can_cast</span>(<span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">REF_PAT</span> <span class="op">|</span> <span class="ident">BIND_PAT</span> <span class="op">|</span> <span class="ident">PLACEHOLDER_PAT</span> <span class="op">|</span> <span class="ident">PATH_PAT</span> <span class="op">|</span> <span class="ident">RECORD_PAT</span> <span class="op">|</span> <span class="ident">TUPLE_STRUCT_PAT</span>
-            <span class="op">|</span> <span class="ident">TUPLE_PAT</span> <span class="op">|</span> <span class="ident">SLICE_PAT</span> <span class="op">|</span> <span class="ident">RANGE_PAT</span> <span class="op">|</span> <span class="ident">LITERAL_PAT</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+            <span class="ident">REF_PAT</span> <span class="op">|</span> <span class="ident">BOX_PAT</span> <span class="op">|</span> <span class="ident">BIND_PAT</span> <span class="op">|</span> <span class="ident">PLACEHOLDER_PAT</span> <span class="op">|</span> <span class="ident">PATH_PAT</span> <span class="op">|</span> <span class="ident">RECORD_PAT</span>
+            <span class="op">|</span> <span class="ident">TUPLE_STRUCT_PAT</span> <span class="op">|</span> <span class="ident">TUPLE_PAT</span> <span class="op">|</span> <span class="ident">SLICE_PAT</span> <span class="op">|</span> <span class="ident">RANGE_PAT</span> <span class="op">|</span> <span class="ident">LITERAL_PAT</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
         }
     }
     <span class="kw">fn</span> <span class="ident">cast</span>(<span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">syntax</span>.<span class="ident">kind</span>() {
             <span class="ident">REF_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">RefPat</span>(<span class="ident">RefPat</span> { <span class="ident">syntax</span> }),
+            <span class="ident">BOX_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">BoxPat</span>(<span class="ident">BoxPat</span> { <span class="ident">syntax</span> }),
             <span class="ident">BIND_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">BindPat</span>(<span class="ident">BindPat</span> { <span class="ident">syntax</span> }),
             <span class="ident">PLACEHOLDER_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">PlaceholderPat</span>(<span class="ident">PlaceholderPat</span> { <span class="ident">syntax</span> }),
             <span class="ident">PATH_PAT</span> <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">PathPat</span>(<span class="ident">PathPat</span> { <span class="ident">syntax</span> }),
@@ -5974,6 +6043,7 @@
     <span class="kw">fn</span> <span class="ident">syntax</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">SyntaxNode</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">Pat</span>::<span class="ident">RefPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
+            <span class="ident">Pat</span>::<span class="ident">BoxPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
             <span class="ident">Pat</span>::<span class="ident">BindPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
             <span class="ident">Pat</span>::<span class="ident">PlaceholderPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,
             <span class="ident">Pat</span>::<span class="ident">PathPat</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">it</span>.<span class="ident">syntax</span>,

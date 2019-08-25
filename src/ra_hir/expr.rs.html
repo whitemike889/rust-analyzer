@@ -1162,6 +1162,7 @@
 <span id="1162">1162</span>
 <span id="1163">1163</span>
 <span id="1164">1164</span>
+<span id="1165">1165</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -2185,6 +2186,7 @@
             }
 
             <span class="comment">// FIXME: implement</span>
+            <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">BoxPat</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">Missing</span>,
             <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">LiteralPat</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">Missing</span>,
             <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">SlicePat</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">ast</span>::<span class="ident">Pat</span>::<span class="ident">RangePat</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">Pat</span>::<span class="ident">Missing</span>,
         };
