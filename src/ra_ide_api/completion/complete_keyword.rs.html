@@ -865,7 +865,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">do_completion</span>, <span class="ident">CompletionItem</span>, <span class="ident">CompletionKind</span>};
-    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot</span>;
 
     <span class="kw">fn</span> <span class="ident">do_keyword_completion</span>(<span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompletionItem</span><span class="op">&gt;</span> {
         <span class="ident">do_completion</span>(<span class="ident">code</span>, <span class="ident">CompletionKind</span>::<span class="ident">Keyword</span>)
@@ -873,7 +873,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_keywords_in_use_stmt</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 use &lt;|&gt;
@@ -904,7 +904,7 @@
 ]&quot;###</span>
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 use a::&lt;|&gt;
@@ -928,7 +928,7 @@
 ]&quot;###</span>
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 use a::{b, &lt;|&gt;}
@@ -955,7 +955,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_various_keywords_in_function</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() {
@@ -1005,7 +1005,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_else_after_if</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() {
@@ -1071,7 +1071,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_completion_return_value</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() -&gt; i32 {
@@ -1118,7 +1118,7 @@
     },
 ]&quot;###</span>
         );
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() {
@@ -1169,7 +1169,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">dont_add_semi_after_return_if_not_a_statement</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() -&gt; i32 {
@@ -1221,7 +1221,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">last_return_in_block_has_semi</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() -&gt; i32 {
@@ -1269,7 +1269,7 @@
     },
 ]&quot;###</span>
         );
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() -&gt; i32 {
@@ -1323,7 +1323,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_break_and_continue_in_loops</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() -&gt; i32 {
@@ -1385,7 +1385,7 @@
         );
 
         <span class="comment">// No completion: lambda isolates control flow</span>
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn quux() -&gt; i32 {
@@ -1435,7 +1435,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">no_semi_after_break_continue_in_expr</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_keyword_completion</span>(
                 <span class="string">r&quot;
                 fn f() {

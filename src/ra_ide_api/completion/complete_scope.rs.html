@@ -656,7 +656,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">do_completion</span>, <span class="ident">CompletionItem</span>, <span class="ident">CompletionKind</span>};
-    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot</span>;
 
     <span class="kw">fn</span> <span class="ident">do_reference_completion</span>(<span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompletionItem</span><span class="op">&gt;</span> {
         <span class="ident">do_completion</span>(<span class="ident">code</span>, <span class="ident">CompletionKind</span>::<span class="ident">Reference</span>)
@@ -664,7 +664,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_bindings_from_let</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 fn quux(x: i32) {
@@ -705,7 +705,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_bindings_from_if_let</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 fn quux() {
@@ -749,7 +749,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_bindings_from_for</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 fn quux() {
@@ -781,7 +781,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_generic_params</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 fn quux&lt;T&gt;() {
@@ -811,7 +811,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_generic_params_in_struct</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 struct X&lt;T&gt; {
@@ -840,7 +840,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_module_items</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_reference_completion</span>(
             <span class="string">r&quot;
                 struct Foo;
@@ -879,7 +879,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_extern_prelude</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 //- /lib.rs
@@ -903,7 +903,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_module_items_in_nested_modules</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 struct Foo;
@@ -935,7 +935,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_return_type</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 struct Foo;
@@ -964,7 +964,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">dont_show_both_completions_for_shadowing</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 fn foo() {
@@ -999,7 +999,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_self_in_methods</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(<span class="string">r&quot;impl S { fn foo(&amp;self) { &lt;|&gt; } }&quot;</span>),
             @<span class="string">r#&quot;[
     CompletionItem {
@@ -1023,7 +1023,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_prelude</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /main.rs

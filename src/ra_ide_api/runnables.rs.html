@@ -303,7 +303,7 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">mock_analysis</span>::<span class="ident">analysis_and_position</span>;
 
@@ -324,7 +324,7 @@
         &quot;#</span>,
         );
         <span class="kw">let</span> <span class="ident">runnables</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">runnables</span>(<span class="ident">pos</span>.<span class="ident">file_id</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
         @<span class="string">r#&quot;[
     Runnable {
         range: [1; 21),
@@ -359,7 +359,7 @@
         &quot;#</span>,
         );
         <span class="kw">let</span> <span class="ident">runnables</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">runnables</span>(<span class="ident">pos</span>.<span class="ident">file_id</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
         @<span class="string">r#&quot;[
     Runnable {
         range: [1; 59),
@@ -392,7 +392,7 @@
         &quot;#</span>,
         );
         <span class="kw">let</span> <span class="ident">runnables</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">runnables</span>(<span class="ident">pos</span>.<span class="ident">file_id</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
         @<span class="string">r#&quot;[
     Runnable {
         range: [23; 85),
@@ -427,7 +427,7 @@
         &quot;#</span>,
         );
         <span class="kw">let</span> <span class="ident">runnables</span> <span class="op">=</span> <span class="ident">analysis</span>.<span class="ident">runnables</span>(<span class="ident">pos</span>.<span class="ident">file_id</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">runnables</span>,
         @<span class="string">r#&quot;[
     Runnable {
         range: [41; 115),

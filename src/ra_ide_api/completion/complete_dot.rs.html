@@ -527,7 +527,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">do_completion</span>, <span class="ident">CompletionItem</span>, <span class="ident">CompletionKind</span>};
-    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot</span>;
 
     <span class="kw">fn</span> <span class="ident">do_ref_completion</span>(<span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompletionItem</span><span class="op">&gt;</span> {
         <span class="ident">do_completion</span>(<span class="ident">code</span>, <span class="ident">CompletionKind</span>::<span class="ident">Reference</span>)
@@ -535,7 +535,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_struct_field_completion</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
                 <span class="string">r&quot;
                 struct A { the_field: u32 }
@@ -561,7 +561,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_struct_field_completion_self</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A {
@@ -603,7 +603,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_struct_field_completion_autoderef</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A { the_field: (u32, i32) }
@@ -639,7 +639,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_no_struct_field_completion_for_method_call</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A { the_field: u32 }
@@ -654,7 +654,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_method_completion</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A {}
@@ -683,7 +683,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_trait_method_completion</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_ref_completion</span>(
                 <span class="string">r&quot;
             struct A {}
@@ -711,7 +711,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_trait_method_completion_deduplicated</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_ref_completion</span>(
                 <span class="string">r&quot;
             struct A {}
@@ -739,7 +739,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_no_non_self_method</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A {}
@@ -757,7 +757,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_method_attr_filtering</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A {}
@@ -790,7 +790,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_tuple_field_completion</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             fn foo() {
@@ -824,7 +824,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_tuple_field_inference</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             pub struct S;
@@ -859,7 +859,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_completion_works_in_consts</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_ref_completion</span>(
             <span class="string">r&quot;
             struct A { the_field: u32 }
@@ -885,7 +885,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_completion_await_impls_future</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
         <span class="ident">do_completion</span>(
             <span class="string">r###&quot;
             //- /main.rs

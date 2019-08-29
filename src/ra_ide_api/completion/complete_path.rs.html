@@ -670,7 +670,7 @@
     <span class="kw">use</span> <span class="ident">test_utils</span>::<span class="ident">covers</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">completion</span>::{<span class="ident">do_completion</span>, <span class="ident">CompletionItem</span>, <span class="ident">CompletionKind</span>};
-    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot</span>;
 
     <span class="kw">fn</span> <span class="ident">do_reference_completion</span>(<span class="ident">code</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompletionItem</span><span class="op">&gt;</span> {
         <span class="ident">do_completion</span>(<span class="ident">code</span>, <span class="ident">CompletionKind</span>::<span class="ident">Reference</span>)
@@ -711,7 +711,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_mod_with_docs</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 use self::my&lt;|&gt;;
@@ -740,7 +740,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_use_item_starting_with_self</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">r&quot;
                 use self::m::&lt;|&gt;;
@@ -764,7 +764,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_use_item_starting_with_crate</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -795,7 +795,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_nested_use_tree</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -826,7 +826,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_deeply_nested_use_tree</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -854,7 +854,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_enum_variant</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -897,7 +897,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_enum_variant_with_details</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -954,7 +954,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_struct_associated_method</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -987,7 +987,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_struct_associated_const</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -1020,7 +1020,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_struct_associated_type</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -1053,7 +1053,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_enum_associated_method</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -1086,7 +1086,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_union_associated_method</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /lib.rs
@@ -1119,7 +1119,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_use_paths_across_crates</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 //- /main.rs
@@ -1145,7 +1145,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">completes_type_alias</span>() {
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(
             <span class="ident">do_reference_completion</span>(
                 <span class="string">&quot;
                 struct S;

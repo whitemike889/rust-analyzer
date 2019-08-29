@@ -671,7 +671,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">mock_analysis</span>::<span class="ident">single_file</span>;
-    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot_matches</span>;
+    <span class="kw">use</span> <span class="ident">insta</span>::<span class="ident">assert_debug_snapshot</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">let_statement</span>() {
@@ -712,7 +712,7 @@ fn main() {
 }&quot;#</span>,
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
     InlayHint {
         range: [193; 197),
         kind: TypeHint,
@@ -779,7 +779,7 @@ fn main() {
 }&quot;#</span>,
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
     InlayHint {
         range: [21; 30),
         kind: TypeHint,
@@ -806,7 +806,7 @@ fn main() {
 }&quot;#</span>,
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
     InlayHint {
         range: [21; 30),
         kind: TypeHint,
@@ -852,7 +852,7 @@ fn main() {
 }&quot;#</span>,
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
     InlayHint {
         range: [166; 170),
         kind: TypeHint,
@@ -913,7 +913,7 @@ fn main() {
 }&quot;#</span>,
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r###&quot;
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r###&quot;
        ⋮[
        ⋮    InlayHint {
        ⋮        range: [166; 170),
@@ -976,7 +976,7 @@ fn main() {
 }&quot;#</span>,
         );
 
-        <span class="macro">assert_debug_snapshot_matches</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
+        <span class="macro">assert_debug_snapshot</span><span class="macro">!</span>(<span class="ident">analysis</span>.<span class="ident">inlay_hints</span>(<span class="ident">file_id</span>).<span class="ident">unwrap</span>(), @<span class="string">r#&quot;[
     InlayHint {
         range: [311; 315),
         kind: TypeHint,
