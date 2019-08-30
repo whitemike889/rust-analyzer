@@ -1,5 +1,4 @@
 var ALIASES = {};
-ALIASES["gen_lsp_server"] = {};
 ALIASES["pre_commit"] = {};
 ALIASES["ra_arena"] = {};
 ALIASES["ra_assists"] = {};

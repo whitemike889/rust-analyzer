@@ -1,5 +1,4 @@
 var N = null;var sourcesIndex = {};
-sourcesIndex["gen_lsp_server"] = {"name":"","files":["lib.rs","msg.rs","stdio.rs"]};
 sourcesIndex["pre_commit"] = {"name":"","files":["pre-commit.rs"]};
 sourcesIndex["ra_arena"] = {"name":"","files":["lib.rs","map.rs"]};
 sourcesIndex["ra_assists"] = {"name":"","files":["add_derive.rs","add_explicit_type.rs","add_impl.rs","add_missing_impl_members.rs","assist_ctx.rs","ast_editor.rs","auto_import.rs","change_visibility.rs","fill_match_arms.rs","flip_binexpr.rs","flip_comma.rs","inline_local_variable.rs","introduce_variable.rs","lib.rs","marks.rs","merge_match_arms.rs","move_guard.rs","remove_dbg.rs","replace_if_let_with_match.rs","split_import.rs"]};
