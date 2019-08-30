@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Worker","A wrapper around event-processing thread with automatic shutdown semantics."]]});
