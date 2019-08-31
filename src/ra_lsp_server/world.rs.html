@@ -260,6 +260,7 @@
 <span id="260">260</span>
 <span id="261">261</span>
 <span id="262">262</span>
+<span id="263">263</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -274,13 +275,13 @@
     <span class="ident">Analysis</span>, <span class="ident">AnalysisChange</span>, <span class="ident">AnalysisHost</span>, <span class="ident">CrateGraph</span>, <span class="ident">FeatureFlags</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>,
     <span class="ident">SourceRootId</span>,
 };
+<span class="kw">use</span> <span class="ident">ra_project_model</span>::<span class="ident">ProjectWorkspace</span>;
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::{<span class="ident">LineEndings</span>, <span class="ident">RootEntry</span>, <span class="ident">Vfs</span>, <span class="ident">VfsChange</span>, <span class="ident">VfsFile</span>, <span class="ident">VfsRoot</span>, <span class="ident">VfsTask</span>};
 <span class="kw">use</span> <span class="ident">ra_vfs_glob</span>::{<span class="ident">Glob</span>, <span class="ident">RustPackageFilterBuilder</span>};
 <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">main_loop</span>::<span class="ident">pending_requests</span>::{<span class="ident">CompletedRequest</span>, <span class="ident">LatestRequests</span>},
-    <span class="ident">project_model</span>::<span class="ident">ProjectWorkspace</span>,
     <span class="ident">LspError</span>, <span class="prelude-ty">Result</span>,
 };
 
@@ -298,6 +299,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WorldState</span> {
     <span class="kw">pub</span> <span class="ident">options</span>: <span class="ident">Options</span>,
+    <span class="comment">//FIXME: this belongs to `LoopState` rather than to `WorldState`</span>
     <span class="kw">pub</span> <span class="ident">roots_to_scan</span>: <span class="ident">usize</span>,
     <span class="kw">pub</span> <span class="ident">roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">workspaces</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProjectWorkspace</span><span class="op">&gt;&gt;</span>,

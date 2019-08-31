@@ -657,6 +657,31 @@
 <span id="657">657</span>
 <span id="658">658</span>
 <span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
+<span id="674">674</span>
+<span id="675">675</span>
+<span id="676">676</span>
+<span id="677">677</span>
+<span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">handlers</span>;
 <span class="kw">mod</span> <span class="ident">subscriptions</span>;
@@ -664,12 +689,13 @@
 
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error</span>::<span class="ident">Error</span>, <span class="ident">fmt</span>, <span class="ident">path</span>::<span class="ident">PathBuf</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>::<span class="ident">Instant</span>};
 
-<span class="kw">use</span> <span class="ident">crossbeam_channel</span>::{<span class="ident">select</span>, <span class="ident">unbounded</span>, <span class="ident">Receiver</span>, <span class="ident">RecvError</span>, <span class="ident">Sender</span>};
+<span class="kw">use</span> <span class="ident">crossbeam_channel</span>::{<span class="ident">select</span>, <span class="ident">unbounded</span>, <span class="ident">RecvError</span>, <span class="ident">Sender</span>};
 <span class="kw">use</span> <span class="ident">lsp_server</span>::{<span class="ident">Connection</span>, <span class="ident">ErrorCode</span>, <span class="ident">Message</span>, <span class="ident">Notification</span>, <span class="ident">Request</span>, <span class="ident">RequestId</span>, <span class="ident">Response</span>};
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{<span class="ident">ClientCapabilities</span>, <span class="ident">NumberOrString</span>};
-<span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">Canceled</span>, <span class="ident">FeatureFlags</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>};
+<span class="kw">use</span> <span class="ident">ra_ide_api</span>::{<span class="ident">Canceled</span>, <span class="ident">FeatureFlags</span>, <span class="ident">FileId</span>, <span class="ident">LibraryData</span>, <span class="ident">SourceRootId</span>};
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_vfs</span>::<span class="ident">VfsTask</span>;
+<span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>::<span class="ident">DeserializeOwned</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">threadpool</span>::<span class="ident">ThreadPool</span>;
 
@@ -678,7 +704,6 @@
         <span class="ident">pending_requests</span>::{<span class="ident">PendingRequest</span>, <span class="ident">PendingRequests</span>},
         <span class="ident">subscriptions</span>::<span class="ident">Subscriptions</span>,
     },
-    <span class="ident">project_model</span>::<span class="ident">workspace_loader</span>,
     <span class="ident">req</span>,
     <span class="ident">world</span>::{<span class="ident">Options</span>, <span class="ident">WorldSnapshot</span>, <span class="ident">WorldState</span>},
     <span class="prelude-ty">Result</span>, <span class="ident">ServerConfig</span>,
@@ -714,14 +739,17 @@
     <span class="ident">connection</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;server_config: {:#?}&quot;</span>, <span class="ident">config</span>);
+
     <span class="comment">// FIXME: support dynamic workspace loading.</span>
     <span class="kw">let</span> <span class="ident">workspaces</span> <span class="op">=</span> {
-        <span class="kw">let</span> <span class="ident">ws_worker</span> <span class="op">=</span> <span class="ident">workspace_loader</span>(<span class="ident">config</span>.<span class="ident">with_sysroot</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">loaded_workspaces</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="ident">ws_root</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">ws_roots</span> {
-            <span class="ident">ws_worker</span>.<span class="ident">sender</span>().<span class="ident">send</span>(<span class="ident">ws_root</span>.<span class="ident">clone</span>()).<span class="ident">unwrap</span>();
-            <span class="kw">match</span> <span class="ident">ws_worker</span>.<span class="ident">receiver</span>().<span class="ident">recv</span>().<span class="ident">unwrap</span>() {
-                <span class="prelude-val">Ok</span>(<span class="ident">ws</span>) <span class="op">=&gt;</span> <span class="ident">loaded_workspaces</span>.<span class="ident">push</span>(<span class="ident">ws</span>),
+            <span class="kw">let</span> <span class="ident">workspace</span> <span class="op">=</span> <span class="ident">ra_project_model</span>::<span class="ident">ProjectWorkspace</span>::<span class="ident">discover_with_sysroot</span>(
+                <span class="ident">ws_root</span>.<span class="ident">as_path</span>(),
+                <span class="ident">config</span>.<span class="ident">with_sysroot</span>,
+            );
+            <span class="kw">match</span> <span class="ident">workspace</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">workspace</span>) <span class="op">=&gt;</span> <span class="ident">loaded_workspaces</span>.<span class="ident">push</span>(<span class="ident">workspace</span>),
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
                     <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;loading workspace failed: {}&quot;</span>, <span class="ident">e</span>);
 
@@ -735,11 +763,13 @@
         }
         <span class="ident">loaded_workspaces</span>
     };
+
     <span class="kw">let</span> <span class="ident">globs</span> <span class="op">=</span> <span class="ident">config</span>
         .<span class="ident">exclude_globs</span>
         .<span class="ident">iter</span>()
         .<span class="ident">map</span>(<span class="op">|</span><span class="ident">glob</span><span class="op">|</span> <span class="ident">ra_vfs_glob</span>::<span class="ident">Glob</span>::<span class="ident">new</span>(<span class="ident">glob</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;&gt;</span>()<span class="question-mark">?</span>;
+
     <span class="kw">let</span> <span class="ident">feature_flags</span> <span class="op">=</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ff</span> <span class="op">=</span> <span class="ident">FeatureFlags</span>::<span class="ident">default</span>();
         <span class="kw">for</span> (<span class="ident">flag</span>, <span class="ident">value</span>) <span class="kw">in</span> <span class="ident">config</span>.<span class="ident">feature_flags</span> {
@@ -755,7 +785,8 @@
         <span class="ident">ff</span>
     };
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;feature_flags: {:#?}&quot;</span>, <span class="ident">feature_flags</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">world_state</span> <span class="op">=</span> <span class="ident">WorldState</span>::<span class="ident">new</span>(
         <span class="ident">ws_roots</span>,
         <span class="ident">workspaces</span>,
         <span class="ident">config</span>.<span class="ident">lru_capacity</span>,
@@ -773,31 +804,58 @@
 
     <span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">ThreadPool</span>::<span class="ident">new</span>(<span class="ident">THREADPOOL_SIZE</span>);
     <span class="kw">let</span> (<span class="ident">task_sender</span>, <span class="ident">task_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>::<span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pending_requests</span> <span class="op">=</span> <span class="ident">PendingRequests</span>::<span class="ident">default</span>();
+    <span class="kw">let</span> (<span class="ident">libdata_sender</span>, <span class="ident">libdata_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>::<span class="op">&lt;</span><span class="ident">LibraryData</span><span class="op">&gt;</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">loop_state</span> <span class="op">=</span> <span class="ident">LoopState</span>::<span class="ident">default</span>();
 
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;server initialized, serving requests&quot;</span>);
-    <span class="kw">let</span> <span class="ident">main_res</span> <span class="op">=</span> <span class="ident">main_loop_inner</span>(
-        <span class="kw-2">&amp;</span><span class="ident">pool</span>,
-        <span class="ident">connection</span>,
-        <span class="ident">task_sender</span>,
-        <span class="ident">task_receiver</span>.<span class="ident">clone</span>(),
-        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>,
-        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pending_requests</span>,
-    );
+    {
+        <span class="kw">let</span> <span class="ident">task_sender</span> <span class="op">=</span> <span class="ident">task_sender</span>;
+        <span class="kw">let</span> <span class="ident">libdata_sender</span> <span class="op">=</span> <span class="ident">libdata_sender</span>;
+        <span class="kw">loop</span> {
+            <span class="ident">log</span>::<span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;selecting&quot;</span>);
+            <span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="macro">select</span><span class="macro">!</span> {
+                <span class="ident">recv</span>(<span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">receiver</span>) <span class="op">-&gt;</span> <span class="ident">msg</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
+                    <span class="prelude-val">Ok</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Msg</span>(<span class="ident">msg</span>),
+                    <span class="prelude-val">Err</span>(<span class="ident">RecvError</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;client exited without shutdown&quot;</span>)<span class="question-mark">?</span>,
+                },
+                <span class="ident">recv</span>(<span class="ident">task_receiver</span>) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Task</span>(<span class="ident">task</span>.<span class="ident">unwrap</span>()),
+                <span class="ident">recv</span>(<span class="ident">world_state</span>.<span class="ident">task_receiver</span>) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">task</span> {
+                    <span class="prelude-val">Ok</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Vfs</span>(<span class="ident">task</span>),
+                    <span class="prelude-val">Err</span>(<span class="ident">RecvError</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;vfs died&quot;</span>)<span class="question-mark">?</span>,
+                },
+                <span class="ident">recv</span>(<span class="ident">libdata_receiver</span>) <span class="op">-&gt;</span> <span class="ident">data</span> <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Lib</span>(<span class="ident">data</span>.<span class="ident">unwrap</span>())
+            };
+            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Event</span>::<span class="ident">Msg</span>(<span class="ident">Message</span>::<span class="ident">Request</span>(<span class="ident">req</span>)) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">event</span> {
+                <span class="kw">if</span> <span class="ident">connection</span>.<span class="ident">handle_shutdown</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>)<span class="question-mark">?</span> {
+                    <span class="kw">break</span>;
+                };
+            }
+            <span class="ident">loop_turn</span>(
+                <span class="kw-2">&amp;</span><span class="ident">pool</span>,
+                <span class="kw-2">&amp;</span><span class="ident">task_sender</span>,
+                <span class="kw-2">&amp;</span><span class="ident">libdata_sender</span>,
+                <span class="ident">connection</span>,
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">world_state</span>,
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">loop_state</span>,
+                <span class="ident">event</span>,
+            )<span class="question-mark">?</span>;
+        }
+    }
 
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;waiting for tasks to finish...&quot;</span>);
-    <span class="ident">task_receiver</span>
-        .<span class="ident">into_iter</span>()
-        .<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">task</span><span class="op">|</span> <span class="ident">on_task</span>(<span class="ident">task</span>, <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">pending_requests</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>));
+    <span class="ident">task_receiver</span>.<span class="ident">into_iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">task</span><span class="op">|</span> {
+        <span class="ident">on_task</span>(<span class="ident">task</span>, <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">loop_state</span>.<span class="ident">pending_requests</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">world_state</span>)
+    });
+    <span class="ident">libdata_receiver</span>.<span class="ident">into_iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">lib</span><span class="op">|</span> <span class="ident">drop</span>(<span class="ident">lib</span>));
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;...tasks have finished&quot;</span>);
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;joining threadpool...&quot;</span>);
     <span class="ident">drop</span>(<span class="ident">pool</span>);
     <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;...threadpool has finished&quot;</span>);
 
-    <span class="kw">let</span> <span class="ident">vfs</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">try_unwrap</span>(<span class="ident">state</span>.<span class="ident">vfs</span>).<span class="ident">expect</span>(<span class="string">&quot;all snapshots should be dead&quot;</span>);
+    <span class="kw">let</span> <span class="ident">vfs</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">try_unwrap</span>(<span class="ident">world_state</span>.<span class="ident">vfs</span>).<span class="ident">expect</span>(<span class="string">&quot;all snapshots should be dead&quot;</span>);
     <span class="ident">drop</span>(<span class="ident">vfs</span>);
 
-    <span class="ident">main_res</span>
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
@@ -852,121 +910,113 @@
     }
 }
 
-<span class="kw">fn</span> <span class="ident">main_loop_inner</span>(
-    <span class="ident">pool</span>: <span class="kw-2">&amp;</span><span class="ident">ThreadPool</span>,
-    <span class="ident">connection</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>,
-    <span class="ident">task_sender</span>: <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
-    <span class="ident">task_receiver</span>: <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
-    <span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WorldState</span>,
-    <span class="ident">pending_requests</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PendingRequests</span>,
-) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">subs</span> <span class="op">=</span> <span class="ident">Subscriptions</span>::<span class="ident">default</span>();
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
+<span class="kw">struct</span> <span class="ident">LoopState</span> {
+    <span class="ident">pending_requests</span>: <span class="ident">PendingRequests</span>,
+    <span class="ident">subscriptions</span>: <span class="ident">Subscriptions</span>,
     <span class="comment">// We try not to index more than MAX_IN_FLIGHT_LIBS libraries at the same</span>
     <span class="comment">// time to always have a thread ready to react to input.</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">in_flight_libraries</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pending_libraries</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">send_workspace_notification</span> <span class="op">=</span> <span class="bool-val">true</span>;
+    <span class="ident">in_flight_libraries</span>: <span class="ident">usize</span>,
+    <span class="ident">pending_libraries</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SourceRootId</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">FileId</span>, <span class="ident">RelativePathBuf</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>)<span class="op">&gt;</span>)<span class="op">&gt;</span>,
+    <span class="ident">workspace_loaded</span>: <span class="ident">bool</span>,
+}
 
-    <span class="kw">let</span> (<span class="ident">libdata_sender</span>, <span class="ident">libdata_receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>();
-    <span class="kw">loop</span> {
-        <span class="ident">log</span>::<span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;selecting&quot;</span>);
-        <span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="macro">select</span><span class="macro">!</span> {
-            <span class="ident">recv</span>(<span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">receiver</span>) <span class="op">-&gt;</span> <span class="ident">msg</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                <span class="prelude-val">Ok</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Msg</span>(<span class="ident">msg</span>),
-                <span class="prelude-val">Err</span>(<span class="ident">RecvError</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;client exited without shutdown&quot;</span>)<span class="question-mark">?</span>,
-            },
-            <span class="ident">recv</span>(<span class="ident">task_receiver</span>) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Task</span>(<span class="ident">task</span>.<span class="ident">unwrap</span>()),
-            <span class="ident">recv</span>(<span class="ident">state</span>.<span class="ident">task_receiver</span>) <span class="op">-&gt;</span> <span class="ident">task</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">task</span> {
-                <span class="prelude-val">Ok</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Vfs</span>(<span class="ident">task</span>),
-                <span class="prelude-val">Err</span>(<span class="ident">RecvError</span>) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="string">&quot;vfs died&quot;</span>)<span class="question-mark">?</span>,
-            },
-            <span class="ident">recv</span>(<span class="ident">libdata_receiver</span>) <span class="op">-&gt;</span> <span class="ident">data</span> <span class="op">=&gt;</span> <span class="ident">Event</span>::<span class="ident">Lib</span>(<span class="ident">data</span>.<span class="ident">unwrap</span>())
-        };
-        <span class="kw">let</span> <span class="ident">loop_start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
+<span class="kw">fn</span> <span class="ident">loop_turn</span>(
+    <span class="ident">pool</span>: <span class="kw-2">&amp;</span><span class="ident">ThreadPool</span>,
+    <span class="ident">task_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">Task</span><span class="op">&gt;</span>,
+    <span class="ident">libdata_sender</span>: <span class="kw-2">&amp;</span><span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">LibraryData</span><span class="op">&gt;</span>,
+    <span class="ident">connection</span>: <span class="kw-2">&amp;</span><span class="ident">Connection</span>,
+    <span class="ident">world_state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">WorldState</span>,
+    <span class="ident">loop_state</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">LoopState</span>,
+    <span class="ident">event</span>: <span class="ident">Event</span>,
+) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">loop_start</span> <span class="op">=</span> <span class="ident">Instant</span>::<span class="ident">now</span>();
 
-        <span class="comment">// NOTE: don&#39;t count blocking select! call as a loop-turn time</span>
-        <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;main_loop_inner/loop-turn&quot;</span>);
-        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;loop turn = {:?}&quot;</span>, <span class="ident">event</span>);
-        <span class="kw">let</span> <span class="ident">queue_count</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">queued_count</span>();
-        <span class="kw">if</span> <span class="ident">queue_count</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;queued count = {}&quot;</span>, <span class="ident">queue_count</span>);
+    <span class="comment">// NOTE: don&#39;t count blocking select! call as a loop-turn time</span>
+    <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="string">&quot;main_loop_inner/loop-turn&quot;</span>);
+    <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;loop turn = {:?}&quot;</span>, <span class="ident">event</span>);
+    <span class="kw">let</span> <span class="ident">queue_count</span> <span class="op">=</span> <span class="ident">pool</span>.<span class="ident">queued_count</span>();
+    <span class="kw">if</span> <span class="ident">queue_count</span> <span class="op">&gt;</span> <span class="number">0</span> {
+        <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;queued count = {}&quot;</span>, <span class="ident">queue_count</span>);
+    }
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state_changed</span> <span class="op">=</span> <span class="bool-val">false</span>;
+    <span class="kw">match</span> <span class="ident">event</span> {
+        <span class="ident">Event</span>::<span class="ident">Task</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> {
+            <span class="ident">on_task</span>(<span class="ident">task</span>, <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">loop_state</span>.<span class="ident">pending_requests</span>, <span class="ident">world_state</span>);
+            <span class="ident">world_state</span>.<span class="ident">maybe_collect_garbage</span>();
         }
-
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state_changed</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        <span class="kw">match</span> <span class="ident">event</span> {
-            <span class="ident">Event</span>::<span class="ident">Task</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> {
-                <span class="ident">on_task</span>(<span class="ident">task</span>, <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>, <span class="ident">pending_requests</span>, <span class="ident">state</span>);
-                <span class="ident">state</span>.<span class="ident">maybe_collect_garbage</span>();
-            }
-            <span class="ident">Event</span>::<span class="ident">Vfs</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> {
-                <span class="ident">state</span>.<span class="ident">vfs</span>.<span class="ident">write</span>().<span class="ident">handle_task</span>(<span class="ident">task</span>);
+        <span class="ident">Event</span>::<span class="ident">Vfs</span>(<span class="ident">task</span>) <span class="op">=&gt;</span> {
+            <span class="ident">world_state</span>.<span class="ident">vfs</span>.<span class="ident">write</span>().<span class="ident">handle_task</span>(<span class="ident">task</span>);
+            <span class="ident">state_changed</span> <span class="op">=</span> <span class="bool-val">true</span>;
+        }
+        <span class="ident">Event</span>::<span class="ident">Lib</span>(<span class="ident">lib</span>) <span class="op">=&gt;</span> {
+            <span class="ident">world_state</span>.<span class="ident">add_lib</span>(<span class="ident">lib</span>);
+            <span class="ident">world_state</span>.<span class="ident">maybe_collect_garbage</span>();
+            <span class="ident">loop_state</span>.<span class="ident">in_flight_libraries</span> <span class="op">-=</span> <span class="number">1</span>;
+        }
+        <span class="ident">Event</span>::<span class="ident">Msg</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
+            <span class="ident">Message</span>::<span class="ident">Request</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> <span class="ident">on_request</span>(
+                <span class="ident">world_state</span>,
+                <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">loop_state</span>.<span class="ident">pending_requests</span>,
+                <span class="ident">pool</span>,
+                <span class="ident">task_sender</span>,
+                <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>,
+                <span class="ident">loop_start</span>,
+                <span class="ident">req</span>,
+            )<span class="question-mark">?</span>,
+            <span class="ident">Message</span>::<span class="ident">Notification</span>(<span class="ident">not</span>) <span class="op">=&gt;</span> {
+                <span class="ident">on_notification</span>(
+                    <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>,
+                    <span class="ident">world_state</span>,
+                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">loop_state</span>.<span class="ident">pending_requests</span>,
+                    <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">loop_state</span>.<span class="ident">subscriptions</span>,
+                    <span class="ident">not</span>,
+                )<span class="question-mark">?</span>;
                 <span class="ident">state_changed</span> <span class="op">=</span> <span class="bool-val">true</span>;
             }
-            <span class="ident">Event</span>::<span class="ident">Lib</span>(<span class="ident">lib</span>) <span class="op">=&gt;</span> {
-                <span class="ident">state</span>.<span class="ident">add_lib</span>(<span class="ident">lib</span>);
-                <span class="ident">state</span>.<span class="ident">maybe_collect_garbage</span>();
-                <span class="ident">in_flight_libraries</span> <span class="op">-=</span> <span class="number">1</span>;
-            }
-            <span class="ident">Event</span>::<span class="ident">Msg</span>(<span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">msg</span> {
-                <span class="ident">Message</span>::<span class="ident">Request</span>(<span class="ident">req</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">if</span> <span class="ident">connection</span>.<span class="ident">handle_shutdown</span>(<span class="kw-2">&amp;</span><span class="ident">req</span>)<span class="question-mark">?</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
-                    };
-                    <span class="ident">on_request</span>(
-                        <span class="ident">state</span>,
-                        <span class="ident">pending_requests</span>,
-                        <span class="ident">pool</span>,
-                        <span class="kw-2">&amp;</span><span class="ident">task_sender</span>,
-                        <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>,
-                        <span class="ident">loop_start</span>,
-                        <span class="ident">req</span>,
-                    )<span class="question-mark">?</span>
-                }
-                <span class="ident">Message</span>::<span class="ident">Notification</span>(<span class="ident">not</span>) <span class="op">=&gt;</span> {
-                    <span class="ident">on_notification</span>(<span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>, <span class="ident">state</span>, <span class="ident">pending_requests</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">subs</span>, <span class="ident">not</span>)<span class="question-mark">?</span>;
-                    <span class="ident">state_changed</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                }
-                <span class="ident">Message</span>::<span class="ident">Response</span>(<span class="ident">resp</span>) <span class="op">=&gt;</span> <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;unexpected response: {:?}&quot;</span>, <span class="ident">resp</span>),
-            },
-        };
+            <span class="ident">Message</span>::<span class="ident">Response</span>(<span class="ident">resp</span>) <span class="op">=&gt;</span> <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;unexpected response: {:?}&quot;</span>, <span class="ident">resp</span>),
+        },
+    };
 
-        <span class="ident">pending_libraries</span>.<span class="ident">extend</span>(<span class="ident">state</span>.<span class="ident">process_changes</span>());
-        <span class="kw">while</span> <span class="ident">in_flight_libraries</span> <span class="op">&lt;</span> <span class="ident">MAX_IN_FLIGHT_LIBS</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">pending_libraries</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">let</span> (<span class="ident">root</span>, <span class="ident">files</span>) <span class="op">=</span> <span class="ident">pending_libraries</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
-            <span class="ident">in_flight_libraries</span> <span class="op">+=</span> <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">libdata_sender</span>.<span class="ident">clone</span>();
-            <span class="ident">pool</span>.<span class="ident">execute</span>(<span class="kw">move</span> <span class="op">||</span> {
-                <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;indexing {:?} ... &quot;</span>, <span class="ident">root</span>);
-                <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;indexed {:?}&quot;</span>, <span class="ident">root</span>));
-                <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">LibraryData</span>::<span class="ident">prepare</span>(<span class="ident">root</span>, <span class="ident">files</span>);
-                <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">data</span>).<span class="ident">unwrap</span>();
-            });
-        }
+    <span class="ident">loop_state</span>.<span class="ident">pending_libraries</span>.<span class="ident">extend</span>(<span class="ident">world_state</span>.<span class="ident">process_changes</span>());
+    <span class="kw">while</span> <span class="ident">loop_state</span>.<span class="ident">in_flight_libraries</span> <span class="op">&lt;</span> <span class="ident">MAX_IN_FLIGHT_LIBS</span>
+        <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">loop_state</span>.<span class="ident">pending_libraries</span>.<span class="ident">is_empty</span>()
+    {
+        <span class="kw">let</span> (<span class="ident">root</span>, <span class="ident">files</span>) <span class="op">=</span> <span class="ident">loop_state</span>.<span class="ident">pending_libraries</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
+        <span class="ident">loop_state</span>.<span class="ident">in_flight_libraries</span> <span class="op">+=</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">libdata_sender</span>.<span class="ident">clone</span>();
+        <span class="ident">pool</span>.<span class="ident">execute</span>(<span class="kw">move</span> <span class="op">||</span> {
+            <span class="ident">log</span>::<span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;indexing {:?} ... &quot;</span>, <span class="ident">root</span>);
+            <span class="kw">let</span> <span class="ident">_p</span> <span class="op">=</span> <span class="ident">profile</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;indexed {:?}&quot;</span>, <span class="ident">root</span>));
+            <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">LibraryData</span>::<span class="ident">prepare</span>(<span class="ident">root</span>, <span class="ident">files</span>);
+            <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">data</span>).<span class="ident">unwrap</span>();
+        });
+    }
 
-        <span class="kw">if</span> <span class="ident">send_workspace_notification</span>
-            <span class="op">&amp;&amp;</span> <span class="ident">state</span>.<span class="ident">roots_to_scan</span> <span class="op">==</span> <span class="number">0</span>
-            <span class="op">&amp;&amp;</span> <span class="ident">pending_libraries</span>.<span class="ident">is_empty</span>()
-            <span class="op">&amp;&amp;</span> <span class="ident">in_flight_libraries</span> <span class="op">==</span> <span class="number">0</span>
-        {
-            <span class="kw">let</span> <span class="ident">n_packages</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">workspaces</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">n_packages</span>()).<span class="ident">sum</span>();
-            <span class="kw">if</span> <span class="ident">state</span>.<span class="ident">feature_flags</span>().<span class="ident">get</span>(<span class="string">&quot;notifications.workspace-loaded&quot;</span>) {
-                <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;workspace loaded, {} rust packages&quot;</span>, <span class="ident">n_packages</span>);
-                <span class="ident">show_message</span>(<span class="ident">req</span>::<span class="ident">MessageType</span>::<span class="ident">Info</span>, <span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>);
-            }
-            <span class="comment">// Only send the notification first time</span>
-            <span class="ident">send_workspace_notification</span> <span class="op">=</span> <span class="bool-val">false</span>;
-        }
-
-        <span class="kw">if</span> <span class="ident">state_changed</span> {
-            <span class="ident">update_file_notifications_on_threadpool</span>(
-                <span class="ident">pool</span>,
-                <span class="ident">state</span>.<span class="ident">snapshot</span>(),
-                <span class="ident">state</span>.<span class="ident">options</span>.<span class="ident">publish_decorations</span>,
-                <span class="ident">task_sender</span>.<span class="ident">clone</span>(),
-                <span class="ident">subs</span>.<span class="ident">subscriptions</span>(),
-            )
+    <span class="kw">if</span> <span class="op">!</span><span class="ident">loop_state</span>.<span class="ident">workspace_loaded</span>
+        <span class="op">&amp;&amp;</span> <span class="ident">world_state</span>.<span class="ident">roots_to_scan</span> <span class="op">==</span> <span class="number">0</span>
+        <span class="op">&amp;&amp;</span> <span class="ident">loop_state</span>.<span class="ident">pending_libraries</span>.<span class="ident">is_empty</span>()
+        <span class="op">&amp;&amp;</span> <span class="ident">loop_state</span>.<span class="ident">in_flight_libraries</span> <span class="op">==</span> <span class="number">0</span>
+    {
+        <span class="ident">loop_state</span>.<span class="ident">workspace_loaded</span> <span class="op">=</span> <span class="bool-val">true</span>;
+        <span class="kw">let</span> <span class="ident">n_packages</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">world_state</span>.<span class="ident">workspaces</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">it</span>.<span class="ident">n_packages</span>()).<span class="ident">sum</span>();
+        <span class="kw">if</span> <span class="ident">world_state</span>.<span class="ident">feature_flags</span>().<span class="ident">get</span>(<span class="string">&quot;notifications.workspace-loaded&quot;</span>) {
+            <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;workspace loaded, {} rust packages&quot;</span>, <span class="ident">n_packages</span>);
+            <span class="ident">show_message</span>(<span class="ident">req</span>::<span class="ident">MessageType</span>::<span class="ident">Info</span>, <span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="ident">connection</span>.<span class="ident">sender</span>);
         }
     }
+
+    <span class="kw">if</span> <span class="ident">state_changed</span> {
+        <span class="ident">update_file_notifications_on_threadpool</span>(
+            <span class="ident">pool</span>,
+            <span class="ident">world_state</span>.<span class="ident">snapshot</span>(),
+            <span class="ident">world_state</span>.<span class="ident">options</span>.<span class="ident">publish_decorations</span>,
+            <span class="ident">task_sender</span>.<span class="ident">clone</span>(),
+            <span class="ident">loop_state</span>.<span class="ident">subscriptions</span>.<span class="ident">subscriptions</span>(),
+        )
+    }
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="kw">fn</span> <span class="ident">on_task</span>(

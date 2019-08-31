@@ -21,7 +21,7 @@
 <span class="kw">use</span> <span class="ident">ra_ide_api</span>::<span class="ident">FileId</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashSet</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">Subscriptions</span> {
     <span class="ident">subs</span>: <span class="ident">FxHashSet</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span>,
 }
