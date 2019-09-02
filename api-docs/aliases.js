@@ -19,3 +19,4 @@ ALIASES["ra_tools"] = {};
 ALIASES["ra_tt"] = {};
 ALIASES["ra_vfs_glob"] = {};
 ALIASES["test_utils"] = {};
+ALIASES["website_gen"] = {};

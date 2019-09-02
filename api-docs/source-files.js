@@ -19,4 +19,5 @@ sourcesIndex["ra_tools"] = {"name":"","files":["boilerplate_gen.rs","lib.rs"]};
 sourcesIndex["ra_tt"] = {"name":"","files":["buffer.rs","lib.rs"]};
 sourcesIndex["ra_vfs_glob"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["test_utils"] = {"name":"","files":["lib.rs","marks.rs"]};
+sourcesIndex["website_gen"] = {"name":"","files":["main.rs"]};
 createSourceSidebar();
