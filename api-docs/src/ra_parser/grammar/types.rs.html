@@ -317,7 +317,7 @@
 
 <span class="kw">const</span> <span class="ident">TYPE_RECOVERY_SET</span>: <span class="ident">TokenSet</span> <span class="op">=</span> <span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">R_PAREN</span>, <span class="ident">COMMA</span>];
 
-<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">type_</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">type_</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="ident">type_with_bounds_cond</span>(<span class="ident">p</span>, <span class="bool-val">true</span>);
 }
 

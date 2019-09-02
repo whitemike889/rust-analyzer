@@ -146,26 +146,6 @@
 <span id="146">146</span>
 <span id="147">147</span>
 <span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! The Rust parser.</span>
 <span class="doccomment">//!</span>
@@ -252,62 +232,42 @@
     <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">root</span>);
 }
 
-<span class="doccomment">/// Parse given tokens into the given sink as a path</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_path</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">path</span>);
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">FragmentKind</span> {
+    <span class="ident">Path</span>,
+    <span class="ident">Expr</span>,
+    <span class="ident">Statement</span>,
+    <span class="ident">Type</span>,
+    <span class="ident">Pattern</span>,
+    <span class="ident">Item</span>,
+    <span class="ident">Block</span>,
+    <span class="ident">Visibility</span>,
+    <span class="ident">MetaItem</span>,
+
+    <span class="comment">// These kinds are used when parsing the result of expansion</span>
+    <span class="comment">// FIXME: use separate fragment kinds for macro inputs and outputs?</span>
+    <span class="ident">Items</span>,
+    <span class="ident">Statements</span>,
 }
 
-<span class="doccomment">/// Parse given tokens into the given sink as a expression</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_expr</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">expr</span>);
-}
-
-<span class="doccomment">/// Parse given tokens into the given sink as a ty</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_ty</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">type_</span>);
-}
-
-<span class="doccomment">/// Parse given tokens into the given sink as a pattern</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_pat</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">pattern</span>);
-}
-
-<span class="doccomment">/// Parse given tokens into the given sink as a statement</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_stmt</span>(
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_fragment</span>(
     <span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>,
     <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>,
-    <span class="ident">with_semi</span>: <span class="ident">bool</span>,
+    <span class="ident">fragment_kind</span>: <span class="ident">FragmentKind</span>,
 ) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">grammar</span>::<span class="ident">stmt</span>(<span class="ident">p</span>, <span class="ident">with_semi</span>));
-}
-
-<span class="doccomment">/// Parse given tokens into the given sink as a block</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_block</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">block</span>);
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_meta</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">meta_item</span>);
-}
-
-<span class="doccomment">/// Parse given tokens into the given sink as an item</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_item</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">item</span>);
-}
-
-<span class="doccomment">/// Parse given tokens into the given sink as an visibility qualifier</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_vis</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="op">|</span><span class="ident">p</span><span class="op">|</span> {
-        <span class="ident">grammar</span>::<span class="ident">opt_visibility</span>(<span class="ident">p</span>);
-    });
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_macro_items</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">macro_items</span>);
-}
-
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse_macro_stmts</span>(<span class="ident">token_source</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TokenSource</span>, <span class="ident">tree_sink</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">dyn</span> <span class="ident">TreeSink</span>) {
-    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">grammar</span>::<span class="ident">macro_stmts</span>);
+    <span class="kw">let</span> <span class="ident">parser</span>: <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="kw-2">mut</span> <span class="ident">parser</span>::<span class="ident">Parser</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">fragment_kind</span> {
+        <span class="ident">FragmentKind</span>::<span class="ident">Path</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">path</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Expr</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">expr</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Type</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">type_</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Pattern</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">pattern</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Item</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">item</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Block</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">block</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Visibility</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">opt_visibility</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">MetaItem</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">meta_item</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Statement</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">stmt</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Items</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">macro_items</span>,
+        <span class="ident">FragmentKind</span>::<span class="ident">Statements</span> <span class="op">=&gt;</span> <span class="ident">grammar</span>::<span class="ident">fragments</span>::<span class="ident">macro_stmts</span>,
+    };
+    <span class="ident">parse_from_tokens</span>(<span class="ident">token_source</span>, <span class="ident">tree_sink</span>, <span class="ident">parser</span>)
 }
 
 <span class="doccomment">/// A parsing function for a specific braced-block.</span>
