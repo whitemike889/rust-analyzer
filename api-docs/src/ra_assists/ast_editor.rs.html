@@ -712,7 +712,7 @@
 
 <span class="kw">impl</span> <span class="ident">AstBuilder</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Expr</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">from_text</span>(<span class="ident">text</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Expr</span> {
-        <span class="ident">ast_node_from_file_text</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;fn f() {{ {}; }}&quot;</span>, <span class="ident">text</span>))
+        <span class="ident">ast_node_from_file_text</span>(<span class="kw-2">&amp;</span><span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;const C: () = {};&quot;</span>, <span class="ident">text</span>))
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unit</span>() <span class="op">-&gt;</span> <span class="ident">ast</span>::<span class="ident">Expr</span> {

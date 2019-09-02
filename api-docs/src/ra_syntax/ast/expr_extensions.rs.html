@@ -301,6 +301,26 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Various extension methods to ast Expr Nodes, which are hard to code-generate.</span>
 
@@ -313,12 +333,12 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ElseBranch</span> {
-    <span class="ident">Block</span>(<span class="ident">ast</span>::<span class="ident">Block</span>),
+    <span class="ident">Block</span>(<span class="ident">ast</span>::<span class="ident">BlockExpr</span>),
     <span class="ident">IfExpr</span>(<span class="ident">ast</span>::<span class="ident">IfExpr</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">IfExpr</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">then_branch</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Block</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">then_branch</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">BlockExpr</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">blocks</span>().<span class="ident">nth</span>(<span class="number">0</span>)
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">else_branch</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ElseBranch</span><span class="op">&gt;</span> {
@@ -332,7 +352,7 @@
         <span class="prelude-val">Some</span>(<span class="ident">res</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">AstChildren</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">Block</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">AstChildren</span><span class="op">&lt;</span><span class="ident">ast</span>::<span class="ident">BlockExpr</span><span class="op">&gt;</span> {
         <span class="ident">children</span>(<span class="self">self</span>)
     }
 }
@@ -589,6 +609,26 @@
             <span class="ident">CHAR</span> <span class="op">=&gt;</span> <span class="ident">LiteralKind</span>::<span class="ident">Char</span>,
             <span class="ident">BYTE</span> <span class="op">=&gt;</span> <span class="ident">LiteralKind</span>::<span class="ident">Byte</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
+        }
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">BlockExpr</span> {
+    <span class="doccomment">/// false if the block is an intrinsic part of the syntax and can&#39;t be</span>
+    <span class="doccomment">/// replaced with arbitrary expression.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```not_rust</span>
+    <span class="doccomment">/// fn foo() { not_stand_alone }</span>
+    <span class="doccomment">/// const FOO: () = { stand_alone };</span>
+    <span class="doccomment">/// ```</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_standalone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">syntax</span>().<span class="ident">parent</span>() {
+            <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="bool-val">true</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>.<span class="ident">kind</span>(),
+        };
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="ident">FN_DEF</span> <span class="op">|</span> <span class="ident">MATCH_ARM</span> <span class="op">|</span> <span class="ident">IF_EXPR</span> <span class="op">|</span> <span class="ident">WHILE_EXPR</span> <span class="op">|</span> <span class="ident">LOOP_EXPR</span> <span class="op">|</span> <span class="ident">TRY_BLOCK_EXPR</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">true</span>,
         }
     }
 }

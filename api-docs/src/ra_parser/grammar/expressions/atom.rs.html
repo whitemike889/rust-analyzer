@@ -1020,10 +1020,10 @@
 <span class="comment">//     unsafe {};</span>
 <span class="comment">//     &#39;label: {};</span>
 <span class="comment">// }</span>
-<span class="kw">fn</span> <span class="ident">block_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Marker</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
+<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">block_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Marker</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">p</span>.<span class="ident">start</span>());
-    <span class="ident">block</span>(<span class="ident">p</span>);
+    <span class="ident">naked_block</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">BLOCK_EXPR</span>)
 }
 

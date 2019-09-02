@@ -4865,7 +4865,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">param_list</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ParamList</span><span class="op">&gt;</span> {
         <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">body</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">body</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockExpr</span><span class="op">&gt;</span> {
         <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ret_type</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RetType</span><span class="op">&gt;</span> {
@@ -6997,7 +6997,7 @@
     }
 }
 <span class="kw">impl</span> <span class="ident">TryBlockExpr</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">body</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockExpr</span><span class="op">&gt;</span> {
         <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()
     }
 }
