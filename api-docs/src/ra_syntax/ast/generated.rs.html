@@ -3856,6 +3856,9 @@
 <span id="3856">3856</span>
 <span id="3857">3857</span>
 <span id="3858">3858</span>
+<span id="3859">3859</span>
+<span id="3860">3860</span>
+<span id="3861">3861</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Generated file, do not edit by hand, see `crate/ra_tools/src/codegen`</span>
 
@@ -6993,8 +6996,11 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
     }
 }
-<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">TryBlockBodyOwner</span> <span class="kw">for</span> <span class="ident">TryBlockExpr</span> {}
-<span class="kw">impl</span> <span class="ident">TryBlockExpr</span> {}
+<span class="kw">impl</span> <span class="ident">TryBlockExpr</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
+        <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()
+    }
+}
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TryExpr</span> {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">syntax</span>: <span class="ident">SyntaxNode</span>,
