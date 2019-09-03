@@ -48,6 +48,7 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
+<span id="51">51</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">lsp_types</span>::{
     <span class="ident">CodeActionProviderCapability</span>, <span class="ident">CodeLensOptions</span>, <span class="ident">CompletionOptions</span>,
@@ -94,6 +95,7 @@
         <span class="ident">rename_provider</span>: <span class="prelude-val">Some</span>(<span class="ident">RenameProviderCapability</span>::<span class="ident">Options</span>(<span class="ident">RenameOptions</span> {
             <span class="ident">prepare_provider</span>: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
         })),
+        <span class="ident">document_link_provider</span>: <span class="prelude-val">None</span>,
         <span class="ident">color_provider</span>: <span class="prelude-val">None</span>,
         <span class="ident">execute_command_provider</span>: <span class="prelude-val">None</span>,
         <span class="ident">workspace</span>: <span class="prelude-val">None</span>,
