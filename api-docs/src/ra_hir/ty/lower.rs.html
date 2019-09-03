@@ -630,6 +630,36 @@
 <span id="630">630</span>
 <span id="631">631</span>
 <span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Methods for lowering the HIR to types. There are two main cases here:</span>
 <span class="doccomment">//!</span>
@@ -641,7 +671,10 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">FnSig</span>, <span class="ident">GenericPredicate</span>, <span class="ident">ProjectionTy</span>, <span class="ident">Substs</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{
+    <span class="ident">FnSig</span>, <span class="ident">GenericPredicate</span>, <span class="ident">ProjectionPredicate</span>, <span class="ident">ProjectionTy</span>, <span class="ident">Substs</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>,
+    <span class="ident">TypeWalk</span>,
+};
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">adt</span>::<span class="ident">VariantDef</span>,
     <span class="ident">generics</span>::<span class="ident">HasGenericParams</span>,
@@ -695,7 +728,9 @@
                 <span class="kw">let</span> <span class="ident">self_ty</span> <span class="op">=</span> <span class="ident">Ty</span>::<span class="ident">Bound</span>(<span class="number">0</span>);
                 <span class="kw">let</span> <span class="ident">predicates</span> <span class="op">=</span> <span class="ident">bounds</span>
                     .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">GenericPredicate</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="ident">b</span>, <span class="ident">self_ty</span>.<span class="ident">clone</span>()))
+                    .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> {
+                        <span class="ident">GenericPredicate</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="ident">b</span>, <span class="ident">self_ty</span>.<span class="ident">clone</span>())
+                    })
                     .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
                 <span class="ident">Ty</span>::<span class="ident">Dyn</span>(<span class="ident">predicates</span>.<span class="ident">into</span>())
             }
@@ -703,7 +738,9 @@
                 <span class="kw">let</span> <span class="ident">self_ty</span> <span class="op">=</span> <span class="ident">Ty</span>::<span class="ident">Bound</span>(<span class="number">0</span>);
                 <span class="kw">let</span> <span class="ident">predicates</span> <span class="op">=</span> <span class="ident">bounds</span>
                     .<span class="ident">iter</span>()
-                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">GenericPredicate</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="ident">b</span>, <span class="ident">self_ty</span>.<span class="ident">clone</span>()))
+                    .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> {
+                        <span class="ident">GenericPredicate</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="ident">b</span>, <span class="ident">self_ty</span>.<span class="ident">clone</span>())
+                    })
                     .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
                 <span class="ident">Ty</span>::<span class="ident">Opaque</span>(<span class="ident">predicates</span>.<span class="ident">into</span>())
             }
@@ -959,15 +996,6 @@
         <span class="ident">TraitRef</span> { <span class="ident">trait_</span>, <span class="ident">substs</span> }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_where_predicate</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>,
-        <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span>,
-        <span class="ident">pred</span>: <span class="kw-2">&amp;</span><span class="ident">WherePredicate</span>,
-    ) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TraitRef</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">self_ty</span> <span class="op">=</span> <span class="ident">Ty</span>::<span class="ident">from_hir</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="kw-2">&amp;</span><span class="ident">pred</span>.<span class="ident">type_ref</span>);
-        <span class="ident">TraitRef</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="kw-2">&amp;</span><span class="ident">pred</span>.<span class="ident">bound</span>, <span class="ident">self_ty</span>)
-    }
-
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_type_bound</span>(
         <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>,
         <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span>,
@@ -982,24 +1010,56 @@
 }
 
 <span class="kw">impl</span> <span class="ident">GenericPredicate</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_where_predicate</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>,
-        <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span>,
-        <span class="ident">where_predicate</span>: <span class="kw-2">&amp;</span><span class="ident">WherePredicate</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">GenericPredicate</span> {
-        <span class="ident">TraitRef</span>::<span class="ident">from_where_predicate</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">where_predicate</span>)
-            .<span class="ident">map_or</span>(<span class="ident">GenericPredicate</span>::<span class="ident">Error</span>, <span class="ident">GenericPredicate</span>::<span class="ident">Implemented</span>)
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_where_predicate</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">impl</span> <span class="ident">HirDatabase</span>,
+        <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Resolver</span>,
+        <span class="ident">where_predicate</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">WherePredicate</span>,
+    ) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">GenericPredicate</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+        <span class="kw">let</span> <span class="ident">self_ty</span> <span class="op">=</span> <span class="ident">Ty</span>::<span class="ident">from_hir</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="kw-2">&amp;</span><span class="ident">where_predicate</span>.<span class="ident">type_ref</span>);
+        <span class="ident">GenericPredicate</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="kw-2">&amp;</span><span class="ident">where_predicate</span>.<span class="ident">bound</span>, <span class="ident">self_ty</span>)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_type_bound</span>(
-        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">HirDatabase</span>,
-        <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="ident">Resolver</span>,
-        <span class="ident">bound</span>: <span class="kw-2">&amp;</span><span class="ident">TypeBound</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_type_bound</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+        <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">impl</span> <span class="ident">HirDatabase</span>,
+        <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Resolver</span>,
+        <span class="ident">bound</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TypeBound</span>,
         <span class="ident">self_ty</span>: <span class="ident">Ty</span>,
-    ) <span class="op">-&gt;</span> <span class="ident">GenericPredicate</span> {
-        <span class="ident">TraitRef</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">bound</span>, <span class="ident">self_ty</span>)
-            .<span class="ident">map_or</span>(<span class="ident">GenericPredicate</span>::<span class="ident">Error</span>, <span class="ident">GenericPredicate</span>::<span class="ident">Implemented</span>)
+    ) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">GenericPredicate</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+        <span class="kw">let</span> <span class="ident">trait_ref</span> <span class="op">=</span> <span class="ident">TraitRef</span>::<span class="ident">from_type_bound</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">bound</span>, <span class="ident">self_ty</span>);
+        <span class="ident">iter</span>::<span class="ident">once</span>(<span class="ident">trait_ref</span>.<span class="ident">clone</span>().<span class="ident">map_or</span>(<span class="ident">GenericPredicate</span>::<span class="ident">Error</span>, <span class="ident">GenericPredicate</span>::<span class="ident">Implemented</span>))
+            .<span class="ident">chain</span>(
+                <span class="ident">trait_ref</span>.<span class="ident">into_iter</span>().<span class="ident">flat_map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">tr</span><span class="op">|</span> {
+                    <span class="ident">assoc_type_bindings_from_type_bound</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="ident">bound</span>, <span class="ident">tr</span>)
+                }),
+            )
     }
+}
+
+<span class="kw">fn</span> <span class="ident">assoc_type_bindings_from_type_bound</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+    <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw">impl</span> <span class="ident">HirDatabase</span>,
+    <span class="ident">resolver</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Resolver</span>,
+    <span class="ident">bound</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TypeBound</span>,
+    <span class="ident">trait_ref</span>: <span class="ident">TraitRef</span>,
+) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">GenericPredicate</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+    <span class="kw">let</span> <span class="ident">last_segment</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">bound</span> {
+        <span class="ident">TypeBound</span>::<span class="ident">Path</span>(<span class="ident">path</span>) <span class="op">=&gt;</span> <span class="ident">path</span>.<span class="ident">segments</span>.<span class="ident">last</span>(),
+        <span class="ident">TypeBound</span>::<span class="ident">Error</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
+    };
+    <span class="ident">last_segment</span>
+        .<span class="ident">into_iter</span>()
+        .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">segment</span><span class="op">|</span> <span class="ident">segment</span>.<span class="ident">args_and_bindings</span>.<span class="ident">iter</span>())
+        .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">args_and_bindings</span><span class="op">|</span> <span class="ident">args_and_bindings</span>.<span class="ident">bindings</span>.<span class="ident">iter</span>())
+        .<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span>(<span class="ident">name</span>, <span class="ident">type_ref</span>)<span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">associated_ty</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">trait_ref</span>.<span class="ident">trait_</span>.<span class="ident">associated_type_by_name</span>(<span class="ident">db</span>, <span class="ident">name</span>.<span class="ident">clone</span>()) {
+                <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">GenericPredicate</span>::<span class="ident">Error</span>,
+                <span class="prelude-val">Some</span>(<span class="ident">t</span>) <span class="op">=&gt;</span> <span class="ident">t</span>,
+            };
+            <span class="kw">let</span> <span class="ident">projection_ty</span> <span class="op">=</span>
+                <span class="ident">ProjectionTy</span> { <span class="ident">associated_ty</span>, <span class="ident">parameters</span>: <span class="ident">trait_ref</span>.<span class="ident">substs</span>.<span class="ident">clone</span>() };
+            <span class="kw">let</span> <span class="ident">ty</span> <span class="op">=</span> <span class="ident">Ty</span>::<span class="ident">from_hir</span>(<span class="ident">db</span>, <span class="ident">resolver</span>, <span class="ident">type_ref</span>);
+            <span class="kw">let</span> <span class="ident">projection_predicate</span> <span class="op">=</span> <span class="ident">ProjectionPredicate</span> { <span class="ident">projection_ty</span>, <span class="ident">ty</span> };
+            <span class="ident">GenericPredicate</span>::<span class="ident">Projection</span>(<span class="ident">projection_predicate</span>)
+        })
 }
 
 <span class="doccomment">/// Build the declared type of an item. This depends on the namespace; e.g. for</span>
@@ -1058,7 +1118,7 @@
 ) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">super</span>::<span class="ident">TraitEnvironment</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">predicates</span> <span class="op">=</span> <span class="ident">resolver</span>
         .<span class="ident">where_predicates_in_scope</span>()
-        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">pred</span><span class="op">|</span> <span class="ident">GenericPredicate</span>::<span class="ident">from_where_predicate</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">pred</span>))
+        .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">pred</span><span class="op">|</span> <span class="ident">GenericPredicate</span>::<span class="ident">from_where_predicate</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">pred</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
 
     <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="kw">super</span>::<span class="ident">TraitEnvironment</span> { <span class="ident">predicates</span> })
@@ -1072,7 +1132,7 @@
     <span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">def</span>.<span class="ident">resolver</span>(<span class="ident">db</span>);
     <span class="kw">let</span> <span class="ident">predicates</span> <span class="op">=</span> <span class="ident">resolver</span>
         .<span class="ident">where_predicates_in_scope</span>()
-        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">pred</span><span class="op">|</span> <span class="ident">GenericPredicate</span>::<span class="ident">from_where_predicate</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">pred</span>))
+        .<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">pred</span><span class="op">|</span> <span class="ident">GenericPredicate</span>::<span class="ident">from_where_predicate</span>(<span class="ident">db</span>, <span class="kw-2">&amp;</span><span class="ident">resolver</span>, <span class="ident">pred</span>))
         .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
     <span class="ident">predicates</span>.<span class="ident">into</span>()
 }

@@ -80,6 +80,8 @@
 <span id="80">80</span>
 <span id="81">81</span>
 <span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;512&quot;</span>]</span>
 
@@ -152,7 +154,9 @@
     <span class="ident">resolve</span>::<span class="ident">Resolution</span>,
     <span class="ident">source_binder</span>::{<span class="ident">PathResolution</span>, <span class="ident">ScopeEntryWithSyntax</span>, <span class="ident">SourceAnalyzer</span>},
     <span class="ident">source_id</span>::{<span class="ident">AstIdMap</span>, <span class="ident">ErasedFileAstId</span>},
-    <span class="ident">ty</span>::{<span class="ident">display</span>::<span class="ident">HirDisplay</span>, <span class="ident">ApplicationTy</span>, <span class="ident">CallableDef</span>, <span class="ident">Substs</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>},
+    <span class="ident">ty</span>::{
+        <span class="ident">display</span>::<span class="ident">HirDisplay</span>, <span class="ident">ApplicationTy</span>, <span class="ident">CallableDef</span>, <span class="ident">Substs</span>, <span class="ident">TraitRef</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>, <span class="ident">TypeWalk</span>,
+    },
     <span class="ident">type_ref</span>::<span class="ident">Mutability</span>,
 };
 

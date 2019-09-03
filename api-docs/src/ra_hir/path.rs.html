@@ -275,6 +275,15 @@
 <span id="275">275</span>
 <span id="276">276</span>
 <span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -309,7 +318,8 @@
     <span class="doccomment">/// Self type. Otherwise, when we have a path `Trait&lt;X, Y&gt;`, the Self type</span>
     <span class="doccomment">/// is left out.</span>
     <span class="kw">pub</span> <span class="ident">has_self_type</span>: <span class="ident">bool</span>,
-    <span class="comment">// someday also bindings</span>
+    <span class="doccomment">/// Associated type bindings like in `Iterator&lt;Item = T&gt;`.</span>
+    <span class="kw">pub</span> <span class="ident">bindings</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Name</span>, <span class="ident">TypeRef</span>)<span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// A single generic argument.</span>
@@ -448,16 +458,24 @@
             <span class="kw">let</span> <span class="ident">type_ref</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">type_arg</span>.<span class="ident">type_ref</span>());
             <span class="ident">args</span>.<span class="ident">push</span>(<span class="ident">GenericArg</span>::<span class="ident">Type</span>(<span class="ident">type_ref</span>));
         }
-        <span class="comment">// lifetimes and assoc type args ignored for now</span>
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">args</span>.<span class="ident">is_empty</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">GenericArgs</span> { <span class="ident">args</span>, <span class="ident">has_self_type</span>: <span class="bool-val">false</span> })
-        } <span class="kw">else</span> {
+        <span class="comment">// lifetimes ignored for now</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bindings</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+        <span class="kw">for</span> <span class="ident">assoc_type_arg</span> <span class="kw">in</span> <span class="ident">node</span>.<span class="ident">assoc_type_args</span>() {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name_ref</span>) <span class="op">=</span> <span class="ident">assoc_type_arg</span>.<span class="ident">name_ref</span>() {
+                <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name_ref</span>.<span class="ident">as_name</span>();
+                <span class="kw">let</span> <span class="ident">type_ref</span> <span class="op">=</span> <span class="ident">TypeRef</span>::<span class="ident">from_ast_opt</span>(<span class="ident">assoc_type_arg</span>.<span class="ident">type_ref</span>());
+                <span class="ident">bindings</span>.<span class="ident">push</span>((<span class="ident">name</span>, <span class="ident">type_ref</span>));
+            }
+        }
+        <span class="kw">if</span> <span class="ident">args</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="ident">bindings</span>.<span class="ident">is_empty</span>() {
             <span class="prelude-val">None</span>
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">GenericArgs</span> { <span class="ident">args</span>, <span class="ident">has_self_type</span>: <span class="bool-val">false</span>, <span class="ident">bindings</span> })
         }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">empty</span>() <span class="op">-&gt;</span> <span class="ident">GenericArgs</span> {
-        <span class="ident">GenericArgs</span> { <span class="ident">args</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(), <span class="ident">has_self_type</span>: <span class="bool-val">false</span> }
+        <span class="ident">GenericArgs</span> { <span class="ident">args</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(), <span class="ident">has_self_type</span>: <span class="bool-val">false</span>, <span class="ident">bindings</span>: <span class="ident">Vec</span>::<span class="ident">new</span>() }
     }
 }
 
