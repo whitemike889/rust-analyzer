@@ -396,13 +396,13 @@
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">generic_defaults_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">generic_defaults</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">def</span>: <span class="ident">GenericDef</span>) <span class="op">-&gt;</span> <span class="ident">Substs</span>;
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">body_with_source_map_query</span>)]</span>
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">lower</span>::<span class="ident">body_with_source_map_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">body_with_source_map</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">def</span>: <span class="ident">DefWithBody</span>,
     ) <span class="op">-&gt;</span> (<span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">Body</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">BodySourceMap</span><span class="op">&gt;</span>);
 
-    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">body_hir_query</span>)]</span>
+    <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">lower</span>::<span class="ident">body_hir_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">body_hir</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">def</span>: <span class="ident">DefWithBody</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">crate</span>::<span class="ident">expr</span>::<span class="ident">Body</span><span class="op">&gt;</span>;
 
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">ty</span>::<span class="ident">method_resolution</span>::<span class="ident">CrateImplBlocks</span>::<span class="ident">impls_in_crate_query</span>)]</span>
