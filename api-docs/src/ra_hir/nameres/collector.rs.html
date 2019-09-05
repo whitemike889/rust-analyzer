@@ -781,6 +781,21 @@
 <span id="781">781</span>
 <span id="782">782</span>
 <span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">ra_db</span>::<span class="ident">FileId</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>;
@@ -967,11 +982,14 @@
 
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ModuleDef</span>::<span class="ident">Module</span>(<span class="ident">m</span>)) <span class="op">=</span> <span class="ident">res</span>.<span class="ident">take_types</span>() {
             <span class="macro">tested_by</span><span class="macro">!</span>(<span class="ident">macro_rules_from_other_crates_are_visible_with_macro_use</span>);
+            <span class="self">self</span>.<span class="ident">import_all_macros_exported</span>(<span class="ident">m</span>);
+        }
+    }
 
-            <span class="kw">let</span> <span class="ident">item_map</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">crate_def_map</span>(<span class="ident">m</span>.<span class="ident">krate</span>);
-            <span class="kw">for</span> (<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">macro_id</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">item_map</span>.<span class="ident">exported_macros</span> {
-                <span class="self">self</span>.<span class="ident">global_macro_scope</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>);
-            }
+    <span class="kw">fn</span> <span class="ident">import_all_macros_exported</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">module</span>: <span class="ident">Module</span>) {
+        <span class="kw">let</span> <span class="ident">item_map</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">crate_def_map</span>(<span class="ident">module</span>.<span class="ident">krate</span>);
+        <span class="kw">for</span> (<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">macro_id</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">item_map</span>.<span class="ident">exported_macros</span> {
+            <span class="self">self</span>.<span class="ident">global_macro_scope</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>);
         }
     }
 
@@ -1304,20 +1322,32 @@
     <span class="ident">DB</span>: <span class="ident">DefDatabase</span>,
 {
     <span class="kw">fn</span> <span class="ident">collect</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="ident">raw</span>::<span class="ident">RawItem</span>]) {
+        <span class="comment">// Prelude module is always considered to be `#[macro_use]`.</span>
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">prelude_module</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">def_map</span>.<span class="ident">prelude</span> {
+            <span class="macro">tested_by</span><span class="macro">!</span>(<span class="ident">prelude_is_macro_use</span>);
+            <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">import_all_macros_exported</span>(<span class="ident">prelude_module</span>);
+        }
+
+        <span class="comment">// This should be processed eagerly instead of deferred to resolving.</span>
+        <span class="comment">// `#[macro_use] extern crate` is hoisted to imports macros before collecting</span>
+        <span class="comment">// any other items.</span>
+        <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Import</span>(<span class="ident">import_id</span>) <span class="op">=</span> <span class="kw-2">*</span><span class="ident">item</span> {
+                <span class="kw">let</span> <span class="ident">import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">import_id</span>].<span class="ident">clone</span>();
+                <span class="kw">if</span> <span class="ident">import</span>.<span class="ident">is_extern_crate</span> <span class="op">&amp;&amp;</span> <span class="ident">import</span>.<span class="ident">is_macro_use</span> {
+                    <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">import_macros_from_extern_crate</span>(<span class="kw-2">&amp;</span><span class="ident">import</span>);
+                }
+            }
+        }
+
         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
             <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">item</span> {
                 <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Module</span>(<span class="ident">m</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">m</span>]),
-                <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Import</span>(<span class="ident">import_id</span>) <span class="op">=&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">import_id</span>].<span class="ident">clone</span>();
-                    <span class="comment">// This should be processed eagerly instead of deferred to resolving.</span>
-                    <span class="comment">// Otherwise, since it will only mutate `global_macro_scope`</span>
-                    <span class="comment">// without `update` names in `mod`s, unresolved macros cannot be expanded.</span>
-                    <span class="kw">if</span> <span class="ident">import</span>.<span class="ident">is_extern_crate</span> <span class="op">&amp;&amp;</span> <span class="ident">import</span>.<span class="ident">is_macro_use</span> {
-                        <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">import_macros_from_extern_crate</span>(<span class="kw-2">&amp;</span><span class="ident">import</span>);
-                    }
-
-                    <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">unresolved_imports</span>.<span class="ident">push</span>((<span class="self">self</span>.<span class="ident">module_id</span>, <span class="ident">import_id</span>, <span class="ident">import</span>));
-                }
+                <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Import</span>(<span class="ident">import_id</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">unresolved_imports</span>.<span class="ident">push</span>((
+                    <span class="self">self</span>.<span class="ident">module_id</span>,
+                    <span class="ident">import_id</span>,
+                    <span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">import_id</span>].<span class="ident">clone</span>(),
+                )),
                 <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Def</span>(<span class="ident">def</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">define_def</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">def</span>]),
                 <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Macro</span>(<span class="ident">mac</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">mac</span>]),
             }
