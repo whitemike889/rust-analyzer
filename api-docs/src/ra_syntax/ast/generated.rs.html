@@ -3859,6 +3859,7 @@
 <span id="3859">3859</span>
 <span id="3860">3860</span>
 <span id="3861">3861</span>
+<span id="3862">3862</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// Generated file, do not edit by hand, see `crate/ra_tools/src/codegen`</span>
 
@@ -4796,6 +4797,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>
     }
 }
+<span class="kw">impl</span> <span class="ident">ast</span>::<span class="ident">AttrsOwner</span> <span class="kw">for</span> <span class="ident">ExternCrateItem</span> {}
 <span class="kw">impl</span> <span class="ident">ExternCrateItem</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NameRef</span><span class="op">&gt;</span> {
         <span class="ident">AstChildren</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">syntax</span>).<span class="ident">next</span>()

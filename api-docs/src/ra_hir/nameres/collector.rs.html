@@ -919,6 +919,44 @@
 <span id="919">919</span>
 <span id="920">920</span>
 <span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">borrow</span>::<span class="ident">Cow</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
@@ -1079,9 +1117,40 @@
         <span class="comment">// crate root, even if the parent modules is **not** visible.</span>
         <span class="kw">if</span> <span class="ident">export</span> {
             <span class="self">self</span>.<span class="ident">update</span>(<span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">root</span>, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>[(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">def</span>.<span class="ident">clone</span>())]);
+
+            <span class="comment">// Exported macros are collected in crate level ready for</span>
+            <span class="comment">// glob import with `#[macro_use]`.</span>
+            <span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">exported_macros</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>);
         }
         <span class="self">self</span>.<span class="ident">update</span>(<span class="ident">module_id</span>, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>[(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">def</span>)]);
         <span class="self">self</span>.<span class="ident">global_macro_scope</span>.<span class="ident">insert</span>(<span class="ident">name</span>, <span class="ident">macro_id</span>);
+    }
+
+    <span class="doccomment">/// Import macros from `#[macro_use] extern crate`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// They are non-scoped, and will only be inserted into mutable `global_macro_scope`.</span>
+    <span class="kw">fn</span> <span class="ident">import_macros_from_extern_crate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">import</span>: <span class="kw-2">&amp;</span><span class="ident">raw</span>::<span class="ident">ImportData</span>) {
+        <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(
+            <span class="string">&quot;importing macros from extern crate: {:?} ({:?})&quot;</span>,
+            <span class="ident">import</span>,
+            <span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">edition</span>,
+        );
+
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">def_map</span>.<span class="ident">resolve_name_in_extern_prelude</span>(
+            <span class="kw-2">&amp;</span><span class="ident">import</span>
+                .<span class="ident">path</span>
+                .<span class="ident">as_ident</span>()
+                .<span class="ident">expect</span>(<span class="string">&quot;extern crate should have been desugared to one-element path&quot;</span>),
+        );
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ModuleDef</span>::<span class="ident">Module</span>(<span class="ident">m</span>)) <span class="op">=</span> <span class="ident">res</span>.<span class="ident">take_types</span>() {
+            <span class="macro">tested_by</span><span class="macro">!</span>(<span class="ident">macro_rules_from_other_crates_are_visible_with_macro_use</span>);
+
+            <span class="kw">let</span> <span class="ident">item_map</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">db</span>.<span class="ident">crate_def_map</span>(<span class="ident">m</span>.<span class="ident">krate</span>);
+            <span class="kw">for</span> (<span class="ident">name</span>, <span class="kw-2">&amp;</span><span class="ident">macro_id</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">item_map</span>.<span class="ident">exported_macros</span> {
+                <span class="self">self</span>.<span class="ident">global_macro_scope</span>.<span class="ident">insert</span>(<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">macro_id</span>);
+            }
+        }
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_imports</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">ReachedFixedPoint</span> {
@@ -1416,11 +1485,17 @@
         <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">items</span> {
             <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">item</span> {
                 <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Module</span>(<span class="ident">m</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_module</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">m</span>]),
-                <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Import</span>(<span class="ident">import</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">unresolved_imports</span>.<span class="ident">push</span>((
-                    <span class="self">self</span>.<span class="ident">module_id</span>,
-                    <span class="ident">import</span>,
-                    <span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">import</span>].<span class="ident">clone</span>(),
-                )),
+                <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Import</span>(<span class="ident">import_id</span>) <span class="op">=&gt;</span> {
+                    <span class="kw">let</span> <span class="ident">import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">import_id</span>].<span class="ident">clone</span>();
+                    <span class="comment">// This should be processed eagerly instead of deferred to resolving.</span>
+                    <span class="comment">// Otherwise, since it will only mutate `global_macro_scope`</span>
+                    <span class="comment">// without `update` names in `mod`s, unresolved macros cannot be expanded.</span>
+                    <span class="kw">if</span> <span class="ident">import</span>.<span class="ident">is_extern_crate</span> <span class="op">&amp;&amp;</span> <span class="ident">import</span>.<span class="ident">is_macro_use</span> {
+                        <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">import_macros_from_extern_crate</span>(<span class="kw-2">&amp;</span><span class="ident">import</span>);
+                    }
+
+                    <span class="self">self</span>.<span class="ident">def_collector</span>.<span class="ident">unresolved_imports</span>.<span class="ident">push</span>((<span class="self">self</span>.<span class="ident">module_id</span>, <span class="ident">import_id</span>, <span class="ident">import</span>));
+                }
                 <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Def</span>(<span class="ident">def</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">define_def</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">def</span>]),
                 <span class="ident">raw</span>::<span class="ident">RawItem</span>::<span class="ident">Macro</span>(<span class="ident">mac</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">collect_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">raw_items</span>[<span class="ident">mac</span>]),
             }
@@ -1782,6 +1857,7 @@
                 <span class="ident">root</span>,
                 <span class="ident">modules</span>,
                 <span class="ident">poison_macros</span>: <span class="ident">FxHashSet</span>::<span class="ident">default</span>(),
+                <span class="ident">exported_macros</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
                 <span class="ident">diagnostics</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             }
         };

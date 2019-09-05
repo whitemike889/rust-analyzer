@@ -549,6 +549,9 @@
 <span id="549">549</span>
 <span id="550">550</span>
 <span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">///</span>
@@ -652,6 +655,8 @@
     <span class="doccomment">/// We should handle this macro set globally</span>
     <span class="doccomment">/// However, do we want to put it as a global variable?</span>
     <span class="ident">poison_macros</span>: <span class="ident">FxHashSet</span><span class="op">&lt;</span><span class="ident">MacroDefId</span><span class="op">&gt;</span>,
+
+    <span class="ident">exported_macros</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">Name</span>, <span class="ident">MacroDefId</span><span class="op">&gt;</span>,
 
     <span class="ident">diagnostics</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">DefDiagnostic</span><span class="op">&gt;</span>,
 }
@@ -797,6 +802,7 @@
                 <span class="ident">root</span>,
                 <span class="ident">modules</span>,
                 <span class="ident">poison_macros</span>: <span class="ident">FxHashSet</span>::<span class="ident">default</span>(),
+                <span class="ident">exported_macros</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
                 <span class="ident">diagnostics</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
             }
         };
