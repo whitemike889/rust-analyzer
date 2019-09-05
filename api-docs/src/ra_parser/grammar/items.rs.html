@@ -462,7 +462,7 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const</span> <span class="ident">ITEM_RECOVERY_SET</span>: <span class="ident">TokenSet</span> <span class="op">=</span> <span class="macro">token_set</span><span class="macro">!</span>[
     <span class="ident">FN_KW</span>, <span class="ident">STRUCT_KW</span>, <span class="ident">ENUM_KW</span>, <span class="ident">IMPL_KW</span>, <span class="ident">TRAIT_KW</span>, <span class="ident">CONST_KW</span>, <span class="ident">STATIC_KW</span>, <span class="ident">LET_KW</span>, <span class="ident">MOD_KW</span>, <span class="ident">PUB_KW</span>,
-    <span class="ident">CRATE_KW</span>
+    <span class="ident">CRATE_KW</span>, <span class="ident">USE_KW</span>
 ];
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">item_or_macro</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">stop_on_r_curly</span>: <span class="ident">bool</span>, <span class="ident">flavor</span>: <span class="ident">ItemFlavor</span>) {
