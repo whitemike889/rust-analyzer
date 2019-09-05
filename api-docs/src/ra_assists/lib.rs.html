@@ -330,6 +330,8 @@
 <span id="330">330</span>
 <span id="331">331</span>
 <span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! `ra_assits` crate provides a bunch of code assists, also known as code</span>
 <span class="doccomment">//! actions (in LSP) or intentions (in IntelliJ).</span>
@@ -435,6 +437,7 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">auto_import</span>;
 <span class="kw">mod</span> <span class="ident">add_missing_impl_members</span>;
 <span class="kw">mod</span> <span class="ident">move_guard</span>;
+<span class="kw">mod</span> <span class="ident">move_bounds</span>;
 
 <span class="kw">fn</span> <span class="ident">all_assists</span><span class="op">&lt;</span><span class="ident">DB</span>: <span class="ident">HirDatabase</span><span class="op">&gt;</span>() <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="kw">fn</span>(<span class="ident">AssistCtx</span><span class="op">&lt;</span><span class="ident">DB</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Assist</span><span class="op">&gt;</span>] {
     <span class="kw-2">&amp;</span>[
@@ -456,6 +459,7 @@
         <span class="ident">inline_local_variable</span>::<span class="ident">inline_local_varialbe</span>,
         <span class="ident">move_guard</span>::<span class="ident">move_guard_to_arm_body</span>,
         <span class="ident">move_guard</span>::<span class="ident">move_arm_cond_to_match_guard</span>,
+        <span class="ident">move_bounds</span>::<span class="ident">move_bounds_to_where_clause</span>,
     ]
 }
 
