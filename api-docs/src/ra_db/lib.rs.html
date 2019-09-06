@@ -102,7 +102,6 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
-<span id="105">105</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! ra_db defines basic database traits. The concrete DB is defined by ra_ide_api.</span>
 <span class="kw">mod</span> <span class="ident">cancellation</span>;
@@ -118,7 +117,7 @@
     <span class="ident">cancellation</span>::<span class="ident">Canceled</span>,
     <span class="ident">input</span>::{<span class="ident">CrateGraph</span>, <span class="ident">CrateId</span>, <span class="ident">Dependency</span>, <span class="ident">Edition</span>, <span class="ident">FileId</span>, <span class="ident">SourceRoot</span>, <span class="ident">SourceRootId</span>},
 };
-<span class="kw">pub</span> <span class="kw">use</span> ::<span class="ident">salsa</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">salsa</span>;
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CheckCanceled</span> {
     <span class="doccomment">/// Aborts current query if there are pending changes.</span>
@@ -199,8 +198,7 @@
 <span class="kw">fn</span> <span class="ident">source_root_crates</span>(<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">SourceDatabase</span>, <span class="ident">id</span>: <span class="ident">SourceRootId</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CrateId</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">source_root</span>(<span class="ident">id</span>);
     <span class="kw">let</span> <span class="ident">graph</span> <span class="op">=</span> <span class="ident">db</span>.<span class="ident">crate_graph</span>();
-    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span>
-        <span class="ident">root</span>.<span class="ident">files</span>.<span class="ident">values</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">it</span><span class="op">|</span> <span class="ident">graph</span>.<span class="ident">crate_id_for_crate_root</span>(<span class="ident">it</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
+    <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">root</span>.<span class="ident">walk</span>().<span class="ident">filter_map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">graph</span>.<span class="ident">crate_id_for_crate_root</span>(<span class="ident">it</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
     <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">res</span>)
 }
 

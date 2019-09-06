@@ -221,6 +221,18 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module specifies the input to rust-analyzer. In some sense, this is</span>
 <span class="doccomment">/// **the** most important module, because all other fancy stuff is strictly</span>
@@ -229,7 +241,7 @@
 <span class="doccomment">/// Note that neither this module, nor any other part of the analyzer&#39;s core do</span>
 <span class="doccomment">/// actual IO. See `vfs` and `project_model` in the `ra_lsp_server` crate for how</span>
 <span class="doccomment">/// actual IO is done and lowered to input.</span>
-<span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
+<span class="kw">use</span> <span class="ident">relative_path</span>::{<span class="ident">RelativePath</span>, <span class="ident">RelativePathBuf</span>};
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">SmolStr</span>;
@@ -260,7 +272,7 @@
     <span class="doccomment">/// Libraries are considered mostly immutable, this assumption is used to</span>
     <span class="doccomment">/// optimize salsa&#39;s query structure</span>
     <span class="kw">pub</span> <span class="ident">is_library</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">files</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">RelativePathBuf</span>, <span class="ident">FileId</span><span class="op">&gt;</span>,
+    <span class="ident">files</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">RelativePathBuf</span>, <span class="ident">FileId</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">SourceRoot</span> {
@@ -269,6 +281,18 @@
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_library</span>() <span class="op">-&gt;</span> <span class="ident">SourceRoot</span> {
         <span class="ident">SourceRoot</span> { <span class="ident">is_library</span>: <span class="bool-val">true</span>, ..<span class="ident">SourceRoot</span>::<span class="ident">new</span>() }
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">file_by_relative_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">RelativePath</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FileId</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">get</span>(<span class="ident">path</span>).<span class="ident">copied</span>()
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert_file</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">RelativePathBuf</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) {
+        <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">insert</span>(<span class="ident">path</span>, <span class="ident">file_id</span>);
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove_file</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">RelativePath</span>) {
+        <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">remove</span>(<span class="ident">path</span>);
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">walk</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">FileId</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span> {
+        <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">values</span>().<span class="ident">copied</span>()
     }
 }
 
