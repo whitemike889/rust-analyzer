@@ -345,6 +345,7 @@
 <span id="345">345</span>
 <span id="346">346</span>
 <span id="347">347</span>
+<span id="348">348</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module is concerned with finding methods that a given type provides.</span>
 <span class="doccomment">//! For details about how this works in rustc, see the method lookup page in the</span>
@@ -357,6 +358,7 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">autoderef</span>, <span class="ident">lower</span>, <span class="ident">Canonical</span>, <span class="ident">InEnvironment</span>, <span class="ident">TraitEnvironment</span>, <span class="ident">TraitRef</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
     <span class="ident">generics</span>::<span class="ident">HasGenericParams</span>,
     <span class="ident">impl_block</span>::{<span class="ident">ImplBlock</span>, <span class="ident">ImplId</span>, <span class="ident">ImplItem</span>},
     <span class="ident">nameres</span>::<span class="ident">CrateModuleId</span>,
@@ -364,7 +366,7 @@
     <span class="ident">traits</span>::<span class="ident">TraitItem</span>,
     <span class="ident">ty</span>::<span class="ident">primitive</span>::{<span class="ident">FloatBitness</span>, <span class="ident">UncertainFloatTy</span>, <span class="ident">UncertainIntTy</span>},
     <span class="ident">ty</span>::{<span class="ident">Ty</span>, <span class="ident">TypeCtor</span>},
-    <span class="ident">Crate</span>, <span class="ident">Function</span>, <span class="ident">HirDatabase</span>, <span class="ident">Module</span>, <span class="ident">Name</span>, <span class="ident">Trait</span>,
+    <span class="ident">Crate</span>, <span class="ident">Function</span>, <span class="ident">Module</span>, <span class="ident">Name</span>, <span class="ident">Trait</span>,
 };
 
 <span class="doccomment">/// This is used as a key for indexing impls.</span>

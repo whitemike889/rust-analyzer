@@ -553,6 +553,10 @@
 <span id="553">553</span>
 <span id="554">554</span>
 <span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">//!</span>
@@ -621,9 +625,12 @@
 <span class="kw">use</span> <span class="ident">test_utils</span>::<span class="ident">tested_by</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>, <span class="ident">either</span>::<span class="ident">Either</span>, <span class="ident">ids</span>::<span class="ident">MacroDefId</span>,
-    <span class="ident">nameres</span>::<span class="ident">diagnostics</span>::<span class="ident">DefDiagnostic</span>, <span class="ident">AstDatabase</span>, <span class="ident">AstId</span>, <span class="ident">BuiltinType</span>, <span class="ident">Crate</span>, <span class="ident">DefDatabase</span>,
-    <span class="ident">HirFileId</span>, <span class="ident">MacroDef</span>, <span class="ident">Module</span>, <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">PathKind</span>, <span class="ident">Trait</span>,
+    <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>},
+    <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>,
+    <span class="ident">either</span>::<span class="ident">Either</span>,
+    <span class="ident">ids</span>::<span class="ident">MacroDefId</span>,
+    <span class="ident">nameres</span>::<span class="ident">diagnostics</span>::<span class="ident">DefDiagnostic</span>,
+    <span class="ident">AstId</span>, <span class="ident">BuiltinType</span>, <span class="ident">Crate</span>, <span class="ident">HirFileId</span>, <span class="ident">MacroDef</span>, <span class="ident">Module</span>, <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">PathKind</span>, <span class="ident">Trait</span>,
 };
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="self">self</span>::<span class="ident">raw</span>::{<span class="ident">ImportSourceMap</span>, <span class="ident">RawItems</span>};
@@ -1072,9 +1079,10 @@
     <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 
     <span class="kw">use</span> <span class="kw">crate</span>::{
+        <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>},
         <span class="ident">diagnostics</span>::{<span class="ident">DiagnosticSink</span>, <span class="ident">UnresolvedModule</span>},
         <span class="ident">nameres</span>::<span class="ident">CrateModuleId</span>,
-        <span class="ident">AstDatabase</span>, <span class="ident">AstId</span>, <span class="ident">DefDatabase</span>,
+        <span class="ident">AstId</span>,
     };
 
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>

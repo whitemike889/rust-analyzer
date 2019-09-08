@@ -238,6 +238,8 @@
 <span id="238">238</span>
 <span id="239">239</span>
 <span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module contains the implementation details of the HIR for ADTs, i.e.</span>
 <span class="doccomment">//! structs and enums (and unions).</span>
@@ -248,8 +250,10 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>, <span class="ident">StructKind</span>, <span class="ident">TypeAscriptionOwner</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>, <span class="ident">AsName</span>, <span class="ident">AstDatabase</span>, <span class="ident">Crate</span>, <span class="ident">DefDatabase</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">FieldSource</span>,
-    <span class="ident">HasSource</span>, <span class="ident">HirDatabase</span>, <span class="ident">Name</span>, <span class="ident">Source</span>, <span class="ident">Struct</span>, <span class="ident">StructField</span>, <span class="ident">Union</span>,
+    <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">HirDatabase</span>},
+    <span class="ident">type_ref</span>::<span class="ident">TypeRef</span>,
+    <span class="ident">AsName</span>, <span class="ident">Crate</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">FieldSource</span>, <span class="ident">HasSource</span>, <span class="ident">Name</span>, <span class="ident">Source</span>, <span class="ident">Struct</span>, <span class="ident">StructField</span>,
+    <span class="ident">Union</span>,
 };
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>

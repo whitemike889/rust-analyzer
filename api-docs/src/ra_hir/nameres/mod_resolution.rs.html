@@ -193,7 +193,7 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">SmolStr</span>;
 <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">DefDatabase</span>, <span class="ident">HirFileId</span>, <span class="ident">Name</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>::<span class="ident">DefDatabase</span>, <span class="ident">HirFileId</span>, <span class="ident">Name</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct</span> <span class="ident">ParentModule</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {

@@ -352,6 +352,7 @@
 <span id="352">352</span>
 <span id="353">353</span>
 <span id="354">354</span>
+<span id="355">355</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -359,8 +360,9 @@
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
     <span class="ident">expr</span>::{<span class="ident">Body</span>, <span class="ident">Expr</span>, <span class="ident">ExprId</span>, <span class="ident">Pat</span>, <span class="ident">PatId</span>, <span class="ident">Statement</span>},
-    <span class="ident">DefWithBody</span>, <span class="ident">HirDatabase</span>, <span class="ident">Name</span>,
+    <span class="ident">DefWithBody</span>, <span class="ident">Name</span>,
 };
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>

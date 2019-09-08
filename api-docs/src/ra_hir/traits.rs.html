@@ -90,6 +90,8 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! HIR for trait definitions.</span>
 
@@ -99,8 +101,10 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>::{<span class="self">self</span>, <span class="ident">NameOwner</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">ids</span>::<span class="ident">LocationCtx</span>, <span class="ident">name</span>::<span class="ident">AsName</span>, <span class="ident">AstDatabase</span>, <span class="ident">Const</span>, <span class="ident">DefDatabase</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">Module</span>,
-    <span class="ident">Name</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>,
+    <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>},
+    <span class="ident">ids</span>::<span class="ident">LocationCtx</span>,
+    <span class="ident">name</span>::<span class="ident">AsName</span>,
+    <span class="ident">Const</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">Module</span>, <span class="ident">Name</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>,
 };
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>

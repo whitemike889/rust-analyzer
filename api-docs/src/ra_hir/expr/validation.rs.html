@@ -141,6 +141,7 @@
 <span id="141">141</span>
 <span id="142">142</span>
 <span id="143">143</span>
+<span id="144">144</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -149,12 +150,13 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">adt</span>::<span class="ident">AdtDef</span>,
+    <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
     <span class="ident">diagnostics</span>::{<span class="ident">DiagnosticSink</span>, <span class="ident">MissingFields</span>, <span class="ident">MissingOkInTailExpr</span>},
     <span class="ident">expr</span>::<span class="ident">AstPtr</span>,
     <span class="ident">name</span>,
     <span class="ident">path</span>::{<span class="ident">PathKind</span>, <span class="ident">PathSegment</span>},
     <span class="ident">ty</span>::{<span class="ident">ApplicationTy</span>, <span class="ident">InferenceResult</span>, <span class="ident">Ty</span>, <span class="ident">TypeCtor</span>},
-    <span class="ident">Function</span>, <span class="ident">HirDatabase</span>, <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">PerNs</span>, <span class="ident">Resolution</span>,
+    <span class="ident">Function</span>, <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">PerNs</span>, <span class="ident">Resolution</span>,
 };
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Expr</span>, <span class="ident">ExprId</span>, <span class="ident">RecordLitField</span>};

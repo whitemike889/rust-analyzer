@@ -161,8 +161,8 @@
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">ast</span>::<span class="ident">AttrsOwner</span>, <span class="ident">SmolStr</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">AstDatabase</span>, <span class="ident">Crate</span>, <span class="ident">DefDatabase</span>, <span class="ident">Enum</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">HirDatabase</span>, <span class="ident">ImplBlock</span>, <span class="ident">Module</span>,
-    <span class="ident">ModuleDef</span>, <span class="ident">Static</span>, <span class="ident">Struct</span>, <span class="ident">Trait</span>,
+    <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">HirDatabase</span>},
+    <span class="ident">Crate</span>, <span class="ident">Enum</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">ImplBlock</span>, <span class="ident">Module</span>, <span class="ident">ModuleDef</span>, <span class="ident">Static</span>, <span class="ident">Struct</span>, <span class="ident">Trait</span>,
 };
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>

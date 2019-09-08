@@ -1675,6 +1675,8 @@
 <span id="1675">1675</span>
 <span id="1676">1676</span>
 <span id="1677">1677</span>
+<span id="1678">1678</span>
+<span id="1679">1679</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Type inference, i.e. the process of walking through the code and determining</span>
 <span class="doccomment">//! the type of each expression and pattern.</span>
@@ -1713,6 +1715,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">adt</span>::<span class="ident">VariantDef</span>,
     <span class="ident">code_model</span>::{<span class="ident">ModuleDef</span>::<span class="ident">Trait</span>, <span class="ident">TypeAlias</span>},
+    <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
     <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>,
     <span class="ident">expr</span>::{
         <span class="self">self</span>, <span class="ident">Array</span>, <span class="ident">BinaryOp</span>, <span class="ident">BindingAnnotation</span>, <span class="ident">Body</span>, <span class="ident">Expr</span>, <span class="ident">ExprId</span>, <span class="ident">Literal</span>, <span class="ident">Pat</span>, <span class="ident">PatId</span>,
@@ -1728,8 +1731,8 @@
     },
     <span class="ident">ty</span>::<span class="ident">infer</span>::<span class="ident">diagnostics</span>::<span class="ident">InferenceDiagnostic</span>,
     <span class="ident">type_ref</span>::{<span class="ident">Mutability</span>, <span class="ident">TypeRef</span>},
-    <span class="ident">AdtDef</span>, <span class="ident">ConstData</span>, <span class="ident">DefWithBody</span>, <span class="ident">FnData</span>, <span class="ident">Function</span>, <span class="ident">HasBody</span>, <span class="ident">HirDatabase</span>, <span class="ident">ImplItem</span>, <span class="ident">ModuleDef</span>,
-    <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">StructField</span>,
+    <span class="ident">AdtDef</span>, <span class="ident">ConstData</span>, <span class="ident">DefWithBody</span>, <span class="ident">FnData</span>, <span class="ident">Function</span>, <span class="ident">HasBody</span>, <span class="ident">ImplItem</span>, <span class="ident">ModuleDef</span>, <span class="ident">Name</span>, <span class="ident">Path</span>,
+    <span class="ident">StructField</span>,
 };
 
 <span class="kw">mod</span> <span class="ident">unify</span>;
@@ -3292,9 +3295,10 @@
 
 <span class="kw">mod</span> <span class="ident">diagnostics</span> {
     <span class="kw">use</span> <span class="kw">crate</span>::{
+        <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
         <span class="ident">diagnostics</span>::{<span class="ident">DiagnosticSink</span>, <span class="ident">NoSuchField</span>},
         <span class="ident">expr</span>::<span class="ident">ExprId</span>,
-        <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">HirDatabase</span>,
+        <span class="ident">Function</span>, <span class="ident">HasSource</span>,
     };
 
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>)]</span>

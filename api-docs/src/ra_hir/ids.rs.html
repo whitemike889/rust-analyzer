@@ -398,6 +398,9 @@
 <span id="398">398</span>
 <span id="399">399</span>
 <span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
@@ -409,7 +412,10 @@
 <span class="kw">use</span> <span class="ident">ra_prof</span>::<span class="ident">profile</span>;
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::{<span class="ident">ast</span>, <span class="ident">AstNode</span>, <span class="ident">Parse</span>, <span class="ident">SyntaxNode</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">AstDatabase</span>, <span class="ident">AstId</span>, <span class="ident">DefDatabase</span>, <span class="ident">FileAstId</span>, <span class="ident">InternDatabase</span>, <span class="ident">Module</span>, <span class="ident">Source</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">InternDatabase</span>},
+    <span class="ident">AstId</span>, <span class="ident">FileAstId</span>, <span class="ident">Module</span>, <span class="ident">Source</span>,
+};
 
 <span class="doccomment">/// hir makes heavy use of ids: integer (u32) handlers to various things. You</span>
 <span class="doccomment">/// can think of id as a pointer (but without a lifetime) or a file descriptor</span>

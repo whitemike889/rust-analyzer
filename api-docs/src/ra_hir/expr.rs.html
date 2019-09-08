@@ -564,6 +564,7 @@
 <span id="564">564</span>
 <span id="565">565</span>
 <span id="566">566</span>
+<span id="567">567</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">lower</span>;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">scope</span>;
@@ -576,10 +577,11 @@
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">db</span>::<span class="ident">HirDatabase</span>,
     <span class="ident">path</span>::<span class="ident">GenericArgs</span>,
     <span class="ident">ty</span>::<span class="ident">primitive</span>::{<span class="ident">UncertainFloatTy</span>, <span class="ident">UncertainIntTy</span>},
     <span class="ident">type_ref</span>::{<span class="ident">Mutability</span>, <span class="ident">TypeRef</span>},
-    <span class="ident">DefWithBody</span>, <span class="ident">Either</span>, <span class="ident">HasSource</span>, <span class="ident">HirDatabase</span>, <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">Resolver</span>, <span class="ident">Source</span>,
+    <span class="ident">DefWithBody</span>, <span class="ident">Either</span>, <span class="ident">HasSource</span>, <span class="ident">Name</span>, <span class="ident">Path</span>, <span class="ident">Resolver</span>, <span class="ident">Source</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">scope</span>::<span class="ident">ExprScopes</span>;

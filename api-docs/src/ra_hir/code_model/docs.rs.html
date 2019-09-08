@@ -94,14 +94,16 @@
 <span id="94">94</span>
 <span id="95">95</span>
 <span id="96">96</span>
+<span id="97">97</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">ast</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">AstDatabase</span>, <span class="ident">Const</span>, <span class="ident">DefDatabase</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">FieldSource</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>,
-    <span class="ident">HirDatabase</span>, <span class="ident">MacroDef</span>, <span class="ident">Module</span>, <span class="ident">Static</span>, <span class="ident">Struct</span>, <span class="ident">StructField</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>, <span class="ident">Union</span>,
+    <span class="ident">db</span>::{<span class="ident">AstDatabase</span>, <span class="ident">DefDatabase</span>, <span class="ident">HirDatabase</span>},
+    <span class="ident">Const</span>, <span class="ident">Enum</span>, <span class="ident">EnumVariant</span>, <span class="ident">FieldSource</span>, <span class="ident">Function</span>, <span class="ident">HasSource</span>, <span class="ident">MacroDef</span>, <span class="ident">Module</span>, <span class="ident">Static</span>, <span class="ident">Struct</span>,
+    <span class="ident">StructField</span>, <span class="ident">Trait</span>, <span class="ident">TypeAlias</span>, <span class="ident">Union</span>,
 };
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
