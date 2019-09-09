@@ -324,7 +324,7 @@
         <span class="comment">// }</span>
         <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[...]) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..=]) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..]) {
             <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">atom_pat</span>(<span class="ident">p</span>, <span class="ident">recovery_set</span>);
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_PAT</span>);
         }
@@ -388,7 +388,7 @@
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">is_literal_pat_start</span>(<span class="ident">p</span>));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>]) {
-        <span class="ident">p</span>.<span class="ident">bump</span>();
+        <span class="ident">p</span>.<span class="ident">bump_any</span>();
     }
     <span class="ident">expressions</span>::<span class="ident">literal</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">LITERAL_PAT</span>)
@@ -428,7 +428,7 @@
 <span class="comment">// }</span>
 <span class="kw">fn</span> <span class="ident">tuple_pat_fields</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">pat_list</span>(<span class="ident">p</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;)&#39;</span>]);
     <span class="ident">p</span>.<span class="ident">expect</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;)&#39;</span>]);
 }
@@ -443,10 +443,10 @@
 <span class="kw">fn</span> <span class="ident">record_field_pat_list</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]) {
         <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(),
+            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
             <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:] <span class="op">=&gt;</span> <span class="ident">record_field_pat</span>(<span class="ident">p</span>),
             <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">=&gt;</span> <span class="ident">error_block</span>(<span class="ident">p</span>, <span class="string">&quot;expected ident&quot;</span>),
             <span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>] <span class="op">=&gt;</span> {
@@ -470,7 +470,7 @@
 
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="ident">name</span>(<span class="ident">p</span>);
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">pattern</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RECORD_FIELD_PAT</span>);
 }
@@ -480,7 +480,7 @@
 <span class="kw">fn</span> <span class="ident">placeholder_pat</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">_</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">PLACEHOLDER_PAT</span>)
 }
 
@@ -492,7 +492,7 @@
 <span class="kw">fn</span> <span class="ident">ref_pat</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>]);
     <span class="ident">pattern</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">REF_PAT</span>)
@@ -516,7 +516,7 @@
 <span class="kw">fn</span> <span class="ident">slice_pat</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;[&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">pat_list</span>(<span class="ident">p</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;]&#39;</span>]);
     <span class="ident">p</span>.<span class="ident">expect</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;]&#39;</span>]);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">SLICE_PAT</span>)
@@ -525,7 +525,7 @@
 <span class="kw">fn</span> <span class="ident">pat_list</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">ket</span>: <span class="ident">SyntaxKind</span>) {
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">ket</span>) {
         <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(),
+            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
             <span class="kw">_</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at_ts</span>(<span class="ident">PATTERN_FIRST</span>) {
                     <span class="ident">p</span>.<span class="ident">error</span>(<span class="string">&quot;expected a pattern&quot;</span>);
@@ -569,7 +569,7 @@
 <span class="kw">fn</span> <span class="ident">box_pat</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">pattern</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">BOX_PAT</span>)
 }

@@ -33,7 +33,7 @@
 
 <span class="kw">fn</span> <span class="ident">const_or_static</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="ident">Marker</span>, <span class="ident">kw</span>: <span class="ident">SyntaxKind</span>, <span class="ident">def</span>: <span class="ident">SyntaxKind</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">kw</span>));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>]); <span class="comment">// FIXME: validator to forbid const mut</span>
     <span class="ident">name</span>(<span class="ident">p</span>);
     <span class="ident">types</span>::<span class="ident">ascription</span>(<span class="ident">p</span>);

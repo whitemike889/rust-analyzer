@@ -62,13 +62,13 @@
     <span class="kw">match</span> (<span class="ident">colon_colon_required</span>, <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">0</span>), <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>)) {
         (<span class="kw">_</span>, <span class="macro">T</span><span class="macro">!</span>[::], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]) <span class="op">=&gt;</span> {
             <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-            <span class="ident">p</span>.<span class="ident">bump</span>();
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
         }
         (<span class="bool-val">false</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span>,
         (<span class="bool-val">false</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="kw">_</span>) <span class="op">=&gt;</span> {
             <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
         }
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">return</span>,
     };
@@ -89,7 +89,7 @@
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
         <span class="ident">LIFETIME</span> <span class="op">=&gt;</span> {
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">LIFETIME_ARG</span>);
         }
         <span class="comment">// test associated_type_bounds</span>
@@ -101,7 +101,7 @@
         }
         <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> {
             <span class="ident">name_ref</span>(<span class="ident">p</span>);
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">types</span>::<span class="ident">type_</span>(<span class="ident">p</span>);
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ASSOC_TYPE_ARG</span>);
         }

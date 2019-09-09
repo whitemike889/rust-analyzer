@@ -451,6 +451,12 @@
 <span id="451">451</span>
 <span id="452">452</span>
 <span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
 
@@ -602,7 +608,7 @@
     }
 
     <span class="doccomment">/// Advances the parser by one token with composite puncts handled</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump_any</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">0</span>);
         <span class="kw">if</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">EOF</span> {
             <span class="kw">return</span>;
@@ -622,6 +628,12 @@
                 <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="number">1</span>);
             }
         }
+    }
+
+    <span class="doccomment">/// Advances the parser by one token, asserting that it is exactly the expected token</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expected</span>: <span class="ident">SyntaxKind</span>) {
+        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">nth</span>(<span class="number">0</span>) <span class="op">==</span> <span class="ident">expected</span>);
+        <span class="self">self</span>.<span class="ident">bump_any</span>()
     }
 
     <span class="doccomment">/// Advances the parser by one token, remapping its kind.</span>
@@ -659,7 +671,7 @@
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">at</span>(<span class="ident">kind</span>) {
             <span class="kw">return</span> <span class="bool-val">false</span>;
         }
-        <span class="self">self</span>.<span class="ident">bump</span>();
+        <span class="self">self</span>.<span class="ident">bump_any</span>();
         <span class="bool-val">true</span>
     }
 
@@ -685,7 +697,7 @@
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start</span>();
             <span class="self">self</span>.<span class="ident">error</span>(<span class="ident">message</span>);
-            <span class="self">self</span>.<span class="ident">bump</span>();
+            <span class="self">self</span>.<span class="ident">bump_any</span>();
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="self">self</span>, <span class="ident">ERROR</span>);
         };
     }

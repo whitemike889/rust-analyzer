@@ -206,7 +206,7 @@
 <span class="kw">fn</span> <span class="ident">type_param_list</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]) {
         <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
@@ -234,7 +234,7 @@
 
 <span class="kw">fn</span> <span class="ident">lifetime_param</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="ident">Marker</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">LIFETIME</span>));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[:]) {
         <span class="ident">lifetime_bounds</span>(<span class="ident">p</span>);
     }
@@ -250,7 +250,7 @@
     <span class="comment">// test type_param_default</span>
     <span class="comment">// struct S&lt;T = i32&gt;;</span>
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) {
-        <span class="ident">p</span>.<span class="ident">bump</span>();
+        <span class="ident">p</span>.<span class="ident">bump_any</span>();
         <span class="ident">types</span>::<span class="ident">type_</span>(<span class="ident">p</span>)
     }
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">TYPE_PARAM</span>);
@@ -260,15 +260,15 @@
 <span class="comment">// struct S&lt;T: &#39;a + ?Sized + (Copy)&gt;;</span>
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">bounds</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[:]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">bounds_without_colon</span>(<span class="ident">p</span>);
 }
 
 <span class="kw">fn</span> <span class="ident">lifetime_bounds</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[:]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">while</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">LIFETIME</span>) {
-        <span class="ident">p</span>.<span class="ident">bump</span>();
+        <span class="ident">p</span>.<span class="ident">bump_any</span>();
         <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>]) {
             <span class="kw">break</span>;
         }
@@ -295,7 +295,7 @@
     <span class="kw">let</span> <span class="ident">has_paren</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>]);
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="question-mark">?</span>]);
     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-        <span class="ident">LIFETIME</span> <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(),
+        <span class="ident">LIFETIME</span> <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
         <span class="macro">T</span><span class="macro">!</span>[<span class="kw">for</span>] <span class="op">=&gt;</span> <span class="ident">types</span>::<span class="ident">for_type</span>(<span class="ident">p</span>),
         <span class="kw">_</span> <span class="kw">if</span> <span class="ident">paths</span>::<span class="ident">is_use_path_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> <span class="ident">types</span>::<span class="ident">path_type_</span>(<span class="ident">p</span>, <span class="bool-val">false</span>),
         <span class="kw">_</span> <span class="op">=&gt;</span> {
@@ -324,7 +324,7 @@
         <span class="kw">return</span>;
     }
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="kw">while</span> <span class="ident">is_where_predicate</span>(<span class="ident">p</span>) {
         <span class="ident">where_predicate</span>(<span class="ident">p</span>);
@@ -362,7 +362,7 @@
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
         <span class="ident">LIFETIME</span> <span class="op">=&gt;</span> {
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[:]) {
                 <span class="ident">bounds</span>(<span class="ident">p</span>);
             } <span class="kw">else</span> {

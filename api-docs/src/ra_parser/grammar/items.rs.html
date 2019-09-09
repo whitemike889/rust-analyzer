@@ -495,7 +495,7 @@
         } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">stop_on_r_curly</span> {
             <span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
             <span class="ident">p</span>.<span class="ident">error</span>(<span class="string">&quot;unmatched `}`&quot;</span>);
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">e</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ERROR</span>);
         } <span class="kw">else</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]) {
             <span class="ident">p</span>.<span class="ident">err_and_bump</span>(<span class="string">&quot;expected an item&quot;</span>);
@@ -707,9 +707,9 @@
 
 <span class="kw">fn</span> <span class="ident">extern_crate_item</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="ident">Marker</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">extern</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">name_ref</span>(<span class="ident">p</span>);
     <span class="ident">opt_alias</span>(<span class="ident">p</span>);
     <span class="ident">p</span>.<span class="ident">expect</span>(<span class="macro">T</span><span class="macro">!</span>[;]);
@@ -719,7 +719,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">extern_item_list</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">mod_contents</span>(<span class="ident">p</span>, <span class="bool-val">true</span>);
     <span class="ident">p</span>.<span class="ident">expect</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">EXTERN_ITEM_LIST</span>);
@@ -727,7 +727,7 @@
 
 <span class="kw">fn</span> <span class="ident">fn_def</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">flavor</span>: <span class="ident">ItemFlavor</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">fn</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="ident">name_r</span>(<span class="ident">p</span>, <span class="ident">ITEM_RECOVERY_SET</span>);
     <span class="comment">// test function_type_params</span>
@@ -754,7 +754,7 @@
     <span class="comment">// test fn_decl</span>
     <span class="comment">// trait T { fn foo(); }</span>
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[;]) {
-        <span class="ident">p</span>.<span class="ident">bump</span>();
+        <span class="ident">p</span>.<span class="ident">bump_any</span>();
     } <span class="kw">else</span> {
         <span class="ident">expressions</span>::<span class="ident">block</span>(<span class="ident">p</span>)
     }
@@ -764,7 +764,7 @@
 <span class="comment">// type Foo = Bar;</span>
 <span class="kw">fn</span> <span class="ident">type_def</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="ident">Marker</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">type</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="ident">name</span>(<span class="ident">p</span>);
 
@@ -788,7 +788,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">mod_item</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">m</span>: <span class="ident">Marker</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">mod</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="ident">name</span>(<span class="ident">p</span>);
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]) {
@@ -802,7 +802,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">mod_item_list</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">mod_contents</span>(<span class="ident">p</span>, <span class="bool-val">true</span>);
     <span class="ident">p</span>.<span class="ident">expect</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">ITEM_LIST</span>);
@@ -843,7 +843,7 @@
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="macro">unreachable</span><span class="macro">!</span>(),
     };
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">closing_paren_kind</span>) {
         <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
             <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;[&#39;</span>] <span class="op">=&gt;</span> <span class="ident">token_tree</span>(<span class="ident">p</span>),

@@ -152,7 +152,7 @@
         };
         <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">use_tree</span> {
             <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">qual</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">path_segment</span>(<span class="ident">p</span>, <span class="ident">mode</span>, <span class="bool-val">false</span>);
             <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">PATH</span>);
             <span class="ident">qual</span> <span class="op">=</span> <span class="ident">path</span>;
@@ -188,7 +188,7 @@
             }
             <span class="comment">// test crate_path</span>
             <span class="comment">// use crate::foo;</span>
-            <span class="macro">T</span><span class="macro">!</span>[<span class="self">self</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">super</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="self">self</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">super</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
             <span class="kw">_</span> <span class="op">=&gt;</span> {
                 <span class="ident">p</span>.<span class="ident">err_recover</span>(<span class="string">&quot;expected identifier&quot;</span>, <span class="ident">items</span>::<span class="ident">ITEM_RECOVERY_SET</span>);
             }

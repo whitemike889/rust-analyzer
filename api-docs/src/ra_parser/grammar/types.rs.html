@@ -354,7 +354,7 @@
 <span class="kw">fn</span> <span class="ident">paren_or_tuple_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n_types</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">trailing_comma</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="bool-val">false</span>;
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;)&#39;</span>]) {
@@ -389,20 +389,20 @@
 <span class="kw">fn</span> <span class="ident">never_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">NEVER_TYPE</span>);
 }
 
 <span class="kw">fn</span> <span class="ident">pointer_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
         <span class="comment">// test pointer_type_mut</span>
         <span class="comment">// type M = *mut ();</span>
         <span class="comment">// type C = *mut ();</span>
-        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">const</span>] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">const</span>] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
         <span class="kw">_</span> <span class="op">=&gt;</span> {
             <span class="comment">// test_err pointer_type_no_mutability</span>
             <span class="comment">// type T = *();</span>
@@ -420,21 +420,21 @@
 <span class="kw">fn</span> <span class="ident">array_or_slice_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;[&#39;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
 
     <span class="ident">type_</span>(<span class="ident">p</span>);
     <span class="kw">let</span> <span class="ident">kind</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
         <span class="comment">// test slice_type</span>
         <span class="comment">// type T = [()];</span>
         <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;]&#39;</span>] <span class="op">=&gt;</span> {
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">SLICE_TYPE</span>
         }
 
         <span class="comment">// test array_type</span>
         <span class="comment">// type T = [(); 92];</span>
         <span class="macro">T</span><span class="macro">!</span>[;] <span class="op">=&gt;</span> {
-            <span class="ident">p</span>.<span class="ident">bump</span>();
+            <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">expressions</span>::<span class="ident">expr</span>(<span class="ident">p</span>);
             <span class="ident">p</span>.<span class="ident">expect</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;]&#39;</span>]);
             <span class="ident">ARRAY_TYPE</span>
@@ -456,7 +456,7 @@
 <span class="kw">fn</span> <span class="ident">reference_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="ident">LIFETIME</span>);
     <span class="ident">p</span>.<span class="ident">eat</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>]);
     <span class="ident">type_no_bounds</span>(<span class="ident">p</span>);
@@ -468,7 +468,7 @@
 <span class="kw">fn</span> <span class="ident">placeholder_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">_</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">PLACEHOLDER_TYPE</span>);
 }
 
@@ -503,7 +503,7 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">for_binder</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">for</span>]));
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]) {
         <span class="ident">type_params</span>::<span class="ident">opt_type_param_list</span>(<span class="ident">p</span>);
     } <span class="kw">else</span> {
@@ -534,7 +534,7 @@
 <span class="kw">fn</span> <span class="ident">impl_trait_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">impl</span>]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">type_params</span>::<span class="ident">bounds_without_colon</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">IMPL_TRAIT_TYPE</span>);
 }
@@ -544,7 +544,7 @@
 <span class="kw">fn</span> <span class="ident">dyn_trait_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
     <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">dyn</span> ]));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="ident">p</span>.<span class="ident">bump</span>();
+    <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">type_params</span>::<span class="ident">bounds_without_colon</span>(<span class="ident">p</span>);
     <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">DYN_TRAIT_TYPE</span>);
 }
