@@ -259,18 +259,40 @@
 <span id="259">259</span>
 <span id="260">260</span>
 <span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">panic</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>};
 
 <span class="kw">use</span> <span class="ident">parking_lot</span>::<span class="ident">Mutex</span>;
 <span class="kw">use</span> <span class="ident">ra_db</span>::{
-    <span class="ident">salsa</span>, <span class="ident">CrateGraph</span>, <span class="ident">Edition</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">SourceDatabase</span>, <span class="ident">SourceRoot</span>, <span class="ident">SourceRootId</span>,
+    <span class="ident">salsa</span>, <span class="ident">CrateGraph</span>, <span class="ident">CrateId</span>, <span class="ident">Edition</span>, <span class="ident">FileId</span>, <span class="ident">FilePosition</span>, <span class="ident">SourceDatabase</span>, <span class="ident">SourceRoot</span>,
+    <span class="ident">SourceRootId</span>,
 };
 <span class="kw">use</span> <span class="ident">relative_path</span>::<span class="ident">RelativePathBuf</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 <span class="kw">use</span> <span class="ident">test_utils</span>::{<span class="ident">extract_offset</span>, <span class="ident">parse_fixture</span>, <span class="ident">CURSOR_MARKER</span>};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>, <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">db</span>, <span class="ident">debug</span>::<span class="ident">HirDebugHelper</span>, <span class="ident">diagnostics</span>::<span class="ident">DiagnosticSink</span>};
 
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WORKSPACE</span>: <span class="ident">SourceRootId</span> <span class="op">=</span> <span class="ident">SourceRootId</span>(<span class="number">0</span>);
 
@@ -286,9 +308,21 @@
     <span class="ident">events</span>: <span class="ident">Mutex</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">salsa</span>::<span class="ident">Event</span><span class="op">&lt;</span><span class="ident">MockDatabase</span><span class="op">&gt;&gt;</span><span class="op">&gt;&gt;</span>,
     <span class="ident">runtime</span>: <span class="ident">salsa</span>::<span class="ident">Runtime</span><span class="op">&lt;</span><span class="ident">MockDatabase</span><span class="op">&gt;</span>,
     <span class="ident">files</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">FileId</span><span class="op">&gt;</span>,
+    <span class="ident">crate_names</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">CrateId</span>, <span class="ident">String</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">file_paths</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">FileId</span>, <span class="ident">String</span><span class="op">&gt;&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">panic</span>::<span class="ident">RefUnwindSafe</span> <span class="kw">for</span> <span class="ident">MockDatabase</span> {}
+
+<span class="kw">impl</span> <span class="ident">HirDebugHelper</span> <span class="kw">for</span> <span class="ident">MockDatabase</span> {
+    <span class="kw">fn</span> <span class="ident">crate_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">krate</span>: <span class="ident">CrateId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">crate_names</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">krate</span>).<span class="ident">cloned</span>()
+    }
+
+    <span class="kw">fn</span> <span class="ident">file_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">file_id</span>: <span class="ident">FileId</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">file_paths</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">file_id</span>).<span class="ident">cloned</span>()
+    }
+}
 
 <span class="kw">impl</span> <span class="ident">MockDatabase</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_files</span>(<span class="ident">fixture</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">MockDatabase</span> {
@@ -324,6 +358,7 @@
         <span class="kw">for</span> (<span class="ident">crate_name</span>, (<span class="ident">crate_root</span>, <span class="ident">edition</span>, <span class="kw">_</span>)) <span class="kw">in</span> <span class="ident">graph</span>.<span class="number">0</span>.<span class="ident">iter</span>() {
             <span class="kw">let</span> <span class="ident">crate_root</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">file_id_of</span>(<span class="kw-2">&amp;</span><span class="ident">crate_root</span>);
             <span class="kw">let</span> <span class="ident">crate_id</span> <span class="op">=</span> <span class="ident">crate_graph</span>.<span class="ident">add_crate_root</span>(<span class="ident">crate_root</span>, <span class="kw-2">*</span><span class="ident">edition</span>);
+            <span class="ident">Arc</span>::<span class="ident">make_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">crate_names</span>).<span class="ident">insert</span>(<span class="ident">crate_id</span>, <span class="ident">crate_name</span>.<span class="ident">clone</span>());
             <span class="ident">ids</span>.<span class="ident">insert</span>(<span class="ident">crate_name</span>, <span class="ident">crate_id</span>);
         }
         <span class="kw">for</span> (<span class="ident">crate_name</span>, (<span class="kw">_</span>, <span class="kw">_</span>, <span class="ident">deps</span>)) <span class="kw">in</span> <span class="ident">graph</span>.<span class="number">0</span>.<span class="ident">iter</span>() {
@@ -413,8 +448,11 @@
         <span class="kw">let</span> <span class="ident">is_crate_root</span> <span class="op">=</span> <span class="ident">rel_path</span> <span class="op">==</span> <span class="string">&quot;lib.rs&quot;</span> <span class="op">||</span> <span class="ident">rel_path</span> <span class="op">==</span> <span class="string">&quot;/main.rs&quot;</span>;
 
         <span class="kw">let</span> <span class="ident">file_id</span> <span class="op">=</span> <span class="ident">FileId</span>(<span class="self">self</span>.<span class="ident">files</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>);
+
         <span class="kw">let</span> <span class="ident">prev</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">files</span>.<span class="ident">insert</span>(<span class="ident">path</span>.<span class="ident">to_string</span>(), <span class="ident">file_id</span>);
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">prev</span>.<span class="ident">is_none</span>(), <span class="string">&quot;duplicate files in the text fixture&quot;</span>);
+        <span class="ident">Arc</span>::<span class="ident">make_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">file_paths</span>).<span class="ident">insert</span>(<span class="ident">file_id</span>, <span class="ident">path</span>.<span class="ident">to_string</span>());
+
         <span class="kw">let</span> <span class="ident">text</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">text</span>.<span class="ident">to_string</span>());
         <span class="self">self</span>.<span class="ident">set_file_text</span>(<span class="ident">file_id</span>, <span class="ident">text</span>);
         <span class="self">self</span>.<span class="ident">set_file_relative_path</span>(<span class="ident">file_id</span>, <span class="ident">rel_path</span>.<span class="ident">clone</span>());
@@ -462,6 +500,8 @@
             <span class="ident">events</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
             <span class="ident">runtime</span>: <span class="ident">salsa</span>::<span class="ident">Runtime</span>::<span class="ident">default</span>(),
             <span class="ident">files</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
+            <span class="ident">crate_names</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
+            <span class="ident">file_paths</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
         };
         <span class="ident">db</span>.<span class="ident">set_crate_graph</span>(<span class="ident">Default</span>::<span class="ident">default</span>());
         <span class="ident">db</span>
@@ -475,6 +515,8 @@
             <span class="ident">runtime</span>: <span class="self">self</span>.<span class="ident">runtime</span>.<span class="ident">snapshot</span>(<span class="self">self</span>),
             <span class="comment">// only the root database can be used to get file_id by path.</span>
             <span class="ident">files</span>: <span class="ident">FxHashMap</span>::<span class="ident">default</span>(),
+            <span class="ident">file_paths</span>: <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">file_paths</span>),
+            <span class="ident">crate_names</span>: <span class="ident">Arc</span>::<span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">crate_names</span>),
         })
     }
 }

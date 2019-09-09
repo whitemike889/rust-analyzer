@@ -262,6 +262,11 @@
 <span id="262">262</span>
 <span id="263">263</span>
 <span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
@@ -357,6 +362,7 @@
             <span class="kw">let</span> <span class="ident">vfs_root_path</span> <span class="op">=</span> <span class="ident">vfs</span>.<span class="ident">root2path</span>(<span class="ident">r</span>);
             <span class="kw">let</span> <span class="ident">is_local</span> <span class="op">=</span> <span class="ident">folder_roots</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">vfs_root_path</span>.<span class="ident">starts_with</span>(<span class="ident">it</span>));
             <span class="ident">change</span>.<span class="ident">add_root</span>(<span class="ident">SourceRootId</span>(<span class="ident">r</span>.<span class="number">0</span>), <span class="ident">is_local</span>);
+            <span class="ident">change</span>.<span class="ident">set_debug_root_path</span>(<span class="ident">SourceRootId</span>(<span class="ident">r</span>.<span class="number">0</span>), <span class="ident">vfs_root_path</span>.<span class="ident">display</span>().<span class="ident">to_string</span>());
         }
 
         <span class="comment">// Create crate graph from all the workspaces</span>
@@ -366,7 +372,11 @@
             <span class="ident">vfs_file</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">f</span><span class="op">|</span> <span class="ident">FileId</span>(<span class="ident">f</span>.<span class="number">0</span>))
         };
         <span class="kw">for</span> <span class="ident">ws</span> <span class="kw">in</span> <span class="ident">workspaces</span>.<span class="ident">iter</span>() {
-            <span class="ident">crate_graph</span>.<span class="ident">extend</span>(<span class="ident">ws</span>.<span class="ident">to_crate_graph</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">load</span>));
+            <span class="kw">let</span> (<span class="ident">graph</span>, <span class="ident">crate_names</span>) <span class="op">=</span> <span class="ident">ws</span>.<span class="ident">to_crate_graph</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">load</span>);
+            <span class="kw">let</span> <span class="ident">shift</span> <span class="op">=</span> <span class="ident">crate_graph</span>.<span class="ident">extend</span>(<span class="ident">graph</span>);
+            <span class="kw">for</span> (<span class="ident">crate_id</span>, <span class="ident">name</span>) <span class="kw">in</span> <span class="ident">crate_names</span> {
+                <span class="ident">change</span>.<span class="ident">set_debug_crate_name</span>(<span class="ident">crate_id</span>.<span class="ident">shift</span>(<span class="ident">shift</span>), <span class="ident">name</span>)
+            }
         }
         <span class="ident">change</span>.<span class="ident">set_crate_graph</span>(<span class="ident">crate_graph</span>);
 

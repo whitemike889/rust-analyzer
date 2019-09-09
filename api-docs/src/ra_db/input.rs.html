@@ -233,6 +233,16 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// This module specifies the input to rust-analyzer. In some sense, this is</span>
 <span class="doccomment">/// **the** most important module, because all other fancy stuff is strictly</span>
@@ -317,6 +327,12 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CrateId</span>(<span class="kw">pub</span> <span class="ident">u32</span>);
+
+<span class="kw">impl</span> <span class="ident">CrateId</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shift</span>(<span class="self">self</span>, <span class="ident">amount</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">CrateId</span> {
+        <span class="ident">CrateId</span>(<span class="self">self</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">amount</span>)
+    }
+}
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Edition</span> {
@@ -414,15 +430,19 @@
 
     <span class="doccomment">/// Extends this crate graph by adding a complete disjoint second crate</span>
     <span class="doccomment">/// graph.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extend</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">CrateGraph</span>) {
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The ids of the crates in the `other` graph are shifted by the return</span>
+    <span class="doccomment">/// amount.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extend</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">CrateGraph</span>) <span class="op">-&gt;</span> <span class="ident">u32</span> {
         <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arena</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>;
         <span class="self">self</span>.<span class="ident">arena</span>.<span class="ident">extend</span>(<span class="ident">other</span>.<span class="ident">arena</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">id</span>, <span class="kw-2">mut</span> <span class="ident">data</span>)<span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">new_id</span> <span class="op">=</span> <span class="ident">CrateId</span>(<span class="ident">id</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">start</span>);
+            <span class="kw">let</span> <span class="ident">new_id</span> <span class="op">=</span> <span class="ident">id</span>.<span class="ident">shift</span>(<span class="ident">start</span>);
             <span class="kw">for</span> <span class="ident">dep</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">data</span>.<span class="ident">dependencies</span> {
-                <span class="ident">dep</span>.<span class="ident">crate_id</span> <span class="op">=</span> <span class="ident">CrateId</span>(<span class="ident">dep</span>.<span class="ident">crate_id</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">start</span>);
+                <span class="ident">dep</span>.<span class="ident">crate_id</span> <span class="op">=</span> <span class="ident">dep</span>.<span class="ident">crate_id</span>.<span class="ident">shift</span>(<span class="ident">start</span>);
             }
             (<span class="ident">new_id</span>, <span class="ident">data</span>)
         }));
+        <span class="ident">start</span>
     }
 
     <span class="kw">fn</span> <span class="ident">dfs_find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">target</span>: <span class="ident">CrateId</span>, <span class="ident">from</span>: <span class="ident">CrateId</span>, <span class="ident">visited</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">FxHashSet</span><span class="op">&lt;</span><span class="ident">CrateId</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {

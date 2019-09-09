@@ -224,6 +224,7 @@
 <span id="224">224</span>
 <span id="225">225</span>
 <span id="226">226</span>
+<span id="227">227</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -232,6 +233,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">adt</span>::{<span class="ident">EnumData</span>, <span class="ident">StructData</span>},
+    <span class="ident">debug</span>::<span class="ident">HirDebugDatabase</span>,
     <span class="ident">generics</span>::{<span class="ident">GenericDef</span>, <span class="ident">GenericParams</span>},
     <span class="ident">ids</span>,
     <span class="ident">impl_block</span>::{<span class="ident">ImplBlock</span>, <span class="ident">ImplSourceMap</span>, <span class="ident">ModuleImplBlocks</span>},
@@ -310,7 +312,7 @@
 <span class="comment">// This database uses `AstDatabase` internally,</span>
 <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">query_group</span>(<span class="ident">DefDatabaseStorage</span>)]</span>
 <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">requires</span>(<span class="ident">AstDatabase</span>)]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DefDatabase</span>: <span class="ident">InternDatabase</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DefDatabase</span>: <span class="ident">InternDatabase</span> <span class="op">+</span> <span class="ident">HirDebugDatabase</span> {
     <span class="attribute">#[<span class="ident">salsa</span>::<span class="ident">invoke</span>(<span class="kw">crate</span>::<span class="ident">adt</span>::<span class="ident">StructData</span>::<span class="ident">struct_data_query</span>)]</span>
     <span class="kw">fn</span> <span class="ident">struct_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="ident">Struct</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">StructData</span><span class="op">&gt;</span>;
 

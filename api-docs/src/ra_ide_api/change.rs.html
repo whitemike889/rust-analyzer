@@ -333,12 +333,23 @@
 <span id="333">333</span>
 <span id="334">334</span>
 <span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">sync</span>::<span class="ident">Arc</span>, <span class="ident">time</span>};
 
 <span class="kw">use</span> <span class="ident">ra_db</span>::{
     <span class="ident">salsa</span>::{<span class="ident">Database</span>, <span class="ident">Durability</span>, <span class="ident">SweepStrategy</span>},
-    <span class="ident">CrateGraph</span>, <span class="ident">FileId</span>, <span class="ident">SourceDatabase</span>, <span class="ident">SourceRoot</span>, <span class="ident">SourceRootId</span>,
+    <span class="ident">CrateGraph</span>, <span class="ident">CrateId</span>, <span class="ident">FileId</span>, <span class="ident">SourceDatabase</span>, <span class="ident">SourceRoot</span>, <span class="ident">SourceRootId</span>,
 };
 <span class="kw">use</span> <span class="ident">ra_prof</span>::{<span class="ident">memory_usage</span>, <span class="ident">profile</span>, <span class="ident">Bytes</span>};
 <span class="kw">use</span> <span class="ident">ra_syntax</span>::<span class="ident">SourceFile</span>;
@@ -347,7 +358,7 @@
 <span class="kw">use</span> <span class="ident">rustc_hash</span>::<span class="ident">FxHashMap</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">db</span>::<span class="ident">RootDatabase</span>,
+    <span class="ident">db</span>::{<span class="ident">DebugData</span>, <span class="ident">RootDatabase</span>},
     <span class="ident">status</span>::<span class="ident">syntax_tree_stats</span>,
     <span class="ident">symbol_index</span>::{<span class="ident">SymbolIndex</span>, <span class="ident">SymbolsDatabase</span>},
 };
@@ -359,6 +370,7 @@
     <span class="ident">files_changed</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">FileId</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
     <span class="ident">libraries_added</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">LibraryData</span><span class="op">&gt;</span>,
     <span class="ident">crate_graph</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CrateGraph</span><span class="op">&gt;</span>,
+    <span class="ident">debug_data</span>: <span class="ident">DebugData</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">AnalysisChange</span> {
@@ -418,6 +430,14 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_crate_graph</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">graph</span>: <span class="ident">CrateGraph</span>) {
         <span class="self">self</span>.<span class="ident">crate_graph</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">graph</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_debug_crate_name</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">crate_id</span>: <span class="ident">CrateId</span>, <span class="ident">name</span>: <span class="ident">String</span>) {
+        <span class="self">self</span>.<span class="ident">debug_data</span>.<span class="ident">crate_names</span>.<span class="ident">insert</span>(<span class="ident">crate_id</span>, <span class="ident">name</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_debug_root_path</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source_root_id</span>: <span class="ident">SourceRootId</span>, <span class="ident">path</span>: <span class="ident">String</span>) {
+        <span class="self">self</span>.<span class="ident">debug_data</span>.<span class="ident">root_paths</span>.<span class="ident">insert</span>(<span class="ident">source_root_id</span>, <span class="ident">path</span>);
     }
 }
 
@@ -536,6 +556,8 @@
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">crate_graph</span>) <span class="op">=</span> <span class="ident">change</span>.<span class="ident">crate_graph</span> {
             <span class="self">self</span>.<span class="ident">set_crate_graph_with_durability</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">crate_graph</span>), <span class="ident">Durability</span>::<span class="ident">HIGH</span>)
         }
+
+        <span class="ident">Arc</span>::<span class="ident">make_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">debug_data</span>).<span class="ident">merge</span>(<span class="ident">change</span>.<span class="ident">debug_data</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">apply_root_change</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">root_id</span>: <span class="ident">SourceRootId</span>, <span class="ident">root_change</span>: <span class="ident">RootChange</span>) {
