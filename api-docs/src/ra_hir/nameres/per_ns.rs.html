@@ -76,83 +76,101 @@
 <span id="76">76</span>
 <span id="77">77</span>
 <span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">MacroDef</span>;
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Namespace</span> {
     <span class="ident">Types</span>,
     <span class="ident">Values</span>,
+    <span class="comment">// Note that only type inference uses this enum, and it doesn&#39;t care about macros.</span>
+    <span class="comment">// Macro,</span>
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="ident">types</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">values</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Since macros has different type, many methods simply ignore it.</span>
+    <span class="doccomment">/// We can only use special method like `get_macros` to access it.</span>
+    <span class="kw">pub</span> <span class="ident">macros</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MacroDef</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="self">Self</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">None</span> }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">None</span>, <span class="ident">macros</span>: <span class="prelude-val">None</span> }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">none</span>() <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">None</span> }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">None</span>, <span class="ident">macros</span>: <span class="prelude-val">None</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">values</span>(<span class="ident">t</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">Some</span>(<span class="ident">t</span>) }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">Some</span>(<span class="ident">t</span>), <span class="ident">macros</span>: <span class="prelude-val">None</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">types</span>(<span class="ident">t</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">Some</span>(<span class="ident">t</span>), <span class="ident">values</span>: <span class="prelude-val">None</span> }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">Some</span>(<span class="ident">t</span>), <span class="ident">values</span>: <span class="prelude-val">None</span>, <span class="ident">macros</span>: <span class="prelude-val">None</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">both</span>(<span class="ident">types</span>: <span class="ident">T</span>, <span class="ident">values</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">Some</span>(<span class="ident">types</span>), <span class="ident">values</span>: <span class="prelude-val">Some</span>(<span class="ident">values</span>) }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">Some</span>(<span class="ident">types</span>), <span class="ident">values</span>: <span class="prelude-val">Some</span>(<span class="ident">values</span>), <span class="ident">macros</span>: <span class="prelude-val">None</span> }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">macros</span>(<span class="ident">macro_</span>: <span class="ident">MacroDef</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">None</span>, <span class="ident">macros</span>: <span class="prelude-val">Some</span>(<span class="ident">macro_</span>) }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_none</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">is_none</span>()
+        <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">is_none</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">macros</span>.<span class="ident">is_none</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_both</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">is_some</span>()
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take</span>(<span class="self">self</span>, <span class="ident">namespace</span>: <span class="ident">Namespace</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">namespace</span> {
-            <span class="ident">Namespace</span>::<span class="ident">Types</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">types</span>,
-            <span class="ident">Namespace</span>::<span class="ident">Values</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">values</span>,
-        }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">is_some</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">macros</span>.<span class="ident">is_some</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_types</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">take</span>(<span class="ident">Namespace</span>::<span class="ident">Types</span>)
+        <span class="self">self</span>.<span class="ident">types</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_values</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">take</span>(<span class="ident">Namespace</span>::<span class="ident">Values</span>)
+        <span class="self">self</span>.<span class="ident">values</span>
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">namespace</span>: <span class="ident">Namespace</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">as_ref</span>().<span class="ident">take</span>(<span class="ident">namespace</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_macros</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MacroDef</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">macros</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">only_macros</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="prelude-val">None</span>, <span class="ident">values</span>: <span class="prelude-val">None</span>, <span class="ident">macros</span>: <span class="self">self</span>.<span class="ident">macros</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_ref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">as_ref</span>(), <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">as_ref</span>() }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">as_ref</span>(), <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">as_ref</span>(), <span class="ident">macros</span>: <span class="self">self</span>.<span class="ident">macros</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">or</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">or</span>(<span class="ident">other</span>.<span class="ident">types</span>), <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">or</span>(<span class="ident">other</span>.<span class="ident">values</span>) }
+        <span class="ident">PerNs</span> {
+            <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">or</span>(<span class="ident">other</span>.<span class="ident">types</span>),
+            <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">or</span>(<span class="ident">other</span>.<span class="ident">values</span>),
+            <span class="ident">macros</span>: <span class="self">self</span>.<span class="ident">macros</span>.<span class="ident">or</span>(<span class="ident">other</span>.<span class="ident">macros</span>),
+        }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">and_then</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">and_then</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>), <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">and_then</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>) }
-    }
-
+    <span class="doccomment">/// Map types and values. Leave macros unchanged.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">U</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span> {
-        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">map</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>), <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">map</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>) }
+        <span class="ident">PerNs</span> { <span class="ident">types</span>: <span class="self">self</span>.<span class="ident">types</span>.<span class="ident">map</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>), <span class="ident">values</span>: <span class="self">self</span>.<span class="ident">values</span>.<span class="ident">map</span>(<span class="kw-2">&amp;</span><span class="ident">f</span>), <span class="ident">macros</span>: <span class="self">self</span>.<span class="ident">macros</span> }
     }
 }
 </pre></div>
