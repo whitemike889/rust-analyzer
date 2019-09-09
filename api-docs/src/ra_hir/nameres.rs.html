@@ -557,6 +557,29 @@
 <span id="557">557</span>
 <span id="558">558</span>
 <span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module implements import-resolution/macro expansion algorithm.</span>
 <span class="doccomment">//!</span>
@@ -698,7 +721,21 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ModuleScope</span> {
     <span class="ident">items</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">Name</span>, <span class="ident">Resolution</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Macros in current module scoped</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This scope works exactly the same way that item scoping does.</span>
+    <span class="doccomment">/// Macro invocation with quantified path will search in it.</span>
+    <span class="doccomment">/// See details below.</span>
     <span class="ident">macros</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">Name</span>, <span class="ident">MacroDef</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Macros visable in current module in legacy textual scope</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// For macros invoked by an unquatified identifier like `bar!()`, `legacy_macros` will be searched in first.</span>
+    <span class="doccomment">/// If it yields no result, then it turns to module scoped `macros`.</span>
+    <span class="doccomment">/// It macros with name quatified with a path like `crate::foo::bar!()`, `legacy_macros` will be skipped,</span>
+    <span class="doccomment">/// and only normal scoped `macros` will be searched in.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Note that this automatically inherit macros defined textually before the definition of module itself.</span>
+    <span class="ident">legacy_macros</span>: <span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">Name</span>, <span class="ident">MacroDef</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">static</span> <span class="ident">BUILTIN_SCOPE</span>: <span class="ident">Lazy</span><span class="op">&lt;</span><span class="ident">FxHashMap</span><span class="op">&lt;</span><span class="ident">Name</span>, <span class="ident">Resolution</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="ident">Lazy</span>::<span class="ident">new</span>(<span class="op">||</span> {
@@ -724,12 +761,16 @@
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
         })
     }
+    <span class="doccomment">/// It resolves in module scope. Textual scoped macros are ignored here.</span>
     <span class="kw">fn</span> <span class="ident">get_item_or_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ItemOrMacro</span><span class="op">&gt;</span> {
         <span class="kw">match</span> (<span class="self">self</span>.<span class="ident">get</span>(<span class="ident">name</span>), <span class="self">self</span>.<span class="ident">macros</span>.<span class="ident">get</span>(<span class="ident">name</span>)) {
             (<span class="prelude-val">Some</span>(<span class="ident">item</span>), <span class="kw">_</span>) <span class="kw">if</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">def</span>.<span class="ident">is_none</span>() <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">item</span>.<span class="ident">def</span>)),
             (<span class="kw">_</span>, <span class="prelude-val">Some</span>(<span class="ident">macro_</span>)) <span class="op">=&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">Either</span>::<span class="ident">B</span>(<span class="kw-2">*</span><span class="ident">macro_</span>)),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="prelude-val">None</span>,
         }
+    }
+    <span class="kw">fn</span> <span class="ident">get_legacy_macro</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MacroDef</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">legacy_macros</span>.<span class="ident">get</span>(<span class="ident">name</span>).<span class="ident">copied</span>()
     }
 }
 
@@ -1044,16 +1085,21 @@
         <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>,
     ) <span class="op">-&gt;</span> <span class="ident">ItemOrMacro</span> {
         <span class="comment">// Resolve in:</span>
+        <span class="comment">//  - legacy scope</span>
         <span class="comment">//  - current module / scope</span>
         <span class="comment">//  - extern prelude</span>
         <span class="comment">//  - std prelude</span>
+        <span class="kw">let</span> <span class="ident">from_legacy_macro</span> <span class="op">=</span> <span class="self">self</span>[<span class="ident">module</span>]
+            .<span class="ident">scope</span>
+            .<span class="ident">get_legacy_macro</span>(<span class="ident">name</span>)
+            .<span class="ident">map_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()), <span class="ident">Either</span>::<span class="ident">B</span>);
         <span class="kw">let</span> <span class="ident">from_scope</span> <span class="op">=</span>
             <span class="self">self</span>[<span class="ident">module</span>].<span class="ident">scope</span>.<span class="ident">get_item_or_macro</span>(<span class="ident">name</span>).<span class="ident">unwrap_or_else</span>(<span class="op">||</span> <span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>()));
         <span class="kw">let</span> <span class="ident">from_extern_prelude</span> <span class="op">=</span>
             <span class="self">self</span>.<span class="ident">extern_prelude</span>.<span class="ident">get</span>(<span class="ident">name</span>).<span class="ident">map_or</span>(<span class="ident">PerNs</span>::<span class="ident">none</span>(), <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">it</span><span class="op">|</span> <span class="ident">PerNs</span>::<span class="ident">types</span>(<span class="ident">it</span>));
         <span class="kw">let</span> <span class="ident">from_prelude</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_in_prelude</span>(<span class="ident">db</span>, <span class="ident">name</span>);
 
-        <span class="ident">or</span>(<span class="ident">from_scope</span>, <span class="ident">or</span>(<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">from_extern_prelude</span>), <span class="ident">from_prelude</span>))
+        <span class="ident">or</span>(<span class="ident">from_legacy_macro</span>, <span class="ident">or</span>(<span class="ident">from_scope</span>, <span class="ident">or</span>(<span class="ident">Either</span>::<span class="ident">A</span>(<span class="ident">from_extern_prelude</span>), <span class="ident">from_prelude</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">resolve_name_in_extern_prelude</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Name</span>) <span class="op">-&gt;</span> <span class="ident">PerNs</span><span class="op">&lt;</span><span class="ident">ModuleDef</span><span class="op">&gt;</span> {
