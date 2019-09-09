@@ -429,7 +429,7 @@
         <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
 
         <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) {
-            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">current</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[;] {
+            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[;]) {
                 <span class="ident">p</span>.<span class="ident">bump</span>();
                 <span class="kw">continue</span>;
             }

@@ -815,7 +815,7 @@
         <span class="comment">//     struct S {};</span>
         <span class="comment">// }</span>
 
-        <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">current</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[;] {
+        <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[;]) {
             <span class="ident">p</span>.<span class="ident">bump</span>();
             <span class="kw">continue</span>;
         }
@@ -920,7 +920,7 @@
             <span class="ident">newly_dollar_open</span> <span class="op">=</span> <span class="bool-val">false</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">is_range</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">current</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">||</span> <span class="ident">p</span>.<span class="ident">current</span>() <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[..=];
+        <span class="kw">let</span> <span class="ident">is_range</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..]) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..=]);
         <span class="kw">let</span> (<span class="ident">op_bp</span>, <span class="ident">op</span>) <span class="op">=</span> <span class="ident">current_op</span>(<span class="ident">p</span>);
         <span class="kw">if</span> <span class="ident">op_bp</span> <span class="op">&lt;</span> <span class="ident">bp</span> {
             <span class="kw">break</span>;
