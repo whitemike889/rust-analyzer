@@ -586,6 +586,12 @@
 <span id="586">586</span>
 <span id="587">587</span>
 <span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! This module takes a (parsed) definition of `macro_rules` invocation, a</span>
 <span class="doccomment">//! `tt::TokenTree` representing an argument of macro invocation, and produces a</span>
@@ -928,21 +934,13 @@
     <span class="ident">template</span>: <span class="kw-2">&amp;</span><span class="kw">crate</span>::<span class="ident">Subtree</span>,
     <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ExpandCtx</span>,
 ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">Subtree</span>, <span class="ident">ExpandError</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">token_trees</span> <span class="op">=</span> <span class="ident">template</span>
-        .<span class="ident">token_trees</span>
-        .<span class="ident">iter</span>()
-        .<span class="ident">map</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> <span class="ident">expand_tt</span>(<span class="ident">it</span>, <span class="ident">ctx</span>))
-        .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">it</span><span class="op">|</span> {
-            <span class="comment">// Filter empty subtree</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">tt</span>::<span class="ident">TokenTree</span>::<span class="ident">Subtree</span>(<span class="ident">subtree</span>)) <span class="op">=</span> <span class="ident">it</span> {
-                <span class="ident">subtree</span>.<span class="ident">delimiter</span> <span class="op">!=</span> <span class="ident">tt</span>::<span class="ident">Delimiter</span>::<span class="prelude-val">None</span> <span class="op">||</span> <span class="op">!</span><span class="ident">subtree</span>.<span class="ident">token_trees</span>.<span class="ident">is_empty</span>()
-            } <span class="kw">else</span> {
-                <span class="bool-val">true</span>
-            }
-        })
-        .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="ident">ExpandError</span><span class="op">&gt;&gt;</span>()<span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">TokenTree</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+    <span class="kw">for</span> <span class="ident">tt</span> <span class="kw">in</span> <span class="ident">template</span>.<span class="ident">token_trees</span>.<span class="ident">iter</span>() {
+        <span class="kw">let</span> <span class="ident">tt</span> <span class="op">=</span> <span class="ident">expand_tt</span>(<span class="ident">tt</span>, <span class="ident">ctx</span>)<span class="question-mark">?</span>;
+        <span class="ident">push_tt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>, <span class="ident">tt</span>);
+    }
 
-    <span class="prelude-val">Ok</span>(<span class="ident">tt</span>::<span class="ident">Subtree</span> { <span class="ident">token_trees</span>, <span class="ident">delimiter</span>: <span class="ident">template</span>.<span class="ident">delimiter</span> })
+    <span class="prelude-val">Ok</span>(<span class="ident">tt</span>::<span class="ident">Subtree</span> { <span class="ident">delimiter</span>: <span class="ident">template</span>.<span class="ident">delimiter</span>, <span class="ident">token_trees</span>: <span class="ident">buf</span> })
 }
 
 <span class="doccomment">/// Reduce single token subtree to single token</span>
@@ -966,7 +964,7 @@
     <span class="kw">let</span> <span class="ident">res</span>: <span class="ident">tt</span>::<span class="ident">TokenTree</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">template</span> {
         <span class="kw">crate</span>::<span class="ident">TokenTree</span>::<span class="ident">Subtree</span>(<span class="ident">subtree</span>) <span class="op">=&gt;</span> <span class="ident">expand_subtree</span>(<span class="ident">subtree</span>, <span class="ident">ctx</span>)<span class="question-mark">?</span>.<span class="ident">into</span>(),
         <span class="kw">crate</span>::<span class="ident">TokenTree</span>::<span class="ident">Repeat</span>(<span class="ident">repeat</span>) <span class="op">=&gt;</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">token_trees</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">TokenTree</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">TokenTree</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
             <span class="ident">ctx</span>.<span class="ident">nesting</span>.<span class="ident">push</span>(<span class="number">0</span>);
             <span class="comment">// Dirty hack to make macro-expansion terminate.</span>
             <span class="comment">// This should be replaced by a propper macro-by-example implementation</span>
@@ -1007,23 +1005,23 @@
 
                 <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">nesting</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
                 <span class="ident">ctx</span>.<span class="ident">nesting</span>.<span class="ident">push</span>(<span class="ident">idx</span> <span class="op">+</span> <span class="number">1</span>);
-                <span class="ident">token_trees</span>.<span class="ident">push</span>(<span class="ident">reduce_single_token</span>(<span class="ident">t</span>));
+                <span class="ident">push_subtree</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>, <span class="ident">t</span>);
 
                 <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">sep</span>) <span class="op">=</span> <span class="ident">repeat</span>.<span class="ident">separator</span> {
                     <span class="kw">match</span> <span class="ident">sep</span> {
                         <span class="kw">crate</span>::<span class="ident">Separator</span>::<span class="ident">Ident</span>(<span class="ident">ident</span>) <span class="op">=&gt;</span> {
                             <span class="ident">has_seps</span> <span class="op">=</span> <span class="number">1</span>;
-                            <span class="ident">token_trees</span>.<span class="ident">push</span>(<span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="ident">ident</span>.<span class="ident">clone</span>()).<span class="ident">into</span>());
+                            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="ident">ident</span>.<span class="ident">clone</span>()).<span class="ident">into</span>());
                         }
                         <span class="kw">crate</span>::<span class="ident">Separator</span>::<span class="ident">Literal</span>(<span class="ident">lit</span>) <span class="op">=&gt;</span> {
                             <span class="ident">has_seps</span> <span class="op">=</span> <span class="number">1</span>;
-                            <span class="ident">token_trees</span>.<span class="ident">push</span>(<span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="ident">lit</span>.<span class="ident">clone</span>()).<span class="ident">into</span>());
+                            <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="ident">lit</span>.<span class="ident">clone</span>()).<span class="ident">into</span>());
                         }
 
                         <span class="kw">crate</span>::<span class="ident">Separator</span>::<span class="ident">Puncts</span>(<span class="ident">puncts</span>) <span class="op">=&gt;</span> {
                             <span class="ident">has_seps</span> <span class="op">=</span> <span class="ident">puncts</span>.<span class="ident">len</span>();
                             <span class="kw">for</span> <span class="ident">punct</span> <span class="kw">in</span> <span class="ident">puncts</span> {
-                                <span class="ident">token_trees</span>.<span class="ident">push</span>(<span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">punct</span>).<span class="ident">into</span>());
+                                <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">tt</span>::<span class="ident">Leaf</span>::<span class="ident">from</span>(<span class="kw-2">*</span><span class="ident">punct</span>).<span class="ident">into</span>());
                             }
                         }
                     }
@@ -1039,16 +1037,16 @@
 
             <span class="ident">ctx</span>.<span class="ident">nesting</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">has_seps</span> {
-                <span class="ident">token_trees</span>.<span class="ident">pop</span>();
+                <span class="ident">buf</span>.<span class="ident">pop</span>();
             }
 
             <span class="kw">if</span> <span class="kw">crate</span>::<span class="ident">RepeatKind</span>::<span class="ident">OneOrMore</span> <span class="op">==</span> <span class="ident">repeat</span>.<span class="ident">kind</span> <span class="op">&amp;&amp;</span> <span class="ident">counter</span> <span class="op">==</span> <span class="number">0</span> {
                 <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ExpandError</span>::<span class="ident">UnexpectedToken</span>);
             }
 
-            <span class="comment">// Check if it is a singel token subtree without any delimiter</span>
+            <span class="comment">// Check if it is a single token subtree without any delimiter</span>
             <span class="comment">// e.g {Delimiter:None&gt; [&#39;&gt;&#39;] /Delimiter:None&gt;}</span>
-            <span class="ident">reduce_single_token</span>(<span class="ident">tt</span>::<span class="ident">Subtree</span> { <span class="ident">token_trees</span>, <span class="ident">delimiter</span>: <span class="ident">tt</span>::<span class="ident">Delimiter</span>::<span class="prelude-val">None</span> })
+            <span class="ident">reduce_single_token</span>(<span class="ident">tt</span>::<span class="ident">Subtree</span> { <span class="ident">delimiter</span>: <span class="ident">tt</span>::<span class="ident">Delimiter</span>::<span class="prelude-val">None</span>, <span class="ident">token_trees</span>: <span class="ident">buf</span> })
         }
         <span class="kw">crate</span>::<span class="ident">TokenTree</span>::<span class="ident">Leaf</span>(<span class="ident">leaf</span>) <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">leaf</span> {
             <span class="kw">crate</span>::<span class="ident">Leaf</span>::<span class="ident">Ident</span>(<span class="ident">ident</span>) <span class="op">=&gt;</span> {
@@ -1173,6 +1171,20 @@
             <span class="ident">ast_to_token_tree</span>(<span class="kw-2">&amp;</span><span class="ident">macro_invocation</span>.<span class="ident">token_tree</span>().<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>();
 
         <span class="ident">expand_rule</span>(<span class="kw-2">&amp;</span><span class="ident">rules</span>.<span class="ident">rules</span>[<span class="number">0</span>], <span class="kw-2">&amp;</span><span class="ident">invocation_tt</span>)
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">push_tt</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">TokenTree</span><span class="op">&gt;</span>, <span class="ident">tt</span>: <span class="ident">tt</span>::<span class="ident">TokenTree</span>) {
+    <span class="kw">match</span> <span class="ident">tt</span> {
+        <span class="ident">tt</span>::<span class="ident">TokenTree</span>::<span class="ident">Subtree</span>(<span class="ident">tt</span>) <span class="op">=&gt;</span> <span class="ident">push_subtree</span>(<span class="ident">buf</span>, <span class="ident">tt</span>),
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">tt</span>),
+    }
+}
+
+<span class="kw">fn</span> <span class="ident">push_subtree</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">tt</span>::<span class="ident">TokenTree</span><span class="op">&gt;</span>, <span class="ident">tt</span>: <span class="ident">tt</span>::<span class="ident">Subtree</span>) {
+    <span class="kw">match</span> <span class="ident">tt</span>.<span class="ident">delimiter</span> {
+        <span class="ident">tt</span>::<span class="ident">Delimiter</span>::<span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="ident">buf</span>.<span class="ident">extend</span>(<span class="ident">tt</span>.<span class="ident">token_trees</span>),
+        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">buf</span>.<span class="ident">push</span>(<span class="ident">tt</span>.<span class="ident">into</span>()),
     }
 }
 </pre></div>

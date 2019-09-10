@@ -378,85 +378,6 @@
 <span id="378">378</span>
 <span id="379">379</span>
 <span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
-<span id="383">383</span>
-<span id="384">384</span>
-<span id="385">385</span>
-<span id="386">386</span>
-<span id="387">387</span>
-<span id="388">388</span>
-<span id="389">389</span>
-<span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
-<span id="393">393</span>
-<span id="394">394</span>
-<span id="395">395</span>
-<span id="396">396</span>
-<span id="397">397</span>
-<span id="398">398</span>
-<span id="399">399</span>
-<span id="400">400</span>
-<span id="401">401</span>
-<span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
-<span id="408">408</span>
-<span id="409">409</span>
-<span id="410">410</span>
-<span id="411">411</span>
-<span id="412">412</span>
-<span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
-<span id="419">419</span>
-<span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
-<span id="458">458</span>
-<span id="459">459</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">Cell</span>;
 
@@ -466,7 +387,7 @@
     <span class="ident">event</span>::<span class="ident">Event</span>,
     <span class="ident">ParseError</span>,
     <span class="ident">SyntaxKind</span>::{<span class="self">self</span>, <span class="ident">EOF</span>, <span class="ident">ERROR</span>, <span class="ident">TOMBSTONE</span>},
-    <span class="ident">Token</span>, <span class="ident">TokenSet</span>, <span class="ident">TokenSource</span>, <span class="ident">T</span>,
+    <span class="ident">TokenSet</span>, <span class="ident">TokenSource</span>, <span class="ident">T</span>,
 };
 
 <span class="doccomment">/// `Parser` struct provides the low-level API for</span>
@@ -500,38 +421,6 @@
         <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">0</span>)
     }
 
-    <span class="doccomment">/// Returns the kinds of the current two tokens, if they are not separated</span>
-    <span class="doccomment">/// by trivia.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Useful for parsing things like `&gt;&gt;`.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">current2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>)<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">c1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">c2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">1</span>);
-
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">current</span>().<span class="ident">is_jointed_to_next</span> {
-            <span class="prelude-val">Some</span>((<span class="ident">c1</span>, <span class="ident">c2</span>))
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
-    }
-
-    <span class="doccomment">/// Returns the kinds of the current three tokens, if they are not separated</span>
-    <span class="doccomment">/// by trivia.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Useful for parsing things like `=&gt;&gt;`.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">current3</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>, <span class="ident">SyntaxKind</span>)<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">c1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">c2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">1</span>);
-        <span class="kw">let</span> <span class="ident">c3</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">nth</span>(<span class="number">2</span>);
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">current</span>().<span class="ident">is_jointed_to_next</span>
-            <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="number">1</span>).<span class="ident">is_jointed_to_next</span>
-        {
-            <span class="prelude-val">Some</span>((<span class="ident">c1</span>, <span class="ident">c2</span>, <span class="ident">c3</span>))
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
-        }
-    }
-
     <span class="doccomment">/// Lookahead operation: returns the kind of the next nth</span>
     <span class="doccomment">/// token.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">SyntaxKind</span> {
@@ -541,33 +430,93 @@
         <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">steps</span> <span class="op">&lt;=</span> <span class="number">10_000_000</span>, <span class="string">&quot;the parser seems stuck&quot;</span>);
         <span class="self">self</span>.<span class="ident">steps</span>.<span class="ident">set</span>(<span class="ident">steps</span> <span class="op">+</span> <span class="number">1</span>);
 
-        <span class="comment">// It is beecause the Dollar will appear between nth</span>
-        <span class="comment">// Following code skips through it</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">non_dollars_count</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-
-        <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="ident">token</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">i</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kind</span> <span class="op">=</span> <span class="ident">token</span>.<span class="ident">kind</span>;
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">composited</span>, <span class="ident">step</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">is_composite</span>(<span class="ident">token</span>, <span class="ident">i</span>) {
-                <span class="ident">kind</span> <span class="op">=</span> <span class="ident">composited</span>;
-                <span class="ident">i</span> <span class="op">+=</span> <span class="ident">step</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
-            }
-
-            <span class="kw">match</span> <span class="ident">kind</span> {
-                <span class="ident">EOF</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">EOF</span>,
-                <span class="ident">SyntaxKind</span>::<span class="ident">L_DOLLAR</span> <span class="op">|</span> <span class="ident">SyntaxKind</span>::<span class="ident">R_DOLLAR</span> <span class="op">=&gt;</span> {}
-                <span class="kw">_</span> <span class="kw">if</span> <span class="ident">non_dollars_count</span> <span class="op">==</span> <span class="ident">n</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="ident">kind</span>,
-                <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">non_dollars_count</span> <span class="op">+=</span> <span class="number">1</span>,
-            }
-        }
+        <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span>).<span class="ident">kind</span>
     }
 
     <span class="doccomment">/// Checks if the current token is `kind`.</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">at</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">current</span>() <span class="op">==</span> <span class="ident">kind</span>
+        <span class="self">self</span>.<span class="ident">nth_at</span>(<span class="number">0</span>, <span class="ident">kind</span>)
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">nth_at</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[:], <span class="macro">T</span><span class="macro">!</span>[:]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[.], <span class="macro">T</span><span class="macro">!</span>[.]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite2</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>]),
+
+            <span class="macro">T</span><span class="macro">!</span>[...] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite3</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[.], <span class="macro">T</span><span class="macro">!</span>[.], <span class="macro">T</span><span class="macro">!</span>[.]),
+            <span class="macro">T</span><span class="macro">!</span>[..=] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite3</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[.], <span class="macro">T</span><span class="macro">!</span>[.], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite3</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>] <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">at_composite3</span>(<span class="ident">n</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span>).<span class="ident">kind</span> <span class="op">==</span> <span class="ident">kind</span>,
+        }
+    }
+
+    <span class="doccomment">/// Consume the next token if `kind` matches.</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">eat</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">at</span>(<span class="ident">kind</span>) {
+            <span class="kw">return</span> <span class="bool-val">false</span>;
+        }
+        <span class="kw">let</span> <span class="ident">n_raw_tokens</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">kind</span> {
+            <span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[::]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[..]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>]
+            <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>] <span class="op">=&gt;</span> <span class="number">2</span>,
+
+            <span class="macro">T</span><span class="macro">!</span>[...] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[..=] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>] <span class="op">=&gt;</span> <span class="number">3</span>,
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="number">1</span>,
+        };
+        <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="ident">n_raw_tokens</span>);
+        <span class="bool-val">true</span>
+    }
+
+    <span class="kw">fn</span> <span class="ident">at_composite2</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">k1</span>: <span class="ident">SyntaxKind</span>, <span class="ident">k2</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">let</span> <span class="ident">t1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">0</span>);
+        <span class="kw">let</span> <span class="ident">t2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="ident">t1</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">k1</span> <span class="op">&amp;&amp;</span> <span class="ident">t1</span>.<span class="ident">is_jointed_to_next</span> <span class="op">&amp;&amp;</span> <span class="ident">t2</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">k2</span>
+    }
+
+    <span class="kw">fn</span> <span class="ident">at_composite3</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">k1</span>: <span class="ident">SyntaxKind</span>, <span class="ident">k2</span>: <span class="ident">SyntaxKind</span>, <span class="ident">k3</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="kw">let</span> <span class="ident">t1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">0</span>);
+        <span class="kw">let</span> <span class="ident">t2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="kw">let</span> <span class="ident">t3</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">2</span>);
+        (<span class="ident">t1</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">k1</span> <span class="op">&amp;&amp;</span> <span class="ident">t1</span>.<span class="ident">is_jointed_to_next</span>)
+            <span class="op">&amp;&amp;</span> (<span class="ident">t2</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">k2</span> <span class="op">&amp;&amp;</span> <span class="ident">t2</span>.<span class="ident">is_jointed_to_next</span>)
+            <span class="op">&amp;&amp;</span> <span class="ident">t3</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">k3</span>
     }
 
     <span class="doccomment">/// Checks if the current token is in `kinds`.</span>
@@ -589,22 +538,9 @@
         <span class="ident">Marker</span>::<span class="ident">new</span>(<span class="ident">pos</span>)
     }
 
-    <span class="doccomment">/// Advances the parser by one token unconditionally</span>
-    <span class="doccomment">/// Mainly use in `token_tree` parsing</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump_raw</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">kind</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">current</span>().<span class="ident">kind</span>;
-
-        <span class="comment">// Skip dollars, do_bump will eat these later</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">while</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">SyntaxKind</span>::<span class="ident">L_DOLLAR</span> <span class="op">||</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">SyntaxKind</span>::<span class="ident">R_DOLLAR</span> {
-            <span class="ident">kind</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">i</span>).<span class="ident">kind</span>;
-            <span class="ident">i</span> <span class="op">+=</span> <span class="number">1</span>;
-        }
-
-        <span class="kw">if</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">EOF</span> {
-            <span class="kw">return</span>;
-        }
-        <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="number">1</span>);
+    <span class="doccomment">/// Consume the next token if `kind` matches.</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">eat</span>(<span class="ident">kind</span>));
     }
 
     <span class="doccomment">/// Advances the parser by one token with composite puncts handled</span>
@@ -613,27 +549,7 @@
         <span class="kw">if</span> <span class="ident">kind</span> <span class="op">==</span> <span class="ident">EOF</span> {
             <span class="kw">return</span>;
         }
-
-        <span class="kw">use</span> <span class="ident">SyntaxKind</span>::<span class="kw-2">*</span>;
-
-        <span class="comment">// Handle parser composites</span>
-        <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="macro">T</span><span class="macro">!</span>[...] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[..=] <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">bump_compound</span>(<span class="ident">kind</span>, <span class="number">3</span>);
-            }
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>] <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">bump_compound</span>(<span class="ident">kind</span>, <span class="number">2</span>);
-            }
-            <span class="kw">_</span> <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="number">1</span>);
-            }
-        }
-    }
-
-    <span class="doccomment">/// Advances the parser by one token, asserting that it is exactly the expected token</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expected</span>: <span class="ident">SyntaxKind</span>) {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">nth</span>(<span class="number">0</span>) <span class="op">==</span> <span class="ident">expected</span>);
-        <span class="self">self</span>.<span class="ident">bump_any</span>()
+        <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="number">1</span>)
     }
 
     <span class="doccomment">/// Advances the parser by one token, remapping its kind.</span>
@@ -650,13 +566,6 @@
         <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="number">1</span>);
     }
 
-    <span class="doccomment">/// Advances the parser by `n` tokens, remapping its kind.</span>
-    <span class="doccomment">/// This is useful to create compound tokens from parts. For</span>
-    <span class="doccomment">/// example, an `&lt;&lt;` token is two consecutive remapped `&lt;` tokens</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">bump_compound</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>, <span class="ident">n</span>: <span class="ident">u8</span>) {
-        <span class="self">self</span>.<span class="ident">do_bump</span>(<span class="ident">kind</span>, <span class="ident">n</span>);
-    }
-
     <span class="doccomment">/// Emit error with the `message`</span>
     <span class="doccomment">/// FIXME: this should be much more fancy and support</span>
     <span class="doccomment">/// structured errors with spans and notes, like rustc</span>
@@ -664,15 +573,6 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">error</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">message</span>: <span class="ident">T</span>) {
         <span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">ParseError</span>(<span class="ident">message</span>.<span class="ident">into</span>());
         <span class="self">self</span>.<span class="ident">push_event</span>(<span class="ident">Event</span>::<span class="ident">Error</span> { <span class="ident">msg</span> })
-    }
-
-    <span class="doccomment">/// Consume the next token if `kind` matches.</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">eat</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">at</span>(<span class="ident">kind</span>) {
-            <span class="kw">return</span> <span class="bool-val">false</span>;
-        }
-        <span class="self">self</span>.<span class="ident">bump_any</span>();
-        <span class="bool-val">true</span>
     }
 
     <span class="doccomment">/// Consume the next token if it is `kind` or emit an error</span>
@@ -703,7 +603,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">do_bump</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">kind</span>: <span class="ident">SyntaxKind</span>, <span class="ident">n_raw_tokens</span>: <span class="ident">u8</span>) {
-        <span class="self">self</span>.<span class="ident">eat_dollars</span>();
+        <span class="comment">// self.eat_dollars();</span>
 
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n_raw_tokens</span> {
             <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">bump</span>();
@@ -714,64 +614,6 @@
 
     <span class="kw">fn</span> <span class="ident">push_event</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">event</span>: <span class="ident">Event</span>) {
         <span class="self">self</span>.<span class="ident">events</span>.<span class="ident">push</span>(<span class="ident">event</span>)
-    }
-
-    <span class="doccomment">/// helper function for check if it is composite.</span>
-    <span class="kw">fn</span> <span class="ident">is_composite</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">first</span>: <span class="ident">Token</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">SyntaxKind</span>, <span class="ident">usize</span>)<span class="op">&gt;</span> {
-        <span class="comment">// We assume the dollars will not occuried between</span>
-        <span class="comment">// mult-byte tokens</span>
-
-        <span class="kw">let</span> <span class="ident">jn1</span> <span class="op">=</span> <span class="ident">first</span>.<span class="ident">is_jointed_to_next</span>;
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">jn1</span> <span class="op">&amp;&amp;</span> <span class="ident">first</span>.<span class="ident">kind</span> <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
-        }
-
-        <span class="kw">let</span> <span class="ident">second</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>);
-        <span class="kw">if</span> <span class="ident">first</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="op">&amp;&amp;</span> <span class="ident">second</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] {
-            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>], <span class="number">2</span>));
-        }
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">jn1</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
-        }
-
-        <span class="kw">match</span> (<span class="ident">first</span>.<span class="ident">kind</span>, <span class="ident">second</span>.<span class="ident">kind</span>) {
-            (<span class="macro">T</span><span class="macro">!</span>[:], <span class="macro">T</span><span class="macro">!</span>[:]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[::], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>], <span class="number">2</span>)),
-            <span class="kw">_</span> <span class="op">=&gt;</span> {}
-        }
-
-        <span class="kw">if</span> <span class="ident">first</span>.<span class="ident">kind</span> <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">||</span> <span class="ident">second</span>.<span class="ident">kind</span> <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[.] {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
-        }
-
-        <span class="kw">let</span> <span class="ident">third</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">lookahead_nth</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">2</span>);
-
-        <span class="kw">let</span> <span class="ident">jn2</span> <span class="op">=</span> <span class="ident">second</span>.<span class="ident">is_jointed_to_next</span>;
-        <span class="kw">let</span> <span class="ident">la3</span> <span class="op">=</span> <span class="ident">third</span>.<span class="ident">kind</span>;
-
-        <span class="kw">if</span> <span class="ident">jn2</span> <span class="op">&amp;&amp;</span> <span class="ident">la3</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[.] {
-            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[...], <span class="number">3</span>));
-        }
-        <span class="kw">if</span> <span class="ident">la3</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] {
-            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[..=], <span class="number">3</span>));
-        }
-        <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="macro">T</span><span class="macro">!</span>[..], <span class="number">2</span>));
-    }
-
-    <span class="kw">fn</span> <span class="ident">eat_dollars</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">current</span>().<span class="ident">kind</span> {
-                <span class="ident">k</span> @ <span class="ident">SyntaxKind</span>::<span class="ident">L_DOLLAR</span> <span class="op">|</span> <span class="ident">k</span> @ <span class="ident">SyntaxKind</span>::<span class="ident">R_DOLLAR</span> <span class="op">=&gt;</span> {
-                    <span class="self">self</span>.<span class="ident">token_source</span>.<span class="ident">bump</span>();
-                    <span class="self">self</span>.<span class="ident">push_event</span>(<span class="ident">Event</span>::<span class="ident">Token</span> { <span class="ident">kind</span>: <span class="ident">k</span>, <span class="ident">n_raw_tokens</span>: <span class="number">1</span> });
-                }
-                <span class="kw">_</span> <span class="op">=&gt;</span> {
-                    <span class="kw">return</span>;
-                }
-            }
-        }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">eat_l_dollars</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {

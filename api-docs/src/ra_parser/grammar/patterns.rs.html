@@ -285,6 +285,11 @@
 <span id="285">285</span>
 <span id="286">286</span>
 <span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
@@ -322,17 +327,20 @@
         <span class="comment">//         200 .. 301=&gt; (),</span>
         <span class="comment">//     }</span>
         <span class="comment">// }</span>
-        <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[...]) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..=]) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..]) {
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-            <span class="ident">p</span>.<span class="ident">bump_any</span>();
-            <span class="ident">atom_pat</span>(<span class="ident">p</span>, <span class="ident">recovery_set</span>);
-            <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_PAT</span>);
+        <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">range_op</span> <span class="kw">in</span> [<span class="macro">T</span><span class="macro">!</span>[...], <span class="macro">T</span><span class="macro">!</span>[..=], <span class="macro">T</span><span class="macro">!</span>[..]].<span class="ident">iter</span>() {
+            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">range_op</span>) {
+                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
+                <span class="ident">p</span>.<span class="ident">bump</span>(<span class="ident">range_op</span>);
+                <span class="ident">atom_pat</span>(<span class="ident">p</span>, <span class="ident">recovery_set</span>);
+                <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_PAT</span>);
+                <span class="kw">return</span>;
+            }
         }
         <span class="comment">// test marco_pat</span>
         <span class="comment">// fn main() {</span>
         <span class="comment">//     let m!(x) = 0;</span>
         <span class="comment">// }</span>
-        <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lhs</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">PATH_PAT</span> <span class="op">&amp;&amp;</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>]) {
+        <span class="kw">if</span> <span class="ident">lhs</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">PATH_PAT</span> <span class="op">&amp;&amp;</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>]) {
             <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
             <span class="ident">items</span>::<span class="ident">macro_call_after_excl</span>(<span class="ident">p</span>);
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">MACRO_CALL</span>);
@@ -344,14 +352,16 @@
     <span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">LET_KW</span>, <span class="ident">IF_KW</span>, <span class="ident">WHILE_KW</span>, <span class="ident">LOOP_KW</span>, <span class="ident">MATCH_KW</span>, <span class="ident">R_PAREN</span>, <span class="ident">COMMA</span>];
 
 <span class="kw">fn</span> <span class="ident">atom_pat</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">recovery_set</span>: <span class="ident">TokenSet</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CompletedMarker</span><span class="op">&gt;</span> {
-    <span class="comment">// Checks the token after an IDENT to see if a pattern is a path (Struct { .. }) or macro</span>
-    <span class="comment">// (T![x]).</span>
-    <span class="kw">let</span> <span class="ident">is_path_or_macro_pat</span> <span class="op">=</span>
-        <span class="op">|</span><span class="ident">la1</span><span class="op">|</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">||</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">||</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">||</span> <span class="ident">la1</span> <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>];
-
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">0</span>) {
         <span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>] <span class="op">=&gt;</span> <span class="ident">box_pat</span>(<span class="ident">p</span>),
-        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">ref</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>] <span class="op">|</span> <span class="ident">IDENT</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">is_path_or_macro_pat</span>(<span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>)) <span class="op">=&gt;</span> <span class="ident">bind_pat</span>(<span class="ident">p</span>, <span class="bool-val">true</span>),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">ref</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">mut</span>] <span class="op">=&gt;</span> <span class="ident">bind_pat</span>(<span class="ident">p</span>, <span class="bool-val">true</span>),
+        <span class="ident">IDENT</span> <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) {
+            <span class="comment">// Checks the token after an IDENT to see if a pattern is a path (Struct { .. }) or macro</span>
+            <span class="comment">// (T![x]).</span>
+            <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>] <span class="op">=&gt;</span> <span class="ident">path_pat</span>(<span class="ident">p</span>),
+            <span class="macro">T</span><span class="macro">!</span>[:] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth_at</span>(<span class="number">1</span>, <span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">=&gt;</span> <span class="ident">path_pat</span>(<span class="ident">p</span>),
+            <span class="kw">_</span> <span class="op">=&gt;</span> <span class="ident">bind_pat</span>(<span class="ident">p</span>, <span class="bool-val">true</span>),
+        },
 
         <span class="kw">_</span> <span class="kw">if</span> <span class="ident">paths</span>::<span class="ident">is_use_path_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> <span class="ident">path_pat</span>(<span class="ident">p</span>),
         <span class="kw">_</span> <span class="kw">if</span> <span class="ident">is_literal_pat_start</span>(<span class="ident">p</span>) <span class="op">=&gt;</span> <span class="ident">literal_pat</span>(<span class="ident">p</span>),
@@ -446,7 +456,7 @@
     <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;}&#39;</span>]) {
         <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
+            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..]) <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[..]),
             <span class="ident">IDENT</span> <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[:] <span class="op">=&gt;</span> <span class="ident">record_field_pat</span>(<span class="ident">p</span>),
             <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">=&gt;</span> <span class="ident">error_block</span>(<span class="ident">p</span>, <span class="string">&quot;expected ident&quot;</span>),
             <span class="macro">T</span><span class="macro">!</span>[<span class="kw">box</span>] <span class="op">=&gt;</span> {
@@ -525,7 +535,7 @@
 <span class="kw">fn</span> <span class="ident">pat_list</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">ket</span>: <span class="ident">SyntaxKind</span>) {
     <span class="kw">while</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">EOF</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">ket</span>) {
         <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
+            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..]) <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[..]),
             <span class="kw">_</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at_ts</span>(<span class="ident">PATTERN_FIRST</span>) {
                     <span class="ident">p</span>.<span class="ident">error</span>(<span class="string">&quot;expected a pattern&quot;</span>);

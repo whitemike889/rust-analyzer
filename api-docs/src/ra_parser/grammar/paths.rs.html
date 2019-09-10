@@ -105,11 +105,12 @@
 <span id="105">105</span>
 <span id="106">106</span>
 <span id="107">107</span>
+<span id="108">108</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const</span> <span class="ident">PATH_FIRST</span>: <span class="ident">TokenSet</span> <span class="op">=</span>
-    <span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">IDENT</span>, <span class="ident">SELF_KW</span>, <span class="ident">SUPER_KW</span>, <span class="ident">CRATE_KW</span>, <span class="ident">COLONCOLON</span>, <span class="ident">L_ANGLE</span>];
+    <span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">IDENT</span>, <span class="ident">SELF_KW</span>, <span class="ident">SUPER_KW</span>, <span class="ident">CRATE_KW</span>, <span class="ident">COLON</span>, <span class="ident">L_ANGLE</span>];
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">is_path_start</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="ident">is_use_path_start</span>(<span class="ident">p</span>) <span class="op">||</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>])
@@ -117,7 +118,8 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">is_use_path_start</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-        <span class="ident">IDENT</span> <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="self">self</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">super</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+        <span class="ident">IDENT</span> <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="self">self</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">super</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="op">=&gt;</span> <span class="bool-val">true</span>,
+        <span class="macro">T</span><span class="macro">!</span>[:] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">=&gt;</span> <span class="bool-val">true</span>,
         <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
     }
 }
@@ -146,13 +148,13 @@
     <span class="ident">path_segment</span>(<span class="ident">p</span>, <span class="ident">mode</span>, <span class="bool-val">true</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">qual</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">PATH</span>);
     <span class="kw">loop</span> {
-        <span class="kw">let</span> <span class="ident">use_tree</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) {
+        <span class="kw">let</span> <span class="ident">use_tree</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) {
             <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">=&gt;</span> <span class="bool-val">true</span>,
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="bool-val">false</span>,
         };
         <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">use_tree</span> {
             <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">qual</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-            <span class="ident">p</span>.<span class="ident">bump_any</span>();
+            <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[::]);
             <span class="ident">path_segment</span>(<span class="ident">p</span>, <span class="ident">mode</span>, <span class="bool-val">false</span>);
             <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">PATH</span>);
             <span class="ident">qual</span> <span class="op">=</span> <span class="ident">path</span>;

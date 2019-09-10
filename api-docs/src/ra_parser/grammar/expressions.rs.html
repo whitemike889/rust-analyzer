@@ -615,6 +615,22 @@
 <span id="615">615</span>
 <span id="616">616</span>
 <span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">mod</span> <span class="ident">atom</span>;
 
@@ -830,52 +846,48 @@
     <span class="ident">prefer_stmt</span>: <span class="ident">bool</span>,
 }
 
-<span class="kw">enum</span> <span class="ident">Op</span> {
-    <span class="ident">Simple</span>,
-    <span class="ident">Composite</span>(<span class="ident">SyntaxKind</span>, <span class="ident">u8</span>),
-}
+<span class="doccomment">/// Binding powers of operators for a Pratt parser.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// See https://www.oilshell.org/blog/2016/11/03.html</span>
+<span class="attribute">#[<span class="ident">rustfmt</span>::<span class="ident">skip</span>]</span>
+<span class="kw">fn</span> <span class="ident">current_op</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">Parser</span>) <span class="op">-&gt;</span> (<span class="ident">u8</span>, <span class="ident">SyntaxKind</span>) {
+    <span class="kw">const</span> <span class="ident">NOT_AN_OP</span>: (<span class="ident">u8</span>, <span class="ident">SyntaxKind</span>) <span class="op">=</span> (<span class="number">0</span>, <span class="macro">T</span><span class="macro">!</span>[@]);
+    <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>])  <span class="op">=&gt;</span> (<span class="number">3</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>]                  <span class="op">=&gt;</span> (<span class="number">6</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>]) <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>])  <span class="op">=&gt;</span> (<span class="number">9</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>])  <span class="op">=&gt;</span> (<span class="number">5</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]                  <span class="op">=&gt;</span> (<span class="number">5</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">=&gt;</span>])  <span class="op">=&gt;</span> <span class="ident">NOT_AN_OP</span>,
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>])  <span class="op">=&gt;</span> (<span class="number">5</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]                  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>])  <span class="op">=&gt;</span> (<span class="number">5</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>]) <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>])  <span class="op">=&gt;</span> (<span class="number">9</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]                  <span class="op">=&gt;</span> (<span class="number">5</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>]                  <span class="op">=&gt;</span> (<span class="number">10</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>]                  <span class="op">=&gt;</span> (<span class="number">7</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>]                  <span class="op">=&gt;</span> (<span class="number">11</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>])  <span class="op">=&gt;</span> (<span class="number">4</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>]                  <span class="op">=&gt;</span> (<span class="number">8</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>]                  <span class="op">=&gt;</span> (<span class="number">11</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>]                  <span class="op">=&gt;</span> (<span class="number">11</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..=]) <span class="op">=&gt;</span> (<span class="number">2</span>,  <span class="macro">T</span><span class="macro">!</span>[..=]),
+        <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..])  <span class="op">=&gt;</span> (<span class="number">2</span>,  <span class="macro">T</span><span class="macro">!</span>[..]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>])  <span class="op">=&gt;</span> (<span class="number">5</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>])  <span class="op">=&gt;</span> (<span class="number">1</span>,  <span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>]                  <span class="op">=&gt;</span> (<span class="number">10</span>, <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>]),
 
-<span class="kw">fn</span> <span class="ident">current_op</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="ident">Parser</span>) <span class="op">-&gt;</span> (<span class="ident">u8</span>, <span class="ident">Op</span>) {
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t</span>) <span class="op">=</span> <span class="ident">p</span>.<span class="ident">current3</span>() {
-        <span class="kw">match</span> <span class="ident">t</span> {
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;=</span>], <span class="number">3</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;=</span>], <span class="number">3</span>)),
-            <span class="kw">_</span> <span class="op">=&gt;</span> (),
-        }
+        <span class="kw">_</span>                      <span class="op">=&gt;</span> <span class="ident">NOT_AN_OP</span>
     }
-
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">t</span>) <span class="op">=</span> <span class="ident">p</span>.<span class="ident">current2</span>() {
-        <span class="kw">match</span> <span class="ident">t</span> {
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">+=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">-=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">*=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">%=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">/=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">|=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">1</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">^=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">3</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">||</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">4</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&amp;&amp;</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">5</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">5</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;=</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">9</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;&lt;</span>], <span class="number">2</span>)),
-            (<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>], <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>]) <span class="op">=&gt;</span> <span class="kw">return</span> (<span class="number">9</span>, <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;&gt;</span>], <span class="number">2</span>)),
-            <span class="kw">_</span> <span class="op">=&gt;</span> (),
-        }
-    }
-
-    <span class="kw">let</span> <span class="ident">bp</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
-        <span class="macro">T</span><span class="macro">!</span>[<span class="op">=</span>] <span class="op">=&gt;</span> <span class="number">1</span>,
-        <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[..=] <span class="op">=&gt;</span> <span class="number">2</span>,
-        <span class="macro">T</span><span class="macro">!</span>[<span class="op">==</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&lt;</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">&gt;</span>] <span class="op">=&gt;</span> <span class="number">5</span>,
-        <span class="macro">T</span><span class="macro">!</span>[<span class="op">|</span>] <span class="op">=&gt;</span> <span class="number">6</span>,
-        <span class="macro">T</span><span class="macro">!</span>[<span class="op">^</span>] <span class="op">=&gt;</span> <span class="number">7</span>,
-        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">&amp;</span>] <span class="op">=&gt;</span> <span class="number">8</span>,
-        <span class="macro">T</span><span class="macro">!</span>[<span class="op">-</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">+</span>] <span class="op">=&gt;</span> <span class="number">10</span>,
-        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">/</span>] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[<span class="op">%</span>] <span class="op">=&gt;</span> <span class="number">11</span>,
-        <span class="kw">_</span> <span class="op">=&gt;</span> <span class="number">0</span>,
-    };
-    (<span class="ident">bp</span>, <span class="ident">Op</span>::<span class="ident">Simple</span>)
 }
 
 <span class="comment">// Parses expression with binding power of at least bp.</span>
@@ -926,12 +938,7 @@
             <span class="kw">break</span>;
         }
         <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-        <span class="kw">match</span> <span class="ident">op</span> {
-            <span class="ident">Op</span>::<span class="ident">Simple</span> <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
-            <span class="ident">Op</span>::<span class="ident">Composite</span>(<span class="ident">kind</span>, <span class="ident">n</span>) <span class="op">=&gt;</span> {
-                <span class="ident">p</span>.<span class="ident">bump_compound</span>(<span class="ident">kind</span>, <span class="ident">n</span>);
-            }
-        }
+        <span class="ident">p</span>.<span class="ident">bump</span>(<span class="ident">op</span>);
 
         <span class="ident">expr_bp</span>(<span class="ident">p</span>, <span class="ident">r</span>, <span class="ident">op_bp</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">dollar_lvl</span>);
         <span class="ident">lhs</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="kw">if</span> <span class="ident">is_range</span> { <span class="ident">RANGE_EXPR</span> } <span class="kw">else</span> { <span class="ident">BIN_EXPR</span> });
@@ -939,8 +946,7 @@
     (<span class="prelude-val">Some</span>(<span class="ident">lhs</span>), <span class="ident">BlockLike</span>::<span class="ident">NotBlock</span>)
 }
 
-<span class="kw">const</span> <span class="ident">LHS_FIRST</span>: <span class="ident">TokenSet</span> <span class="op">=</span>
-    <span class="ident">atom</span>::<span class="ident">ATOM_EXPR_FIRST</span>.<span class="ident">union</span>(<span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">AMP</span>, <span class="ident">STAR</span>, <span class="ident">EXCL</span>, <span class="ident">DOTDOT</span>, <span class="ident">DOTDOTEQ</span>, <span class="ident">MINUS</span>]);
+<span class="kw">const</span> <span class="ident">LHS_FIRST</span>: <span class="ident">TokenSet</span> <span class="op">=</span> <span class="ident">atom</span>::<span class="ident">ATOM_EXPR_FIRST</span>.<span class="ident">union</span>(<span class="macro">token_set</span><span class="macro">!</span>[<span class="ident">AMP</span>, <span class="ident">STAR</span>, <span class="ident">EXCL</span>, <span class="ident">DOT</span>, <span class="ident">MINUS</span>]);
 
 <span class="kw">fn</span> <span class="ident">lhs</span>(
     <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>,
@@ -971,17 +977,20 @@
             <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">PREFIX_EXPR</span>
         }
-        <span class="comment">// test full_range_expr</span>
-        <span class="comment">// fn foo() { xs[..]; }</span>
-        <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[..=] <span class="op">=&gt;</span> {
-            <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-            <span class="ident">p</span>.<span class="ident">bump_any</span>();
-            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at_ts</span>(<span class="ident">EXPR_FIRST</span>) {
-                <span class="ident">expr_bp</span>(<span class="ident">p</span>, <span class="ident">r</span>, <span class="number">2</span>, <span class="ident">dollar_lvl</span>);
-            }
-            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_EXPR</span>), <span class="ident">BlockLike</span>::<span class="ident">NotBlock</span>));
-        }
         <span class="kw">_</span> <span class="op">=&gt;</span> {
+            <span class="comment">// test full_range_expr</span>
+            <span class="comment">// fn foo() { xs[..]; }</span>
+            <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">op</span> <span class="kw">in</span> [<span class="macro">T</span><span class="macro">!</span>[..=], <span class="macro">T</span><span class="macro">!</span>[..]].<span class="ident">iter</span>() {
+                <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">op</span>) {
+                    <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
+                    <span class="ident">p</span>.<span class="ident">bump</span>(<span class="ident">op</span>);
+                    <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at_ts</span>(<span class="ident">EXPR_FIRST</span>) {
+                        <span class="ident">expr_bp</span>(<span class="ident">p</span>, <span class="ident">r</span>, <span class="number">2</span>, <span class="ident">dollar_lvl</span>);
+                    }
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_EXPR</span>), <span class="ident">BlockLike</span>::<span class="ident">NotBlock</span>));
+                }
+            }
+
             <span class="comment">// test expression_after_block</span>
             <span class="comment">// fn foo() {</span>
             <span class="comment">//    let mut p = F{x: 5};</span>
@@ -1017,29 +1026,13 @@
             <span class="comment">// }</span>
             <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="kw">if</span> <span class="ident">allow_calls</span> <span class="op">=&gt;</span> <span class="ident">call_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>),
             <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;[&#39;</span>] <span class="kw">if</span> <span class="ident">allow_calls</span> <span class="op">=&gt;</span> <span class="ident">index_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>),
-            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="ident">IDENT</span> <span class="op">&amp;&amp;</span> (<span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">||</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">=&gt;</span> {
-                <span class="ident">method_call_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>)
-            }
-            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="ident">AWAIT_KW</span> <span class="op">=&gt;</span> {
-                <span class="comment">// test await_expr</span>
-                <span class="comment">// fn foo() {</span>
-                <span class="comment">//     x.await;</span>
-                <span class="comment">//     x.0.await;</span>
-                <span class="comment">//     x.0().await?.hello();</span>
-                <span class="comment">// }</span>
-                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-                <span class="ident">p</span>.<span class="ident">bump_any</span>();
-                <span class="ident">p</span>.<span class="ident">bump_any</span>();
-                <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">AWAIT_EXPR</span>)
-            }
-            <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">=&gt;</span> <span class="ident">field_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>),
-            <span class="comment">// test postfix_range</span>
-            <span class="comment">// fn foo() { let x = 1..; }</span>
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">|</span> <span class="macro">T</span><span class="macro">!</span>[..=] <span class="kw">if</span> <span class="op">!</span><span class="ident">EXPR_FIRST</span>.<span class="ident">contains</span>(<span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>)) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
-                <span class="ident">p</span>.<span class="ident">bump_any</span>();
-                <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_EXPR</span>)
-            }
+            <span class="macro">T</span><span class="macro">!</span>[.] <span class="op">=&gt;</span> <span class="kw">match</span> <span class="ident">postfix_dot_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>) {
+                <span class="prelude-val">Ok</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> <span class="ident">it</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">it</span>) <span class="op">=&gt;</span> {
+                    <span class="ident">lhs</span> <span class="op">=</span> <span class="ident">it</span>;
+                    <span class="kw">break</span>;
+                }
+            },
             <span class="macro">T</span><span class="macro">!</span>[<span class="question-mark">?</span>] <span class="op">=&gt;</span> <span class="ident">try_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>),
             <span class="macro">T</span><span class="macro">!</span>[<span class="kw">as</span>] <span class="op">=&gt;</span> <span class="ident">cast_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>),
             <span class="kw">_</span> <span class="op">=&gt;</span> <span class="kw">break</span>,
@@ -1047,7 +1040,46 @@
         <span class="ident">allow_calls</span> <span class="op">=</span> <span class="bool-val">true</span>;
         <span class="ident">block_like</span> <span class="op">=</span> <span class="ident">BlockLike</span>::<span class="ident">NotBlock</span>;
     }
-    (<span class="ident">lhs</span>, <span class="ident">block_like</span>)
+    <span class="kw">return</span> (<span class="ident">lhs</span>, <span class="ident">block_like</span>);
+
+    <span class="kw">fn</span> <span class="ident">postfix_dot_expr</span>(
+        <span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>,
+        <span class="ident">lhs</span>: <span class="ident">CompletedMarker</span>,
+    ) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CompletedMarker</span>, <span class="ident">CompletedMarker</span><span class="op">&gt;</span> {
+        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[.]));
+        <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="ident">IDENT</span> <span class="op">&amp;&amp;</span> (<span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">||</span> <span class="ident">p</span>.<span class="ident">nth_at</span>(<span class="number">2</span>, <span class="macro">T</span><span class="macro">!</span>[::])) {
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">method_call_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>));
+        }
+
+        <span class="comment">// test await_expr</span>
+        <span class="comment">// fn foo() {</span>
+        <span class="comment">//     x.await;</span>
+        <span class="comment">//     x.0.await;</span>
+        <span class="comment">//     x.0().await?.hello();</span>
+        <span class="comment">// }</span>
+        <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw">await</span>] {
+            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
+            <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[.]);
+            <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw">await</span>]);
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">AWAIT_EXPR</span>));
+        }
+
+        <span class="comment">// test postfix_range</span>
+        <span class="comment">// fn foo() { let x = 1..; }</span>
+        <span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">op</span>, <span class="ident">la</span>) <span class="kw">in</span> [(<span class="macro">T</span><span class="macro">!</span>[..=], <span class="number">3</span>), (<span class="macro">T</span><span class="macro">!</span>[..], <span class="number">2</span>)].<span class="ident">iter</span>() {
+            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="ident">op</span>) {
+                <span class="kw">return</span> <span class="kw">if</span> <span class="ident">EXPR_FIRST</span>.<span class="ident">contains</span>(<span class="ident">p</span>.<span class="ident">nth</span>(<span class="ident">la</span>)) {
+                    <span class="prelude-val">Err</span>(<span class="ident">lhs</span>)
+                } <span class="kw">else</span> {
+                    <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
+                    <span class="ident">p</span>.<span class="ident">bump</span>(<span class="ident">op</span>);
+                    <span class="prelude-val">Ok</span>(<span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RANGE_EXPR</span>))
+                };
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="ident">field_expr</span>(<span class="ident">p</span>, <span class="ident">lhs</span>))
+    }
 }
 
 <span class="comment">// test call_expr</span>
@@ -1083,7 +1115,7 @@
 <span class="comment">//     y.bar::&lt;T&gt;(1, 2,);</span>
 <span class="comment">// }</span>
 <span class="kw">fn</span> <span class="ident">method_call_expr</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>, <span class="ident">lhs</span>: <span class="ident">CompletedMarker</span>) <span class="op">-&gt;</span> <span class="ident">CompletedMarker</span> {
-    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[.]) <span class="op">&amp;&amp;</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="ident">IDENT</span> <span class="op">&amp;&amp;</span> (<span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">||</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[::]));
+    <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[.]) <span class="op">&amp;&amp;</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">==</span> <span class="ident">IDENT</span> <span class="op">&amp;&amp;</span> (<span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;(&#39;</span>] <span class="op">||</span> <span class="ident">p</span>.<span class="ident">nth_at</span>(<span class="number">2</span>, <span class="macro">T</span><span class="macro">!</span>[::])));
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">lhs</span>.<span class="ident">precede</span>(<span class="ident">p</span>);
     <span class="ident">p</span>.<span class="ident">bump_any</span>();
     <span class="ident">name_ref</span>(<span class="ident">p</span>);
@@ -1185,7 +1217,7 @@
             <span class="ident">record_field_list</span>(<span class="ident">p</span>);
             (<span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RECORD_LIT</span>), <span class="ident">BlockLike</span>::<span class="ident">NotBlock</span>)
         }
-        <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>] <span class="op">=&gt;</span> {
+        <span class="macro">T</span><span class="macro">!</span>[<span class="op">!</span>] <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">!=</span>]) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">block_like</span> <span class="op">=</span> <span class="ident">items</span>::<span class="ident">macro_call_after_excl</span>(<span class="ident">p</span>);
             (<span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">MACRO_CALL</span>), <span class="ident">block_like</span>)
         }
@@ -1219,8 +1251,8 @@
                 }
                 <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RECORD_FIELD</span>);
             }
-            <span class="macro">T</span><span class="macro">!</span>[..] <span class="op">=&gt;</span> {
-                <span class="ident">p</span>.<span class="ident">bump_any</span>();
+            <span class="macro">T</span><span class="macro">!</span>[.] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[..]) <span class="op">=&gt;</span> {
+                <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[..]);
                 <span class="ident">expr</span>(<span class="ident">p</span>);
             }
             <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">=&gt;</span> <span class="ident">error_block</span>(<span class="ident">p</span>, <span class="string">&quot;expected a field&quot;</span>),

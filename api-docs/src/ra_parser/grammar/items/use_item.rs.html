@@ -140,9 +140,8 @@
 <span class="doccomment">/// so handles both `some::path::{inner::path}` and `inner::path` in</span>
 <span class="doccomment">/// `use some::path::{inner::path};`</span>
 <span class="kw">fn</span> <span class="ident">use_tree</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) {
-    <span class="kw">let</span> <span class="ident">la</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>);
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-    <span class="kw">match</span> (<span class="ident">p</span>.<span class="ident">current</span>(), <span class="ident">la</span>) {
+    <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
         <span class="comment">// Finish the use_tree for cases of e.g.</span>
         <span class="comment">// `use some::path::{self, *};` or `use *;`</span>
         <span class="comment">// This does not handle cases such as `use some::path::*`</span>
@@ -155,15 +154,15 @@
         <span class="comment">// use ::*;</span>
         <span class="comment">// use some::path::{*};</span>
         <span class="comment">// use some::path::{::*};</span>
-        (<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>], <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump_any</span>(),
-        (<span class="macro">T</span><span class="macro">!</span>[::], <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>]) <span class="op">=&gt;</span> {
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">=&gt;</span> <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>]),
+        <span class="macro">T</span><span class="macro">!</span>[:] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">&amp;&amp;</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">=&gt;</span> {
             <span class="comment">// Parse `use ::*;`, which imports all from the crate root in Rust 2015</span>
             <span class="comment">// This is invalid inside a use_tree_list, (e.g. `use some::path::{::*}`)</span>
             <span class="comment">// but still parses and errors later: (&#39;crate root in paths can only be used in start position&#39;)</span>
             <span class="comment">// FIXME: Add this error (if not out of scope)</span>
             <span class="comment">// In Rust 2018, it is always invalid (see above)</span>
-            <span class="ident">p</span>.<span class="ident">bump_any</span>();
-            <span class="ident">p</span>.<span class="ident">bump_any</span>();
+            <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[::]);
+            <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>]);
         }
         <span class="comment">// Open a use tree list</span>
         <span class="comment">// Handles cases such as `use {some::path};` or `{inner::path}` in</span>
@@ -174,10 +173,11 @@
         <span class="comment">// use {path::from::root}; // Rust 2015</span>
         <span class="comment">// use ::{some::arbritrary::path}; // Rust 2015</span>
         <span class="comment">// use ::{{{crate::export}}}; // Nonsensical but perfectly legal nestnig</span>
-        (<span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>], <span class="kw">_</span>) <span class="op">|</span> (<span class="macro">T</span><span class="macro">!</span>[::], <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>]) <span class="op">=&gt;</span> {
-            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) {
-                <span class="ident">p</span>.<span class="ident">bump_any</span>();
-            }
+        <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">=&gt;</span> {
+            <span class="ident">use_tree_list</span>(<span class="ident">p</span>);
+        }
+        <span class="macro">T</span><span class="macro">!</span>[:] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">&amp;&amp;</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">2</span>) <span class="op">==</span> <span class="macro">T</span><span class="macro">!</span>[<span class="string">&#39;{&#39;</span>] <span class="op">=&gt;</span> {
+            <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[::]);
             <span class="ident">use_tree_list</span>(<span class="ident">p</span>);
         }
         <span class="comment">// Parse a &#39;standard&#39; path.</span>
@@ -207,8 +207,8 @@
                     <span class="comment">// use Trait as _;</span>
                     <span class="ident">opt_alias</span>(<span class="ident">p</span>);
                 }
-                <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">=&gt;</span> {
-                    <span class="ident">p</span>.<span class="ident">bump_any</span>();
+                <span class="macro">T</span><span class="macro">!</span>[:] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">=&gt;</span> {
+                    <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[::]);
                     <span class="kw">match</span> <span class="ident">p</span>.<span class="ident">current</span>() {
                         <span class="macro">T</span><span class="macro">!</span>[<span class="kw-2">*</span>] <span class="op">=&gt;</span> {
                             <span class="ident">p</span>.<span class="ident">bump_any</span>();

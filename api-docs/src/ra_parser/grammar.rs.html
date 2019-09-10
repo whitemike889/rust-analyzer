@@ -514,7 +514,7 @@
         <span class="comment">//</span>
         <span class="comment">// test crate_keyword_path</span>
         <span class="comment">// fn foo() { crate::foo(); }</span>
-        <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">nth</span>(<span class="number">1</span>) <span class="op">!=</span> <span class="macro">T</span><span class="macro">!</span>[::] <span class="op">=&gt;</span> {
+        <span class="macro">T</span><span class="macro">!</span>[<span class="kw">crate</span>] <span class="kw">if</span> <span class="op">!</span><span class="ident">p</span>.<span class="ident">nth_at</span>(<span class="number">1</span>, <span class="macro">T</span><span class="macro">!</span>[::]) <span class="op">=&gt;</span> {
             <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
             <span class="ident">p</span>.<span class="ident">bump_any</span>();
             <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">VISIBILITY</span>);
@@ -549,7 +549,7 @@
 <span class="kw">fn</span> <span class="ident">opt_fn_ret_type</span>(<span class="ident">p</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Parser</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
     <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">at</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>]) {
         <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">start</span>();
-        <span class="ident">p</span>.<span class="ident">bump_any</span>();
+        <span class="ident">p</span>.<span class="ident">bump</span>(<span class="macro">T</span><span class="macro">!</span>[<span class="op">-&gt;</span>]);
         <span class="ident">types</span>::<span class="ident">type_</span>(<span class="ident">p</span>);
         <span class="ident">m</span>.<span class="ident">complete</span>(<span class="ident">p</span>, <span class="ident">RET_TYPE</span>);
         <span class="bool-val">true</span>
